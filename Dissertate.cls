@@ -12,7 +12,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
 \LoadClass[12pt, oneside, letterpaper]{book}
-
+\synctex=1
 %
 % Options
 %
@@ -63,6 +63,7 @@
 
 % Text layout.
 \RequirePackage[width=5.75in, letterpaper]{geometry}
+
 \usepackage{ragged2e}
 \RaggedRight
 \RequirePackage{graphicx}
@@ -90,7 +91,7 @@
 \setmonofont[Scale=MatchLowercase]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
                 textfont={sf,footnotesize,singlespacing},
-                justification={justified,RaggedRight},
+                justification={justified},
                 singlelinecheck=false,
                 margin=0pt,
                 figurewithin=chapter,
@@ -120,8 +121,10 @@
 
 % References.
 \renewcommand\bibname{References}
-\RequirePackage[super,comma,numbers]{natbib}
-\renewcommand{\bibnumfmt}[1]{[#1]}
+\RequirePackage{natbib}
+% \RequirePackage[super,comma,numbers]{natbib}
+
+% \renewcommand{\bibnumfmt}[1]{[#1]}
 \RequirePackage[palatino]{quotchap}
 \renewcommand*{\chapterheadstartvskip}{\vspace*{-0.5\baselineskip}}
 \renewcommand*{\chapterheadendvskip}{\vspace{1.3\baselineskip}}
@@ -188,10 +191,11 @@
 % http://www.princeton.edu/communications/services/image/graphic/color
 \definecolor{SchoolColor}{rgb}{0.9608, 0.5020, 0.1451}
 \definecolor{chaptergrey}{rgb}{0.9608, 0.5020, 0.1451}
+\definecolor{graylink}{rgb}{0.6, 0.6, 0.6}
 
 \hypersetup{
     colorlinks,
-    citecolor=SchoolColor,
+    citecolor=graylink,
     filecolor=black,
     linkcolor=black,
     urlcolor=SchoolColor,
@@ -292,6 +296,40 @@
     \bibliography{references}
     \addcontentsline{toc}{chapter}{References}
     \bibliographystyle{apalike2}
-    \include{endmatter/colophon}
+    % \include{endmatter/colophon}
 }
 
+\usepackage{etoolbox}
+\makeatletter
+
+\pretocmd{\NAT@citex}{%
+  \let\NAT@hyper@\NAT@hyper@citex
+  \def\NAT@postnote{#2}%
+  \setcounter{NAT@total@cites}{0}%
+  \setcounter{NAT@count@cites}{0}%
+  \forcsvlist{\stepcounter{NAT@total@cites}\@gobble}{#3}}{}{}
+\newcounter{NAT@total@cites}
+\newcounter{NAT@count@cites}
+\def\NAT@postnote{}
+
+% include postnote and \citet closing bracket in hyperlink
+\def\NAT@hyper@citex#1{%
+  \stepcounter{NAT@count@cites}%
+  \hyper@natlinkstart{\@citeb\@extra@b@citeb}#1%
+  \ifnumequal{\value{NAT@count@cites}}{\value{NAT@total@cites}}
+    {\ifNAT@swa\else\if*\NAT@postnote*\else%
+     \NAT@cmt\NAT@postnote\global\def\NAT@postnote{}\fi\fi}{}%
+  \ifNAT@swa\else\if\relax\NAT@date\relax
+  \else\NAT@@close\global\let\NAT@nm\@empty\fi\fi% avoid compact citations
+  \hyper@natlinkend}
+\renewcommand\hyper@natlinkbreak[2]{#1}
+
+% avoid extraneous postnotes, closing brackets
+\patchcmd{\NAT@citex}
+  {\ifNAT@swa\else\if*#2*\else\NAT@cmt#2\fi
+   \if\relax\NAT@date\relax\else\NAT@@close\fi\fi}{}{}{}
+\patchcmd{\NAT@citex}
+  {\if\relax\NAT@date\relax\NAT@def@citea\else\NAT@def@citea@close\fi}
+  {\if\relax\NAT@date\relax\NAT@def@citea\else\NAT@def@citea@space\fi}{}{}
+
+\makeatother
