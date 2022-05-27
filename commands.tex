@@ -7,7 +7,6 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
 
-
 % \newcommand{\expect}[2][]{\mathbb{E}_{#1} \left[ #2 \right]}
 \newcommand{\Normal}{\mathrm{Normal}}
 \renewcommand{\vec}[1]{\mathbf{#1}}
@@ -27,6 +26,8 @@
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\E}{E}
 \DeclareMathOperator*{\Var}{Var}
+% \newcommand{\argmax}[1]{\underset{#1}{\operatorname{argmax}}\;}
+
 
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
@@ -38,3 +39,67 @@
 \newcommand{\expectunder}[2]{\E_{#2} \left[ #1 \right]}
 
 \newcommand{\curly}[1]{\left\{ #1 \right\}}
+
+
+% ATTENTION
+\newcommand{\given}{\bigm\vert}
+\newcommand{\last}{\mathrm{last}}
+\newcommand{\std}{\operatorname{std}}
+\newcommand{\mean}{\operatorname{mean}}
+\newcommand{\cdf}{\operatorname{cdf}}
+
+\newcommand{\nop}{\texttt{NOOP}}
+\newcommand{\samplecost}{\gamma_\text{sample}}
+\newcommand{\switchcost}{\gamma_\text{switch}}
+\newcommand{\pswitch}{p_\text{switch}}
+\newcommand{\pstop}{p_\text{stop}}
+\newcommand{\sampletime}{t_\text{sample}}
+
+\newcommand{\VOC}{\text{VOC}}
+\newcommand{\VOI}{\text{VOI}}
+\newcommand{\VOImy}{\VOI_\text{myopic}}
+\newcommand{\VPIitem}{\VOI_\text{item}}
+\newcommand{\VPI}{\VOI_\text{full}}
+\newcommand{\VOCapprox}{\widehat{\text{VOC}}(b, c; \vec{w})}
+\newcommand{\VOChat}{\widehat{\text{VOC}}}
+\newcommand{\like}{\mathcal{L}(D \mid \theta)}
+
+% PLANNING
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\renewcommand{\P}{\mathcal{P}}
+
+\newcommand{\rmeta}{r\meta}
+\newcommand{\tmeta}{T\meta}
+\newcommand{\term}{\bot}
+\newcommand{\pselect}{p_{\mathrm{select}}(s, a)}
+\newcommand{\myopic}{^{\mathrm{myopic}}}
+
+\renewcommand{\stop}{_{\mathrm{stop}}}
+\newcommand{\select}{_{\mathrm{select}}}
+\newcommand{\depth}{_{\mathrm{depth}}}
+\newcommand{\frontier}{\mathrm{frontier}}
+\newcommand{\bias}{\psi_\mathrm{forward}}
+\newcommand{\prune}{_{\mathrm{prune}}}
+\newcommand{\dnll}{\Delta_{\mathrm{LL}}}
+
+\newcommand{\best}{_{\mathrm{best}}}
+\newcommand{\nxt}{_{\mathrm{next}}}
+\newcommand{\satisfice}{_{\mathrm{satisfice}}}
+
+
+% \newcommand{\heur}{^{H}}
+% \newcommand{\opt}{^{O}}
+% \newcommand{\greedy}{^{G}}
+
+\newcommand{\phiopt}{\phi^{\mathrm{opt}}}
+\newcommand{\phimg}{\phi^{\mathrm{MG}}}
+\newcommand{\phiclass}{\phi^{\mathrm{heur}}}
+\newcommand{\phirand}{\phi^{\mathrm{rand}}}
+\newcommand{\expp}[1]{\exp\left\{#1\right\}}
+
+
+
+

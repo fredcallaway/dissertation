@@ -1,14 +1,19 @@
 %!TEX root = ../dissertation.tex
 \begin{savequote}[75mm]
 We must be prepared to accept the possibility that what we call ``the environment'' may lie, in part, within the skin of the biological organism
-\qauthor{Herbert Simon}
+\qauthor{Herbert Simon (\citeyear{simon1955behavioral})}
 \end{savequote}
 
-\chapter{Metalevel Markov decision processes}
+% \chapter{Formalism}
+\Chapter[Meta-level Markov decision processes]{Formalism}
+% \begin{flushright}
+% {\large\itshape Meta-level Markov decision processes}
+% \vspace{1.3\baselineskip}
+% \end{flushright}
 
 \newthought{The key insight} underlying the proposed framework is that cognitive processes (including, for example, decision making) are themselves solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{meta-level Markov decision processes} (meta-level MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's beliefs about the world. At each moment, the agent must choose whether to continue deliberating, refining their beliefs but accruing computational cost, or to instead stop computing and make a decision. In the former case, they must additionally decide which computation to execute next (i.e., what to think about); in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
-In this chapter, I describe the formal framework and show how it can be applied to multi-attribute choice, the domain in which we conduct our experimental case studies. We provide a non-technical summary at the end of this section.
+In this chapter, I provide a formal description of the framework, identify technical challenges that arise when applying the framework, and discuss various strategies for addressing those strategies.
 
 % We begin by introducing Markov decision processes (MDPs). Next, we define meta-level MDPs as extensions of standard MDPs. Finally, we define a specific meta-level MDP model for multi-attribute decision-making, which we will employ in our experimental case studies.
 
@@ -34,7 +39,7 @@ The standard goal in an MDP is to maximize the expected cumulative reward attain
 
 % An important property of MDPs is that there is at least one deterministic \emph{optimal policy}; that is, there is a mapping from states to actions that, when followed, will produce the maximum possible return. 
 
-In addition to their foundational role in artificial intelligence \citep{sutton2018reinforcement}, MDPs are widely used in models of human decision-making \citep{dayan2008decision}. MDPs are the formal foundation for models of reinforcement learning \citep{niv2009reinforcement} and model-based planning \citep{huys2015interplay,botvinick2012planning}, as well as competition between the two systems \citep{daw2005uncertaintybased,keramati2011speed,kool2017costbenefit}. They have also been used to study information-seeking \citep{gottlieb2013informationseeking,hunt2016approachinduced}, generalization \citep{tomov2021multi}, and hierarchical abstraction \citep{solway2014optimal,botvinick2009hierarchically}. However, with a few notable exceptions \citep{dayan2008serotonin,drugowitsch2012cost,tajima2016optimal}, MDPs have primarily been used to model the sequential decision problems posed by the external world. In the following section, we show how this framework can be applied to model the sequential decision problem posed by one's own cognitive architecture.
+In addition to their foundational role in artificial intelligence \citep{sutton2018reinforcement}, MDPs are widely used in models of human decision-making \citep{dayan2008decision}. MDPs are the formal foundation for models of reinforcement learning \citep{niv2009reinforcement} and model-based planning \citep{huys2015interplay,botvinick2012planning}, as well as competition between the two systems \citep{daw2005uncertaintybased,keramati2011speed,kool2017costbenefit}. They have also been used to study information-seeking \citep{gottlieb2013informationseeking,hunt2016approachinduced}, generalization \citep{tomov2021multitask}, and hierarchical abstraction \citep{solway2014optimal,botvinick2009hierarchically}. However, with a few notable exceptions \citep{dayan2008serotonin,drugowitsch2012cost,tajima2016optimal}, MDPs have primarily been used to model the sequential decision problems posed by the external world. In the following section, we show how this framework can be applied to model the sequential decision problem posed by one's own cognitive architecture.
 
 \section{Meta-level Markov decision processes}
 
@@ -59,7 +64,7 @@ The meta-level transition function $T\meta: \B \times \C \times \S \rightarrow \
 \begin{equation}
 b_{t+1} \sim T\meta(b_t, c_t, s).
 \end{equation}
-The transition function thus defines the core structure of the computational architecture. Following previous work \citep{Matheson1968,hay2012}, we assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state. Thus, in expectation, computation has the effect of making one's beliefs more precise and accurate, although an individual computation may yield misleading information. 
+The transition function thus defines the core structure of the computational architecture. Following previous work \citep{matheson1968economic,hay2012selecting}, we assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state. Thus, in expectation, computation has the effect of making one's beliefs more precise and accurate, although an individual computation may yield misleading information. 
 
 % This formalization is quite natural for many types of cognitive operations, such as memory recall and mental simulation. However, it can also be applied in less obvious cases; for example, performing an addition operation generates previously inaccessible information about the value of the sum of two numbers.
 

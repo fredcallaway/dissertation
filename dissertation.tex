@@ -7,7 +7,9 @@
 \usepackage{amsfonts}
 % \usepackage{caption}
 \usepackage{amsmath,amsthm,amssymb,amsfonts,bm}
+\usepackage{nicefrac}
 % \usepackage{enumitem}
+\usepackage{booktabs}
 
 \include{commands}
 \begin{document}
@@ -18,6 +20,7 @@
 % \copyrightpage
 \frontmatter
 \setstretch{\dnormalspacing}
+
 % \abstractpage
 % \tableofcontents
 % %\authorlist
@@ -25,23 +28,14 @@
 % \dedicationpage
 % \acknowledgments
 
-% \doublespacing
-
-
-% include each chapter...
-\setcounter{chapter}{-1}  % start chapter numbering at 0
-
+% \setcounter{chapter}{-1}  % start chapter numbering at 0
 
 \include{chapters/introduction}
-\include{chapters/chapter1}
-% \include{chapters/chapter2}
-% \include{chapters/chapter3}
-% \include{chapters/conclusion}
-
-\setstretch{\dnormalspacing}
-
-% the back matter
-% \backmatter
+\include{chapters/metamdp}
+\include{chapters/attention}
+\include{chapters/memory}
+\include{chapters/planning}
+\include{chapters/conclusion}
 
 % \begin{appendices}
 %     \include{chapters/appendixA}
@@ -51,7 +45,7 @@
 \bibliography{references}
 \addcontentsline{toc}{chapter}{References}
 \bibliographystyle{apalike}
-% \include{endmatter/colophon}
+\include{endmatter/colophon}
 
 
 \end{document}

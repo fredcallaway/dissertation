@@ -24,7 +24,7 @@
 \togglefalse{DissertateSingleSpace}
 \DeclareOption{dsingle}{
     \toggletrue{DissertateSingleSpace}
-    \ClassWarning{Dissertate}{Single-spaced mode on.}
+    % \ClassWarning{Dissertate}{Single-spaced mode on.}
 }
 \DeclareOption{ddouble}{\togglefalse{DissertateSingleSpace}}
 
@@ -62,7 +62,17 @@
     {\endoldenumerate\end{spacing}}
 
 % Text layout.
-\RequirePackage[width=5.75in, letterpaper]{geometry}
+% \RequirePackage[letterpaper]{geometry}
+\usepackage[letterpaper]{geometry}
+\geometry{
+    top=1in,
+    bottom=1.5in,
+    left=1.2in,
+    right=1.2in,
+    % headheight=3ex,
+    % headsep=3ex
+}
+% \RequirePackage[width=5.75in, letterpaper]{geometry}
 
 \usepackage{ragged2e}
 \RaggedRight
@@ -123,11 +133,21 @@
 \renewcommand\bibname{References}
 \RequirePackage{natbib}
 % \RequirePackage[super,comma,numbers]{natbib}
-
 % \renewcommand{\bibnumfmt}[1]{[#1]}
+
+% Chapters
 \RequirePackage[palatino]{quotchap}
 \renewcommand*{\chapterheadstartvskip}{\vspace*{-0.5\baselineskip}}
-\renewcommand*{\chapterheadendvskip}{\vspace{1.3\baselineskip}}
+% \renewcommand*{\chapterheadendvskip}{\vspace{1.3\baselineskip}}
+\renewcommand*{\chapterheadendvskip}{}
+
+\newcommand{\Chapter}[2][]{%
+    \chapter{#2}
+    \begin{flushright}
+    {\large\itshape #1}
+    \vspace{1.3\baselineskip}
+    \end{flushright}
+}
 
 % An environment for paragraph-style section.
 \providecommand\newthought[1]{%
@@ -235,7 +255,7 @@
 	  by the Department of\\
 		\@department\\
 		\vspace{25pt}
-	  Adviser: \@advisor \\
+	  Advisor: \@advisor \\
 		\vspace{15pt}
 	  \@degreemonth\ \@degreeyear
 	\rm
@@ -299,6 +319,7 @@
     % \include{endmatter/colophon}
 }
 
+% everything below makes each citation a single link (rather than author and year)
 \usepackage{etoolbox}
 \makeatletter
 
