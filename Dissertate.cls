@@ -91,14 +91,13 @@
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
 % \setmathsfont(Latin){EB Garamond}
-% \setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{EB Garamond}
-\setmathsfont(Digits,Latin)[Numbers={Proportional}]{EB Garamond}
+\setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{EB Garamond}
 \setmathrm{EB Garamond}
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300
 \clubpenalty=300
-\setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.0]{EB Garamond}
-\newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{EB Garamond}
+% \setromanfont[Ligatures={Common, TeX}, Scale=1]{EB Garamond}
+% \newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{EB Garamond}
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
 \setmonofont[Scale=MatchLowercase]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
