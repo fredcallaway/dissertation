@@ -77,7 +77,7 @@
 \usepackage{ragged2e}
 \RaggedRight
 \RequirePackage{graphicx}
-\usepackage{fixltx2e}
+% \usepackage{fixltx2e}
 \parindent 12pt
 \RequirePackage{lettrine}
 \RequirePackage{setspace}
@@ -90,7 +90,9 @@
 \RequirePackage{url}
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
-\setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{EB Garamond}
+% \setmathsfont(Latin){EB Garamond}
+% \setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{EB Garamond}
+\setmathsfont(Digits,Latin)[Numbers={Proportional}]{EB Garamond}
 \setmathrm{EB Garamond}
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300

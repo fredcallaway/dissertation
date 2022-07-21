@@ -1,0 +1,375 @@
+%!TEX root = ../dissertation.tex
+
+\clearpage
+% Reset numbering
+
+% % \runninglinenumbers[1]
+% \setcounter{page}{1}
+% \setcounter{table}{0}
+% % \renewcommand{\thetable}{S\arabic{table}}
+% \setcounter{figure}{0}
+% % \renewcommand{\thefigure}{S\arabic{figure}}
+% \renewcommand{\thefigure}{\Alph{table}}
+% \renewcommand{\thefigure}{\Alph{figure}}
+
+\newcommand{\nextbest}{\max_{i \neq c} \mu_t^{(i)}}
+\newcommand{\postmean}{\mu_{t+1}^{(c)}}
+\newcommand{\currentmean}{\mu_{t}^{(c)}}
+\newcommand{\currentlam}{\lambda_{t}^{(c)}}
+\newcommand{\voiCDF}{\Phi \left( \frac{a - \mu_\mu}{\sigma_\mu} \right)}
+\newcommand{\conditionalx}{x_t \mid \currentmean, \currentlam}
+
+% \newgeometry{left=1.2in, right=1.2in, top=1in, bottom=1in}
+% \onecolumn
+
+\chapter{Supplementary information for Chapter~\ref{sec:attention}}
+
+\section{Task descriptions}\label{app:attention-task}
+
+This datasets for binary and trinary choice were initially reported in \citet{krajbich2010visual} and \citet{krajbich2011multialternative}, respectively. For the convenience of the reader, we include the task description from the original papers.
+
+\subsection{Binary choice}
+
+The experiment consisted of 39 Caltech students. Only subjects who self-reported regularly eating the snack foods (for example, potato chips and candy bars) used in the experiment and not being on a diet were allowed to participate. These steps were taken to ensure that the food items we used would be motivationally relevant. This would not have been the case if the subjects did not like junk food. Subjects were asked to refrain from eating for 3 h before the start of the experiment. After the experiment they were required to stay in the room with the experimenter for 30 min while eating the food item that they chose in a randomly selected trial (see below). Subjects were not allowed to eat anything else during this time.
+
+In an initial rating phase subjects entered liking ratings for 70 different foods using an on-screen slider bar (“how much would you like to eat this at the end of the experiment?”, scale -10 to 10). The initial location of the slider was randomized to reduce anchoring effects. This rating screen had a free response time. The food was kept in the room with the subjects during the experimental session to assure them that all the items were available. Furthermore, subjects briefly saw all the items at this point so that they could effectively use the rating scale.
+
+In the choice phase, subjects made their choices by pressing the left or right arrow keys on the keyboard. The choice screen had a free response time. Food items that received a negative rating in the rating phase of the experiment were excluded from the choice phase. The items shown in each trial were chosen pseudo-randomly according to the following rules: (i) no item was used in more than 6 trials; (ii) the difference in liking ratings between the two items was constrained to be 5 or less; (iii) if at some point in the experiment (i) and (ii) could no longer both be satisfied, then the difference in allowable liking ratings was expanded to 7, but these trials occurred for only 5 subjects and so were discarded from the analyses. The spatial location of the items was randomized. After subjects indicated their choice, a yellow box was drawn around the chosen item (with the other item still on-screen) and displayed for 1 s, followed by a fixation screen before the beginning of the next trial.
+
+Subjects’ fixation patterns were recorded at 50 Hz using a Tobii desktop-mounted eye-tracker. Before each choice trial, subjects were required to maintain a fixation at the center of the screen for 2 s before the items would appear, ensuring that subjects began every choice fixating on the same location.
+
+
+\subsection{Trinary choice}
+
+Thirty Caltech students participated in the experiment. The screening, pre-experimental instructions, eye-tracking and liking rating phase were identical to those used in the binary choice task described in the previous section.
+
+In the choice phase, subjects made their choices using the keyboard. The choice screen had a free response time. The items shown in each trial were randomly chosen. In all trials the three items were displayed in a triangular formation with the left and right items at the same vertical position, and the center item at the opposite vertical position. In half of the trials the center item was on the top half of the screen, and in the other half it was on the bottom half of the screen. Subjects indicated their choice by pressing the left, down, or right arrow keys for the left, center, and right items, respectively. After subjects indicated their choice, a yellow box was drawn around the chosen item (with the other item still on the screen) and displayed for 1 s, followed by a fixation screen, before the beginning of the next trial.
+
+
+\section{Individual fits}\label{app:attention-individual}
+We have focused on group-level fits because we are especially interested in the ability of the model to predict differences between binary and trinary decisions. However, it is important to verify that the qualitative effects that we emphasize also hold in individual data, and are not aggregation artifacts. It is also interesting to see to what extent the model can account for individual variability in fixation and choice behavior. To address both of these concerns, we present versions of each plot shown in the main text with separate panels for each participant. The model was fit to each participant's data following the same fitting procedure as for the group-level fit (using the same precomputed likelihood histograms). Finally, because many of the behavioral patterns are quite noisy with only 50 trials, we aditionally plot Bayesian linear model fits for both the human and model-simulated data (using logistic regression for binary dependent variables). These predictions were generated using the rstanarm package \citep{rstanarm}. The plots can be found at \url{https://doi.org/10.1371/journal.pcbi.1008863.s002}.
+
+In brief, we found that most behavioral patterns shown in the main text figures were consistently demonstrated by a majority of participants. However, although most effects were consistently present and in the correct direction, the strength often varied considerably across individuals. In many cases, the model showed only a modest ability to capture this variability. This reflects the strong \emph{a priori} assumptions of the model, in particular, the assumption that attention is allocated optimally.
+
+
+\section{Parameter recovery}\label{app:attention-recovery}
+%!TEX root = ../main.tex
+
+\begin{figure}[tb!]
+  
+  \centering
+  \includegraphics[width=\textwidth]{figs/attention/supp-recovery.pdf}
+  \caption{Parameter recovery. Each panel plots the estimated parameter value as a function of the true parameter value. Each black dot corresponds to one simulated dataset. The dotted red line shows equality (i.e., perfect recovery) and the solid blue line shows the linear trend. The top row shows results when simulating the full joint dataset. The middle row shows results when simulating 50 trials (the amount of fitting data one individual produces) of binary choice. The bottom row shows the same for trinary choice.
+  }
+  \label{fig:attention-recovery}
+  
+\end{figure}
+
+To validate our model fitting approach, we conducted a parameter recovery exercise. We began by sampling 1024 ``true'' parameter configurations from the promising region of the parameter space that we considered when fitting human data (see main text \emph{Methods}). We sampled these values using the 5-dimensional Sobol sequence \citep{sobol1967distribution} to ensure good coverage of the space. For each parameter configuration, we computed two sets of 80 near-optimal policies (one for binary choice and one for trinary choice) using the UCB-based method described in the main text. Then, for each set, we simulated the even trials of the corresponding dataset. We simulated each trial only once (to match the amount of data when fitting participants), cycling between the 80 near-optimal policies. We then applied the full approximate maximum likelihood estimation procedure described in the main text for each dataset.\footnotemark\ For each configuration, the maximum likelihood estimate of each parameter was its mean in the 30 configurations with highest likelihood (following our reporting approach for the fits to human data).
+
+\footnotetext{We reused the likelihood histograms that we computed when fitting participant data. Critically, however, the policies used to generate these histograms were not the same ones used to generate the simulated data.}
+
+The results, shown in \Fig{fig:attention-recovery}{}, suggest that we were able to recover parameters with fairly high accuracy. For all parameters besides the softmax temperature, the Pearson correlation was over 0.9. Importantly, we found only slight bias in the estimation procedure, with the best fitting linear regression line falling close to the equality line for all parameters. The largest bias was for the prior bias parameter, $\alpha$, for which the recovered parameter was on average .095 less than the true parameter.
+
+To validate our approach when fitting individual subjects, we repeated the steps above, except using only 50 simulated trials (the number of fitting trials for each subject). Unsurprisingly, we find that the estimates become less reliable; however the correlations are still fairly strong. In the trinary case, we see substantial bias for both $\samplecost$ and $\alpha$. Thus, care must be taken when interpreting the individual fitting results.
+
+% %!TEX root = ../main.tex
+
+\begin{figure*}[hb!]
+  \centering
+  \includegraphics[width=\textwidth]{figs/attention/supp-grid-both.png}
+  \caption{Grid search on model parameters. Each panel shows the best likelihood achieved for each value of one parameter (diagonal) or combination of values for two parameters (off-diagonal), i.e., minimizing over all the non-plotted variables.
+  }
+  \label{fig:attention-grid}
+\end{figure*}
+
+\section{Implementation and validation of the aDDM}\label{app:attention-addm}
+
+
+In order to compare our model to the predictions of the aDDM \citep{krajbich2010visual,krajbich2011multialternative}, we reimplemented it based on code provided from the first author. We made one change to the simulation procedure. In the original papers, the model predictions were generated by simulating an equal number of trials for all possible combinations of item ratings. In contrast, we have simulated each trial in the dataset a fixed number of times. That is, our simulations follow the empirical distribution of the item ratings. To verify the correctness of our implementation, we have replicated four key plots from the original binary and trinary papers, shown in Figures~\Fig[]{fig:attention-addm2}{} and~\Fig[]{fig:attention-addm3}{} respectively. Note that for these plots, we use the original approach of simulating each possible combination a fixed number of times.
+
+
+%!TEX root = ../main.tex
+
+\begin{figure*}[tb!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figs/attention/supp-addm-replication-binary.pdf}
+  \caption{Replication of Krajbich, Armel, and Rangel (2010). Note that x axis labels in the orginal plots sometimes reflected the left tail of the bin; in these cases, we adjusted the tick locations accordingly.
+  }
+  \label{fig:attention-addm2}
+\end{figure*}
+
+\begin{figure*}[tb!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figs/attention/supp-addm-replication-trinary.pdf}
+  \caption{Replication of Krajbich and Rangel (2011). Note that there are slight deviations in model predictions due to noise in the simulations; the orginal plots are based on 2000 simulated trials.
+  }
+  \label{fig:attention-addm3}
+\end{figure*}
+
+\clearpage
+
+%!TEX root = main.tex
+
+\begin{figure}[b!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figs/attention/supp-voi-vpi.pdf}
+  \caption{Illustration of the value of information features. The solid line shows the average value of the item chosen after different numbers of computations selected by a near-optimal policy assuming no computational costs. The dashed lines show values for two of the VOI features in the initial belief state: $\VOImy$ is the value after one computation and $\VPI$ is the asymptotitc value after infinite computations.
+  }
+  \label{fig:attention-voi}
+\end{figure}
+
+% \clearpage
+% \onecolumn
+
+\section{Derivations for VOI features}\label{app:attention-derivations}
+
+Here we present derivations of the value of information (VOI) features used by the policy approximation method \citep{callaway2018learning} applied to the current metalevel MDP model.
+
+\subsection{Myopic Value of Information}
+The myopic value of information is the value of the information acquired by a single computation, that is, the expected increase in decision quality from executing a single computation and then deciding rather than making a decision immediately. Formally,
+%
+% \begin{equation*}
+%   \VOImy(b,c) = \E_{B_{t+1}}\left[
+%     R(B_{t+1},\bot) \mid C_t=c, B_t=b
+%   \right] - R(b, \bot).
+% \end{equation*}
+%
+\begin{equation*}
+  \VOImy(b_t,c) = \E_{b_{t+1} \mid b_t, c}\left[
+    R(b_{t+1},\bot)
+  \right] - R(b, \bot).
+\end{equation*}
+%
+In our model, this is equal to the expected value of the item that will be chosen after taking an additional sample minus the expected value of an item chosen based on the current beliefs. That is,
+%
+% \begin{equation}
+%   \VOImy(b, c) = \E_{\mu_{t+1}}\left[
+%     \max_i \mu_{t+1}^{(i)}
+%     \given C_t = c, B_t = b
+% \right] - \max_i \mu_t^{(i)}
+% .
+% \end{equation}
+%
+\begin{equation*}
+  \VOImy(b_t, c) = \E_{\mu_{t+1} \mid \mu_t, \lambda_t} \left[
+    \max_i \mu_{t+1}^{(i)}
+\right] - \max_i \mu_t^{(i)}.
+\end{equation*}
+%
+Because $\mu_{t+1}$ differs from $\mu_t$ only for item $c$, we can rewrite the expectation term as
+%
+\begin{equation}
+  \label{eq:myopicmax}
+  \E_{\postmean \mid \currentmean, \currentlam} \left[ 
+    \max \left\{ \postmean,\nextbest \right\} 
+  \right].
+\end{equation}
+%
+Thus, the term inside the expectation is the maximum of a constant, $\nextbest$, and a univariate random variable, $\postmean \mid \currentmean, \currentlam$. To simplify notation, we suppress the conditioning variables in the following derivation.
+
+To derive an analytic expression for Equation~\ref{eq:myopicmax}, we first derive the distribution of $\postmean$, that is, the distribution over the posterior mean after taking a sample. Applying the transition dynamics given in Equation~\ref{eq:dynamics}, we have
+%
+\begin{equation}
+  \label{eq:update}
+  \postmean=\frac
+  {\sigma_{x}^{-2}x_t+\currentlam\currentmean}
+  {\currentlam+\sigma_{x}^{-2}}.
+\end{equation}
+%
+Since $x_t \mid u^{(c)} \sim \Normal(u^{(c)},\sigma_{x}^{2}$) and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. Additionally, because the belief is a distribution over the true utility, we have $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,1/\currentlam)$. Combining these two statements, we see that $\conditionalx$ is a Gaussian whose mean is itself a Gaussian. Applying the fact that $\Normal(\mu, \sigma^2) = \mu + \Normal(0,  \sigma^2)$, we can then derive that $\conditionalx \sim \Normal(\currentmean, \nicefrac{1}{\currentlam}) + \Normal(0, \sigma_x)$, which reduces to $\Normal(\currentmean, \nicefrac{1}{\currentlam}+\sigma_{x}^{2})$.
+% Then, because $E[X+Y]=E[X]+E[Y]$ and $\Var[X+Y]=\Var[X]+\Var[Y]$ when $X$ and $Y$ are Gaussian, we get that $\E[\conditionalx]=\currentmean$ and $\Var[\conditionalx]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$.
+Finally, applying the linear transformation of $x_t$ given by Equation~\ref{eq:update}, we have
+% Since $x_t \mid u^{(c)}\sim u^{(c)}+\Normal(0,\sigma_{x}^{2}$), and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. 
+% Furthermore, using the fact that $u^{(c)} \mid \currentmean\sim \Normal(\currentmean,1/\currentlam)$, and that $E\left[X+Y\right]=E\left[X\right]+E\left[Y\right]$ and $\Var\left[X+Y\right]=\Var\left[X\right]+\Var\left[Y\right]$ when $X$ and $Y$ are Gaussian, we get that $E\left[x_t\mid b_t\right]=\currentmean$ and $\Var\left[x_t\mid b_t\right]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$ . From this, it follows that
+%
+\begin{equation*}
+  \postmean \sim
+    \Normal(\mu_\mu, \sigma^2_\mu)
+\end{equation*}
+where
+\begin{equation*}
+  \mu_\mu =  \frac{\sigma_{x}^{-2}}{\lambda_{t+1}^{(c)}}\currentmean+\frac{\currentlam\currentmean}{\lambda_{t+1}^{(c)}}=\currentmean
+\end{equation*}
+and
+\begin{equation*}
+  \sigma^2_\mu = {\left(\frac{\sigma_{x}^{-2}}{\lambda_{t+1}^{(c)}}\right)}^{2}\left(\frac{1}{\currentlam}+\sigma_{x}^{2}\right).
+\end{equation*}
+%
+
+Having derived the distribution of Equation $\postmean$, we now turn to the expected maximum in [\ref{eq:myopicmax}]. From basic probability theory we know that for any constant $z$ and random variable $X$,
+%
+\begin{equation}
+  \label{eq:emaxtrick}
+  \E[\max\{X,z\}] = 
+    \Pr[X\le z]\cdot z+
+    (1-\Pr[X\le z]) 
+    % \Pr[X > z])
+    \cdot \E[X\mid X>z].
+\end{equation}
+%
+% Intuitively, this equation says that the expected value of the maximum of a random variable and a constant can be broken down into two cases, one in which the random variable is less than the constant (and so we take the constant) and another in which the random variable is greater than the constant (and so we take the random variable). 
+%
+Substituting $\nextbest$ for $z$ and $\postmean$ for $X$, we can use this formula to derive an analytical solution for the myopic value of information. First, we have
+%
+\begin{equation*}
+  \Pr\left[\postmean\le \max_{i\neq c}\,\mu_t^{(i)}\right]=\Phi\left(\beta\right),
+\end{equation*}
+%
+where $\Phi$ is the cumulative density function (CDF) of a standard Gaussian , and 
+%
+\begin{equation*}
+  \beta=\frac{\max_{i\neq c}\,\mu_t^{(i)}-\mu_{\mu}.}{\sigma_{\mu}}
+\end{equation*}
+%
+Next, we apply the standard formula for the expectation of a truncated Gaussian, giving us
+%
+\begin{equation*}
+  E\left[\postmean\mid\postmean>\max_{i\neq c}\,\mu_t^{(i)}\right]=\mu_{\mu}+\frac{\phi\left(\beta\right)}{1-\Phi\left(\beta\right)}\sigma_{\mu},
+\end{equation*}
+%
+where $\phi$ is the standard normal probability density function.
+Finally, putting this together we find that $\VOImy(b,c)$ is equal to
+%
+\begin{equation*}
+  \Phi(\beta)\cdot\max_{i\neq c}\mu_t^{(i)}+\left(1-\Phi(\beta)\right)\cdot\left(\mu_{\mu}+\frac{\phi\left(\beta\right)}{1-\Phi\left(\beta\right)}\sigma_{\mu}\right)-\max_{i}\mu_t^{(i)}.
+\end{equation*}
+
+
+\subsection{Value of Perfect Information About One Item}
+Whereas $\VOImy$ captures the information value of a single sample, $\VPIitem$ captures the information value of an infinite number of samples for one item, that is, the value of knowing the exact value of one item. Formally,
+
+\begin{equation*}
+  \VPIitem(b_t,c)=\E_{u^{(c)} \mid \currentmean, \currentlam} \left[
+    \max \left\{ u^{(c)},\max_{i\neq c}\,\mu_t^{(i)} \right\}
+  \right] -\max_{i}\mu_t^{(i)}.
+\end{equation*}
+%
+The derivation is similar to that of $\VOImy$, but instead of taking the expectation over the posterior mean after one computation, $\postmean$, we take the expectation over the true utility, $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,\nicefrac{1}{\currentlam})$. Thus, we apply the same steps beginning with [\ref{eq:emaxtrick}], but replacing $\postmean$ with $u^{(c)} \mid \currentmean, \currentlam$. This results in $\VPIitem(b, c)$ equal to
+%
+% $\mu_\mu$ with $\currentmean$ and $\sigma^2_\mu$ with $\nicefrac{1}{\currentlam}$ 
+% Trivially, we have $\E\left[u^{(c)} \mid b_t\right]=\currentmean$ and $\Var\left[u^{(c)} \mid b_t\right]=\nicefrac{1}{\currentlam}$. Repeating the same steps as in the previous section, we get that $\VPIitem(b,c)$ is equal to
+%
+\begin{equation*}
+  \Phi(\beta')\cdot\max_{i\neq c}\mu_t^{(i)}+\left(1-\Phi(\beta')\right)\cdot\left(\currentmean+\frac{\phi\left(\beta'\right)}{1-\Phi\left(\beta'\right)}
+  \sqrt{\nicefrac{1}{\currentlam}}\right)
+  - \max_{i}\mu_t^{(i)}
+\end{equation*}
+%
+where 
+%
+\begin{equation*}
+  \beta'=\frac{\max_{i\neq c}\mu_t^{(i)}-\currentmean}{\sqrt{\nicefrac{1}{\currentlam}}}.
+\end{equation*}
+%
+
+% %!TEX root = main.tex
+
+\begin{figure*}[b!]
+  
+  \centering
+  \includegraphics[width=0.95\textwidth]{figs/attention/supp-bernoulli.pdf}
+  \caption{Performance of the policy approximation (red) compared with the true optimal solution (blue) on the Bernoulli model with switching costs. The red line shows mean performance from the top 80 policies identified by the UCB algorithm. Additionally each individual policy's performance is plotted as an individual point, but performance is so consistent that the points are not visually distinct.}
+  \label{fig:attention-bernoulli}
+  
+\end{figure*}  % For some reason, this has to be here to prevent latex from putting it on the next page ??
+
+\subsection{Value of Perfect Information About All Items}
+$\VPI$ captures the information value of learning the exact value of every item in the choice set, that is acquiring full information. In this case, the DM will make an exactly optimal choice, gaining the utility of the item that is in fact best. Formally,
+
+\begin{equation}
+  \label{eq:vpi}
+  \VPI(b)=\E_{u \mid \currentmean, \currentlam} \left[
+    \max_{i}\left\{ u^{(i)}\right\}
+  \right] -\max_{i}\mu_t^{(i)}.
+\end{equation}
+%
+
+For the case of $N$ items, the conditional expectation term is given by the integral
+%
+\begin{equation*}
+  \int...\int\left[\max_{i}u^{(i)}\prod_{i=1}^{k}\Normal(u^{(i)};\mu_t^{(i)},\nicefrac{1}{\lambda_t^{(i)}})\right]du^{(1)}...\,du^{(N)}.
+\end{equation*}
+%
+Unfortunately, there is no analytic solution to this integral. However, we can substantially reduce our computational burden by reducing to a piecewise one-dimensional integral. First, we can express the expectation of any random variable as a piecewise integral,
+%
+\begin{equation}
+  \label{eq:piecewise}
+  \E[X]=-\int_{-\infty}^{0}F_{X}(x)\ dx+\int_{0}^{\infty}(1-F_{X}(x))\ dx,
+\end{equation}
+%
+where $F_{X}$ is the CDF of $X$. Next, we can express the CDF of the maximum of a set of random variables as the product of the CDF for each variable alone,
+%
+\begin{equation}
+  \label{eq:cdfmax}
+  F_{\max\mathcal{X}}(x)=\prod_{X\in\mathcal{X}}F_{X}(x),
+\end{equation}
+%
+because the maximum of a set is less than $x$ if and only if each element in the set is less than $x$. In our case, the set $\chi$ contains the belief distributions for each item.
+% that is, $\chi = \{ \Normal(\mu_t^{(i)}, \nicefrac{1}{\lambda_t^{(i)}}) \}$.
+Letting $M$ denote $\max \mathcal{X}$, we can define its CDF as
+%
+\begin{equation*}
+  F_{M}(m)=\prod_{i=1}^{N}\Phi\left(\sqrt{\lambda_t^{(i)}}\left(m-\mu_t^{(i)}\right)\right).
+\end{equation*}
+%
+Combining Equations [\ref{eq:vpi}], [\ref{eq:piecewise}], and [\ref{eq:cdfmax}], we arrive at the following expression for $\VPI(b)$:
+%
+\begin{equation*}
+  -\int_{-\infty}^{0}F_{M}(x)\ dx 
+  + \int_{0}^{\infty}(1-F_{M}(x))\ dx
+  -\max_{i}\mu_t^{(i)}.
+\end{equation*}
+
+We evaluate these two integrals numerically to a minimum precision of $10^{-5}$ by the adaptive Gauss-Kronrod quadrature method implemented in the QuadGK Julia package.
+
+Despite the dimensionality reduction, we found that evaluating these integrals was still the primary computational bottleneck for simulating the model. Thus, in order to reduce computation time, we only compute $\VPI$ when it is necessary to determine which computation the policy will execute. As detailed below, this is often unnecessary because the other features already determine which feature has maximal $\widehat{\VOC}$.
+
+Critically, the modification that we describe here has no effect on the behavior of the policy or the predictions of the models; we have verified this assertion through simulation.
+
+This computational trick is based on three insights. First, note that $\VPI$ helps to decide whether or not to take another sample, but not which item to sample from. Thus, we can determine which computation the policy would take, conditional on taking a sample at all, based only on the $\VOImy$ and $\VPIitem$ features. Given that these two features have an analytical solution, as derived above, we can quickly identity the best item to sample from, which is given by
+%
+\begin{equation}
+\label{eq:vpitrick}
+  c^{*}= \arg\max_{c\neq\bot} \big\{ 
+    w_{1}\cdot\VOImy(b,c)+w_{2}\cdot \VPIitem(b,c)
+    - \text{cost}(c)+w_{4} \big\} .
+% \begin{aligned}
+%   c^{*}=& \arg\max_{c\neq\bot} \big\{ 
+%     w_{1}\cdot\VOImy(b,c)+w_{2}\cdot \VPIitem(b,c)
+%     \\& -(\text{cost}(c)+w_{4}) \big\} .
+% \end{aligned}
+\end{equation}
+%
+
+Second, since $\VOC(b,\bot)=0$, it follows that if $\widehat{\VOC}(b,c^{*})>0$, the policy should sample from item $c^{*}$, and otherwise it should stop sampling. In general, determining the sign of $\widehat{\VOC}(b,c^{*})$requires evaluating $\VPI(b)$. However, in some cases the sign can be determined without knowing $\VPI(b)$. In particular, we can take advantage of the fact that $\VPIitem(b,c)\leq \VPI(b)$ for all $b$, $c$. We can thus compute a lower bound on $\widehat{\VOC}(b,c)$ by replacing $\VPI(b)$ with $\VPIitem(b,c)$ in Equation [\ref{eq:vpitrick}]. If this lower bound is positive, then we know the full approximation would also be positive, and thus the optimal choice is to sample from item $c^{*}$. Otherwise, we compute $\VPI(b)$ and identify the optimal computation using all of the features.
+
+Third, at first sight this approach might seem to be incompatible with the soft-maximizing policy, where computation $c$ is selected with probability proportional to $\exp\beta\widehat{\VOC}(b,c)$. In particular, the standard method for sampling from this distribution requires fully evaluating $\widehat{\VOC}(b,c)$. However, we can circumvent this issue using the Gumbel-max trick \citep{yellott1977relationship}, which provides a way to sample from a Boltzman (softmax) distribution by taking the argmax of the unexponentiated values corrupted by Gumbel noise. Formally,
+%
+\begin{equation*}
+  \Pr\left[\arg\max_{i}\left\{ x_{i}+\epsilon_{i}\right\} =j\right]=\frac{\exp x_{j}}{\sum_{i}\exp x_{i}}.
+\end{equation*}
+%
+As a result, we can rewrite the soft-max policy as 
+%
+\begin{equation*}
+  \pi(b;\vec{w},\beta)=\arg\max_{c}\left\{ \beta\widehat{VOC}(b,c;w)+\epsilon_{c}\right\} ,
+\end{equation*}
+%
+where $\epsilon_{c}\sim\text{Gumbel}(0,1)$. We can then implement steps 1 and 2 of the short-cut, adding $\epsilon_{c}$ to the right hand side of Equation~\ref{eq:vpitrick}, and comparing the lower-bound VOC to an independent Gumbel sample, $\epsilon_\bot$, rather than 0 to capture the noise applied to $\VOC(b,\bot)$.
+
+
+
+\section{Quality of the approximation method in Bernoulli model}\label{app:attention-bernoulli}
+
+The approximation method used here has previously been shown to learn policies with near-optimal performance on a metalevel MDP similar to the one in the present model, but with Bernoulli-distributed samples and \emph{no} switching costs \citep{callaway2018learning}. The logic of the problem is identical: A DM wants to select the best item and informs her decision by drawing noisy samples with an expected value  equal to the items' true utility. However, in the simpler Bernoulli case that has been previously studied, true utilities take values between 0 and 1, samples from item $c$ are drawn from $\text{Bernoulli}(u^{(c)})$,  and the  uniform distribution over all possible utilities, $\text{Beta}(1, 1)$, provides a conjugate prior. Thus, posterior beliefs take the form $\text{Beta}(1+a, 1+b)$, where $a$ and $b$ are respectively the number of times 1 and 0 have been sampled for the given item.  Critically, the resulting belief space is discrete because $a$ and $b$ are integers. This allows the computation of the exact optimal policy by dynamic programming, if an upper bound on the number of samples that can be taken is assumed. 
+
+\citet{callaway2018learning} take advantage of this fact to show that the policy approximation method used here provides a highly-accurate approximation of the optimal policy. However, their model does not have switching costs, which could potentially make the approximation perform much worse. Here, we investigate this issue by adding switching costs to the Bernoulli model, and measuring their impact on the method's performance. Ideally we would be able to directly assess the performance of our method in the full model with Gaussian samples, but an optimal solution for this case is not available and deriving one is beyond the scope of the study.
+% the performance of the method in our model, but this is an open and challenging computationally problem beyond the scope of this study.
+
+
+To aid interpretation, we re-parameterized the switching cost as $\switchcost = (k - 1)\samplecost$ such that $k$ can be interpreted as a multiplier on the base sample cost. For example, $k=1$, indicated by "1x" in the figure, corresponds to no switching cost. We considered a grid of cost parameters with $\samplecost \in \{e^{-9}, e^{-8}, \dots, e^{-3}\}$ and $k \in {1, 2 \dots, 10}$. We set an upper bound of 75 samples. As shown in \Fig{fig:attention-bernoulli}{}, we replicated previous results that the approximated policy is nearly optimal when there is no switch cost. As the figure shows, relative performance degrades somewhat when switch costs are added, but the approximation still achieves 92\% of the optimal metalevel reward in the worst case explored.
+
+
+
+

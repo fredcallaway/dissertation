@@ -75,7 +75,7 @@ These classical algorithms specify the order in which nodes are expanded, but ar
 \end{figure}
 
 
-\subsection{Task: Mouselab-MDP}
+\section{Task: Mouselab-MDP}
 All the models we consider make precise predictions about the exact sequence of node expansion operations a person will execute while planning. The ideal way to test these predictions would be to compare them directly to the node expansion operations performed by people. Unfortunately, this is impossible because those operations are internal and unobservable.
 
 Early work on human planning addressed this challenge using ``think aloud'' protocols in which participants narrate their planning process \cite{degroot1965thought,newell1972human,chase1973perception}. However, verbal reports are only indirectly related to the cognitive operations involved in planning and do not lend themselves well to precise quantitative modeling.
@@ -111,9 +111,11 @@ Like its predecessor, Mouselab-MDP externalizes the core representations and ope
 \end{figure}
 
 
-\subsection{Experiment 1}
+\subsection{Experiment 1: Ch}
 
 In our first experiment, we sought to test the extent to which human planning is consistent with an optimal planning strategy in a relatively unstructured environment, illustrated in Figure~\ref{fig:planning-task}A.
+
+\subsubsection{Overall performance}
 
 To evaluate participants' performance, we must consider both the scores they achieved as well as the amount of planning effort (i.e., clicking) that they expended. Figure~\ref{fig:planning-exp1}A thus shows the average reward and number of clicks each participant made per trial. The blue line shows the Pareto front, the maximum average reward attainable for a given average number of clicks. On average, participants earned 0.92 fewer points than they could have with the same number of clicks. They earned 4.94 more than clicking randomly (95\% CI [4.43, 5.44]; Wilcoxon test: $z = 8.40, p < .001$). Confidence intervals are boot-strapped over participants and p-values are two-tailed (see Methods).
 
