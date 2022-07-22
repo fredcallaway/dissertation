@@ -97,14 +97,99 @@ In English, the meta-level reward for termination is the \emph{true} utility of 
   For notational clarity, we have assumed a single optimal action. When multiple actions have the same expected value, we assume that ties are broken randomly; thus, $a^*(b)$ is more precisely a uniform distribution over all optimal actions, and $r\meta(b, \bot, s)$ takes an expectation over them.
 }
 
-\paragraph{Policy}
+\paragraph{Policy}\label{sec:metamdp-policy}
 
 The solution to a meta-level MDP takes the form of a policy $\pi: \B \rightarrow \Delta(\C)$ that (perhaps stochastically) selects which computation to perform in each possible belief state. The optimal policy is the one that maximizes expected meta-level return,
 %
-\begin{equation}
+\begin{equation}\label{eq:optimal-policy}
   \pi^* = \argmax_\pi \expect{
     \sum_{t=1}^T r\meta(B_t, C_t, S)
   }{
     C_t \sim \pi
   }.
 \end{equation}
+
+
+\subsection{Value of computation}
+
+This suggests a strategy for selecting computations optimally. For each item, estimate how much one's decision would improve if one sampled from it (and then continued sampling optimally). Subtract from this number the cost of taking the sample (and also the estimated cost of the future samples). Now identify the item for which this value is maximal. If it is positive, it is optimal to take another sample for this item; otherwise, it is optimal to stop sampling and make a decision.
+
+This basic logic is formalized in rational metareasoning as the \textit{value of computation} (VOC; \citealp{russell1991principles}). Formally, $\VOC(b, c)$ is defined as the expected increase in total metalevel reward if one executes a single computation, $c$, and continues optimally rather than making a choice immediately (i.e., executing $\bot$):
+$$
+\VOC(b_t, c) = R(b_t, c) + \E \left[
+  \sum_{t'=t+1}^T R(b_{t'}, c_{t'})\ \Big\vert\ c_{t'} \sim \pi^*(b_{t'}) 
+\right] - R(b, \bot).
+$$
+
+We can then define the optimal policy as selecting computations with maximal VOC:
+$$
+\pi^*(b) \sim \text{Uniform}(\argmax{c} \VOC(b, c)).
+$$
+For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the state-action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
+
+\subsection{Optimal metalevel policy}
+
+\todo{shorten, maybe move some material to metamdp section}
+
+The solution to a metalevel MDP takes the form of a Markov policy, $\pi$, that stochastically selects which computation to take next given the current belief state. Formally, $c_t \sim \pi(b_t)$. The optimal metalevel policy, $\pi^*$, is the one that maximizes expected total metalevel reward,
+\begin{equation*}
+  \pi^* = \argmax{\pi} \E \left[ \sum_t^T R(b_t, c_t) \ \Big\vert\ c_t \sim \pi(b_t) \right].
+\end{equation*}
+Replacing $R$ with its definition, we see that this requires striking a balance between the expected value of the chosen item and the computational cost of the samples that informed the choice,
+\begin{equation*}
+  \pi^* = \argmax{\pi} \E \left[
+     \max_i \mu_T^{(i)} - \sum_t^{T-1} \cost(b_t, c_t)
+   \ \Big\vert\ c_t \sim \pi(b_t) \right].
+\end{equation*}
+That is, one wishes to acquire accurate beliefs that support selecting a high-value item, while at the same time minimizing the cost of the samples necessary to attain those beliefs. This suggests a strategy for selecting computations optimally. For each item, estimate how much one's decision would improve if one sampled from it (and then continued sampling optimally). Subtract from this number the cost of taking the sample (and also the estimated cost of the future samples). Now identify the item for which this value is maximal. If it is positive, it is optimal to take another sample for this item; otherwise, it is optimal to stop sampling and make a decision.
+
+This basic logic is formalized in rational metareasoning as the \textit{value of computation} (VOC; \citealp{russell1991principles}). Formally, $\VOC(b, c)$ is defined as the expected increase in total metalevel reward if one executes a single computation, $c$, and continues optimally rather than making a choice immediately (i.e., executing $\bot$):
+$$
+\VOC(b_t, c) = R(b_t, c) + \E \left[
+  \sum_{t'=t+1}^T R(b_{t'}, c_{t'})\ \Big\vert\ c_{t'} \sim \pi^*(b_{t'}) 
+\right] - R(b, \bot).
+$$
+In our model, this can be rewritten
+$$
+\VOC(b_t, c) = -\cost(b_t, c) + \E \left[ 
+  \max_i \mu_T^{(i)} - \sum_{t'=t+1}^{T-1} \cost(b_{t'}, c_{t'})
+  \Big\vert\ c_{t'} \sim \pi^*(b_{t'})
+\right] -  \max_i \mu_t^{(i)}.
+$$
+That is, the VOC for sampling a given item in some belief state is the expected improvement in the value of the chosen item (rather than making a choice based on the current belief) minus the cost of sampling that item and the expected cost of all future samples.
+
+We can then define the optimal policy as selecting computations with maximal VOC:
+$$
+\pi^*(b) \sim \text{Uniform}(\argmax{c} \VOC(b, c)).
+$$
+For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the state-action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
+
+Finally, by definition, $\VOC(b,\bot)=0$ for all $b$. Thus, the optimal policy terminates sampling when no computation has a positive VOC.
+
+\subsection{Bayesian metalevel policy search}\label{sec:BMPS}
+
+This method is based on an approximation of the VOC as a linear combination of features,
+\begin{equation}\label{eq:vochat}
+  \begin{aligned}
+    \VOCapprox =& w_{1}\VOImy(b,c)+w_{2}\VPIitem(b,c) +
+     w_{3}\VPI(b) -(\cost(c)+w_{4}),
+  \end{aligned}
+\end{equation}
+for all $c\neq\bot$, with $\widehat{\VOC}(b, \bot; \vec{w}) = \VOC(b,\bot)=0$.
+
+We briefly define the features here, and provide full derivations in Appendix~\ref{app:attention-derivations}. The VOI terms quantify the \textit{value of information} \citep{howard1966information} that might be gained by different additional computations. Note that the VOI is different from the VOC because the latter includes the costs of computation as well as its benefits. In general, the VOI is defined as the expected improvement in the utility of the action selected based on additional information rather than the current belief state: $E_{\tilde{b} \mid b}[R(\tilde{b}, \bot) - R(b, \bot)]$, where $\tilde{b}$ is a hypothetical future belief in which the information has been gained, the distribution of which depends on the current belief.
+
+$\VOImy(b,c)$ denotes the expected improvement in choice utility from drawing one additional sample from item $c$ before making a choice, as opposed to making a choice immediately based on the current belief, $b$. $\VPIitem(b,c)$ denotes the expected improvement from learning the true value of item $c$, and then choosing the best item based on that information. Finally, $\VPI(b)$ denotes the improvement from learning the true value of \text{every} item and then making an optimal choice based on that complete information.
+
+Together, these three features approximate the expected value of information that could be gained by the (unknown) sequence of future samples. Importantly, this true value of information always lies between the lower bound of $\VOImy$ and the upper bound of $\VPI$ (see \Fig{fig:attention-voi}), implying that the true VOI is a convex combination of these two terms. Note, however, that the weights on this combination are not constant across beliefs, as assumed in our approximation. Thus, including the $\VPIitem$ term, improves the accuracy of the approximation, by providing an intermediate value between the two extremes. Finally, the last two terms in Equation~\ref{eq:vochat} approximate the cost of computation: $\text{cost}(c)$ is the cost of carrying out computation $c$ and $w_{4}$ approximates the expected future costs incurred under the optimal policy.
+
+Although maximizing $\VOCapprox$ identifies the policy with the best performance, it is unlikely that humans make attentional decisions using such perfect and noiseless maximization. Thus, 
+we assume that computations are chosen using a Boltzmann (softmax) distribution   \citep{mcfadden2001economic} given  by
+\[
+\pi(c \mid b; \mathbf{w}, \beta) \propto \exp \left\{ \beta\VOCapprox \right\},
+\]
+where the inverse temperature, $\beta$, is a free parameter that controls the degree of noise. Note that computation selection is fully random when $\beta=0$ and becomes deterministic as $\beta\rightarrow\infty$.
+
+
+
+To identify the weights used in the approximation, we first assume that $w_{i}\ge0$ and $w_{1}+w_{2}+w_{3}=1$, since $w_{1:3}$ features form a convex combination and $w_4$ captures the non-negative future cost.
