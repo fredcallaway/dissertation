@@ -1,8 +1,6 @@
 %!TEX root = ../dissertation.tex
 
-\clearpage
 % Reset numbering
-
 % % \runninglinenumbers[1]
 % \setcounter{page}{1}
 % \setcounter{table}{0}
@@ -22,7 +20,7 @@
 % \newgeometry{left=1.2in, right=1.2in, top=1in, bottom=1in}
 % \onecolumn
 
-\chapter{Supplementary information for Chapter~\ref{sec:attention}}
+\Chapter{Supplementary information for Chapter~\ref{sec:attention}}
 
 \section{Task descriptions}\label{app:attention-task}
 
@@ -59,7 +57,8 @@ In brief, we found that most behavioral patterns shown in the main text figures 
   
   \centering
   \includegraphics[width=\textwidth]{figs/attention/supp-recovery.pdf}
-  \caption{Parameter recovery. Each panel plots the estimated parameter value as a function of the true parameter value. Each black dot corresponds to one simulated dataset. The dotted red line shows equality (i.e., perfect recovery) and the solid blue line shows the linear trend. The top row shows results when simulating the full joint dataset. The middle row shows results when simulating 50 trials (the amount of fitting data one individual produces) of binary choice. The bottom row shows the same for trinary choice.
+  \caption{\captiontitle{Parameter recovery}.
+    Each panel plots the estimated parameter value as a function of the true parameter value. Each black dot corresponds to one simulated dataset. The dotted red line shows equality (i.e., perfect recovery) and the solid blue line shows the linear trend. The top row shows results when simulating the full joint dataset. The middle row shows results when simulating 50 trials (the amount of fitting data one individual produces) of binary choice. The bottom row shows the same for trinary choice.
   }
   \label{fig:attention-recovery}
   
@@ -69,7 +68,7 @@ To validate our model fitting approach, we conducted a parameter recovery exerci
 
 \footnotetext{We reused the likelihood histograms that we computed when fitting participant data. Critically, however, the policies used to generate these histograms were not the same ones used to generate the simulated data.}
 
-The results, shown in \Fig{fig:attention-recovery}{}, suggest that we were able to recover parameters with fairly high accuracy. For all parameters besides the softmax temperature, the Pearson correlation was over 0.9. Importantly, we found only slight bias in the estimation procedure, with the best fitting linear regression line falling close to the equality line for all parameters. The largest bias was for the prior bias parameter, $\alpha$, for which the recovered parameter was on average .095 less than the true parameter.
+The results, shown in \Fig{fig:attention-recovery}{}, suggest that we were able to recover parameters with fairly high accuracy. For all parameters besides the softmax temperature, the Pearson correlation was over 0.9. Importantly, we found only slight bias in the estimation procedure, with the best fitting linear regression line falling close to the equality line for all parameters. The largest bias was for the prior bias parameter, $\alpha$, for which the recovered parameter was on average 0.095 less than the true parameter.
 
 To validate our approach when fitting individual subjects, we repeated the steps above, except using only 50 simulated trials (the number of fitting trials for each subject). Unsurprisingly, we find that the estimates become less reliable; however the correlations are still fairly strong. In the trinary case, we see substantial bias for both $\samplecost$ and $\alpha$. Thus, care must be taken when interpreting the individual fitting results.
 
@@ -78,7 +77,8 @@ To validate our approach when fitting individual subjects, we repeated the steps
 \begin{figure*}[hb!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/supp-grid-both.png}
-  \caption{Grid search on model parameters. Each panel shows the best likelihood achieved for each value of one parameter (diagonal) or combination of values for two parameters (off-diagonal), i.e., minimizing over all the non-plotted variables.
+  \caption{\captiontitle{Grid search on model parameters}.
+    Each panel shows the best likelihood achieved for each value of one parameter (diagonal) or combination of values for two parameters (off-diagonal), i.e., minimizing over all the non-plotted variables.
   }
   \label{fig:attention-grid}
 \end{figure*}
@@ -94,7 +94,8 @@ In order to compare our model to the predictions of the aDDM \citep{krajbich2010
 \begin{figure*}[tb!]
   \centering
   \includegraphics[width=0.9\textwidth]{figs/attention/supp-addm-replication-binary.pdf}
-  \caption{Replication of Krajbich, Armel, and Rangel (2010). Note that x axis labels in the orginal plots sometimes reflected the left tail of the bin; in these cases, we adjusted the tick locations accordingly.
+  \caption{\captiontitle{Replication of \citet{krajbich2010visual}}.
+    Note that x axis labels in the orginal plots sometimes reflected the left tail of the bin; in these cases, we adjusted the tick locations accordingly.
   }
   \label{fig:attention-addm2}
 \end{figure*}
@@ -102,7 +103,8 @@ In order to compare our model to the predictions of the aDDM \citep{krajbich2010
 \begin{figure*}[tb!]
   \centering
   \includegraphics[width=0.9\textwidth]{figs/attention/supp-addm-replication-trinary.pdf}
-  \caption{Replication of Krajbich and Rangel (2011). Note that there are slight deviations in model predictions due to noise in the simulations; the orginal plots are based on 2000 simulated trials.
+  \caption{\captiontitle{Replication of \citet{krajbich2011multialternative}}.
+    Note that there are slight deviations in model predictions due to noise in the simulations; the orginal plots are based on 2000 simulated trials.
   }
   \label{fig:attention-addm3}
 \end{figure*}
@@ -114,7 +116,8 @@ In order to compare our model to the predictions of the aDDM \citep{krajbich2010
 \begin{figure}[b!]
   \centering
   \includegraphics[width=0.7\textwidth]{figs/attention/supp-voi-vpi.pdf}
-  \caption{Illustration of the value of information features. The solid line shows the average value of the item chosen after different numbers of computations selected by a near-optimal policy assuming no computational costs. The dashed lines show values for two of the VOI features in the initial belief state: $\VOImy$ is the value after one computation and $\VPI$ is the asymptotitc value after infinite computations.
+  \caption{\captiontitle{Illustration of the value of information features}.
+    The solid line shows the average value of the item chosen after different numbers of computations selected by a near-optimal policy assuming no computational costs. The dashed lines show values for two of the VOI features in the initial belief state: $\VOImy$ is the value after one computation and $\VPI$ is the asymptotitc value after infinite computations.
   }
   \label{fig:attention-voi}
 \end{figure}
@@ -269,7 +272,8 @@ where
   
   \centering
   \includegraphics[width=0.95\textwidth]{figs/attention/supp-bernoulli.pdf}
-  \caption{Performance of the policy approximation (red) compared with the true optimal solution (blue) on the Bernoulli model with switching costs. The red line shows mean performance from the top 80 policies identified by the UCB algorithm. Additionally each individual policy's performance is plotted as an individual point, but performance is so consistent that the points are not visually distinct.}
+  \caption{\captiontitle{Performance of BMPS on the Bernoulli model with switching costs}.
+    Each line shows the average metalevel return achieved by the BMPS policy (red) or the true optimal policy (blue). The red line shows mean performance from the top 80 policies identified by the UCB algorithm. Additionally, each individual policy's performance is plotted as an individual point, but performance is so consistent that the points are not visually distinct.}
   \label{fig:attention-bernoulli}
   
 \end{figure*}  % For some reason, this has to be here to prevent latex from putting it on the next page ??

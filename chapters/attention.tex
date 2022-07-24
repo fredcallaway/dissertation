@@ -1,6 +1,6 @@
 %!TEX root = ../dissertation.tex
 \begin{savequote}[75mm]
-Choice of attention---to pay attention to this and ignore that---is to the inner life what choice of action is to the outer. In both cases, a man is responsible for his choice and must accept the consequences, whatever they may be.
+Choice of attention---to pay attention to this and ignore that---is to the inner life what choice of action is to the outer. In both cases, a [person] is responsible for [their] choice and must accept the consequences, whatever they may be.
 \qauthor{W. H. Auden}
 \end{savequote}
 
@@ -53,7 +53,7 @@ We compare the optimal fixation policy to human fixation patterns in two influen
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{figs/attention/Fig1.pdf}
-    \caption{\textbf{Sampling and belief updating in the binary choice task.} The top row shows the experimental display, with the fixated item denoted by the eye symbol.  The bottom two rows depict the first few steps of the sampling and belief updating process. The decision maker's beliefs about the value of each item are denoted by the Gaussian probability density curves. The true values of each item (dashed lines) are sampled from standard normal distributions; this is captured in the decision maker's initial belief state (first column). Every time step, $t$, the decision maker fixates one of the items and receives a noisy sample about the true value of that item ($x_t$ marks). She then updates her belief about the value of the fixated item using Bayesian updating (shift from light to dark curve). The beliefs for the unfixated item are not updated. The process repeats each time step until the decision maker terminates sampling, at which point she chooses the item with maximal posterior mean.
+    \caption{\captiontitle{Sampling and belief updating in the binary choice task.} The top row shows the experimental display, with the fixated item denoted by the eye symbol.  The bottom two rows depict the first few steps of the sampling and belief updating process. The decision maker's beliefs about the value of each item are denoted by the Gaussian probability density curves. The true values of each item (dashed lines) are sampled from standard normal distributions; this is captured in the decision maker's initial belief state (first column). Every time step, $t$, the decision maker fixates one of the items and receives a noisy sample about the true value of that item ($x_t$ marks). She then updates her belief about the value of the fixated item using Bayesian updating (shift from light to dark curve). The beliefs for the unfixated item are not updated. The process repeats each time step until the decision maker terminates sampling, at which point she chooses the item with maximal posterior mean.
   }
   \label{fig:attention1}
 \end{figure}
@@ -95,16 +95,16 @@ to stop sampling and choose the item with the highest expected value. In this ca
 \begin{figure}[tb!]
   \centering
   \includegraphics[width=0.8\textwidth]{figs/attention/Fig2.pdf}
-  \caption{\textbf{Optimal fixation policy.}
-  (A) Probability of fixating on item 1 as a function of the precision of its value estimate, $\lambda^{(1)}$, and the mean of its relative value estimate, $\mu^{(1)}-\mathrm{mean}(\mu^{(2)},\mu^{(3)})$. The heat map denotes the probability of fixating item 1 as opposed to fixating one of the other items or terminating the sampling process.
-  (B) Illustration of the value of sampling. Each panel shows a belief state for trinary choice. The curves depict the estimated beliefs for each item's value, and the shaded regions show the probability that the item's true value is higher than the current best value estimate. This probability correlates strongly with the value of sampling the item because sampling is only valuable if it changes the choice (the full value of sampling additionally depends on the size of the potential gain in value, as well as the cost of future samples and the possibility of sampling other items). In each case, it is more valuable to sample the orange item than the purple item because either (top) its value is more uncertain, or (bottom) its value is closer to the leading value.
+  \caption{\captiontitle{Optimal fixation policy.}
+  \subcap{A} Probability of fixating on item 1 as a function of the precision of its value estimate, $\lambda^{(1)}$, and the mean of its relative value estimate, $\mu^{(1)}-\mathrm{mean}(\mu^{(2)},\mu^{(3)})$. The heat map denotes the probability of fixating item 1 as opposed to fixating one of the other items or terminating the sampling process.
+  \subcap{B} Illustration of the value of sampling. Each panel shows a belief state for trinary choice. The curves depict the estimated beliefs for each item's value, and the shaded regions show the probability that the item's true value is higher than the current best value estimate. This probability correlates strongly with the value of sampling the item because sampling is only valuable if it changes the choice (the full value of sampling additionally depends on the size of the potential gain in value, as well as the cost of future samples and the possibility of sampling other items). In each case, it is more valuable to sample the orange item than the purple item because either (top) its value is more uncertain, or (bottom) its value is closer to the leading value.
   }
   \label{fig:attention2}
 \end{figure}
 
 \subsection{Metalevel Markov decision process}
 
-To characterize optimal attention allocation, we cast the model as a metalevel MDP in which the belief states correspond to distributions over the value of each item and the computations correspond to fixating on an item and taking a sample of its value.
+To characterize optimal attention allocation, we cast the model as a metalevel MDP in which the belief states correspond to distributions over the value of each item and the computations correspond to fixating on an item and taking a sample of its value. We detail the four components of the metalevel MDP below.
 
 \paragraph{Beliefs}
 A belief state, $b \in \B$, corresponds to a set of posterior distributions over each item's value. Because the distributions are Gaussian, the belief can be represented by two vectors, $\boldsymbol{\mu}$ and $\boldsymbol{\lambda}$, that specify the mean and precision of each distribution. That is 
@@ -118,6 +118,7 @@ A computation, $c \in \C$, corresponds to sampling an item's value and updating 
 
 \paragraph{Transition function}
 The metalevel transition function describes how computations update beliefs. In our model, this corresponds to the sampling and Bayesian belief updating procedure described above. Given the current belief, $b_t = (\boldsymbol{\mu}_t, \boldsymbol{\lambda}_t, \last_t)$, and computation, $c$, the next belief state, $b_{t+1} = (\boldsymbol{\mu}_{t+1}, \boldsymbol{\lambda}_{t+1}, \last_{t+1})$, is sampled from the following generative process:
+%
 \begin{equation}\label{eq:dynamics}
 \begin{aligned}
   x_{t} &\sim \Normal(u^{(c)},\sigma_{x}^{2})\\
@@ -130,17 +131,20 @@ The metalevel transition function describes how computations update beliefs. In 
 \end{equation}
 
 
+
 \paragraph{Reward function}
 Finally, the metalevel reward function incorporates both the cost of computation and the utility of the chosen action. The metalevel reward for sampling is defined
 $$
 R(b_t, c_t) = -\cost(b_t, c_t) = -(\samplecost + \mathbf{1}(\last_t \neq \oslash \wedge c_t \neq \last_t)\,\switchcost).
 $$
 That is, the cost of sampling includes a fixed cost, $\samplecost$, as well as an additional switching cost, $\switchcost$, that is paid when sampling from a different item than that sampled on the last time step. We assume that this cost is not paid for the first fixation; however, this assumption has no effect on the optimal policy for reasonable parameter values.
-The action utility is the true value of the chosen item, i.e., $u^{(i^*_T)}$ where $i^*_T = \argmax{i} \mu_T^{(i)}$. The metalevel reward for the termination computation, $\bot$, is the expectation of this value. Because we assume accurate priors and Bayesian belief updating, this expectation can be taken with respect to the agent's own beliefs \citep{hay2012selecting}, resulting in 
+
+The action utility is the true value of the chosen item, i.e., $u^{(i^*_t)}$ where $i^*_t = \argmax_i \mu_t^{(i)}$. The metalevel reward for the termination computation, $\bot$, is the expectation of this value. Because we assume accurate priors and Bayesian belief updating, this expectation can be taken with respect to the agent's own beliefs \citep{hay2012selecting}, resulting in 
 $$
-R(b_t, \bot) = \E \left[ u^{(i^*_T)} \ \big\vert\ b_t \right]
+R(b_t, \bot) = \E \left[ u^{(i^*_t)} \ \big\vert\ b_t \right]
 = \max_i \mu_t^{(i)}.
 $$
+
 
 \subsection{Optimal policy}
 
@@ -186,12 +190,12 @@ Because the policy optimization and likelihood estimation methods that we use ar
 \begin{figure}[t!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/Fig3.pdf}
-  \caption{\textbf{Basic psychometrics}.
+  \caption{\captiontitle{Basic psychometrics}.
   Each panel compares human data (black) and model predictions for binary choice (left, two dots) and trinary choice (right, three dots). The main model predictions are shown in purple. The restricted model predictions for the case of a highly biased prior mean ($\alpha = 0$) is shown in blue, and for the case of a highly unbiased prior mean ($\alpha = 1$) are shown in pink. These colors were chosen to illustrate that the main model falls between these two extremes. The aDDM predictions are shown in dashed green. Error bars (human) and shaded regions (model) indicate 95\% confidence intervals computed by 10,000 bootstrap samples (the model confidence intervals are often too small to be visible). Note that the method used to compute and estimate the model parameters is noisy. To provide a sense of the effect of this noise on the main model predictions, we depict the predictions of the thirty best-fitting parameter configurations. Each light purple line depicts the predictions for one of those parameters, whereas the darker purple line shows the mean prediction. In order to keep the plot legible, only the mean predictions of the biased priors models are shown). 
-  (A) Choice probability as a function of relative rating.
-  (B) Kernel density estimation for the distribution of total fixation time. Quartiles (25\%, 50\%, and 75\% quantiles) for the data, aDDM and main model predictions are shown at the bottom.
-  (C) Total fixation time as a function of the relative rating of the highest rated item.
-  (D) Total fixation time as a function of the mean of all the item ratings (overall value).
+  \subcap{A} Choice probability as a function of relative rating.
+  \subcap{B} Kernel density estimation for the distribution of total fixation time. Quartiles (25\%, 50\%, and 75\% quantiles) for the data, aDDM and main model predictions are shown at the bottom.
+  \subcap{C} Total fixation time as a function of the relative rating of the highest rated item.
+  \subcap{D} Total fixation time as a function of the mean of all the item ratings (overall value).
   }
   \label{fig:attention3}
 \end{figure}
@@ -215,10 +219,10 @@ Several additional patterns in \Fig{fig:attention3}{} are worth highlighting. Fi
 \begin{figure}[t!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/Fig4.pdf}
-  \caption{\textbf{Basic fixation patterns.}
-  (A) Histogram of number of fixations in a trial.
-  (B) Number of fixations as a function of decision difficulty, as measured by the relative rating of the best item.
-  (C) Duration of fixation by fixation number. Final fixations are excluded from all but the last bin.
+  \caption{\captiontitle{Basic fixation patterns.}
+  \subcap{A} Histogram of number of fixations in a trial.
+  \subcap{B} Number of fixations as a function of decision difficulty, as measured by the relative rating of the best item.
+  \subcap{C} Duration of fixation by fixation number. Final fixations are excluded from all but the last bin.
   See \Fig{fig:attention3}{} for more details.
   }
   \label{fig:attention4}
@@ -239,10 +243,10 @@ The original binary and trinary choice papers observed a systematic change in fi
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/Fig5.pdf}
-  \caption{\textbf{Uncertainty-directed attention.}
-    (A) Distribution of fixation advantage of the fixated item, computed at the beginning of each new fixation. Fixation advantage is defined as the cumulative fixation time to the item  minus the mean cumulative fixation time to the other item(s). First fixations are excluded in this plot.
-    (B) Similar to A, except that we compare the fixation advantage between the fixated item and the other item that could have been fixated but was not. First and second fixations are excluded in this plot.
-    (C) The probability that the item with greater alternative fixation advantage is fixated, as a function of that advantage.
+  \caption{\captiontitle{Uncertainty-directed attention.}
+    \subcap{A} Distribution of fixation advantage of the fixated item, computed at the beginning of each new fixation. Fixation advantage is defined as the cumulative fixation time to the item  minus the mean cumulative fixation time to the other item(s). First fixations are excluded in this plot.
+    \subcap{B} Similar to (A), except that we compare the fixation advantage between the fixated item and the other item that could have been fixated but was not. First and second fixations are excluded in this plot.
+    \subcap{C} The probability that the item with greater alternative fixation advantage is fixated, as a function of that advantage.
     See \Fig{fig:attention3}{} for more details.}
   \label{fig:attention5}
 \end{figure}
@@ -263,12 +267,12 @@ Note, however, that a purely mechanical effect can account for this basic patter
 \begin{figure}[t!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/Fig6.pdf}
-  \caption{\textbf{Value-directed attention.}
-  (A) Proportion of time fixating the left item as a function of its relative rating.
-  (B) First fixation duration as a function of the rating of the first-fixated item.
-  (C) Probability of fixating the lowest rated item as a function of the cumulative fixation time to any of the items.
-  (D) Probability that the fourth fixation is to the first-fixated item as a function of the difference in rating between that item and the second-fixated item.
-  (E) Probability that the third fixation is to the first fixated item as a function of its rating.
+  \caption{\captiontitle{Value-directed attention.}
+  \subcap{A} Proportion of time fixating the left item as a function of its relative rating.
+  \subcap{B} First fixation duration as a function of the rating of the first-fixated item.
+  \subcap{C} Probability of fixating the lowest rated item as a function of the cumulative fixation time to any of the items.
+  \subcap{D} Probability that the fourth fixation is to the first-fixated item as a function of the difference in rating between that item and the second-fixated item.
+  \subcap{E} Probability that the third fixation is to the first fixated item as a function of its rating.
   See \Fig{fig:attention3}{} for more details.
   }
   \label{fig:attention6}
@@ -294,10 +298,10 @@ Finally, the model makes a striking prediction regarding the location of the thi
 \begin{figure}[t!]
   \centering
   \includegraphics[width=\textwidth]{figs/attention/Fig7.pdf}
-  \caption{\textbf{Choice biases.}
-  (A) Probability that the last fixated item is chosen as a function of its relative rating.
-  (B) Probability that the left item is chosen as a function of its final fixation advantage, given by total fixation time to the left item minus the mean total fixation time to the other item(s).
-  (C) Probability of choosing the first-seen item as a function of the first-fixation duration.
+  \caption{\captiontitle{Choice biases.}
+  \subcap{A} Probability that the last fixated item is chosen as a function of its relative rating.
+  \subcap{B} Probability that the left item is chosen as a function of its final fixation advantage, given by total fixation time to the left item minus the mean total fixation time to the other item(s).
+  \subcap{C} Probability of choosing the first-seen item as a function of the first-fixation duration.
   See \Fig{fig:attention3}{} for more details.
   }
   \label{fig:attention7}
@@ -351,7 +355,7 @@ The model was implemented in the Julia programming language \citep{bezanson2017j
 
 As described in Section~\ref{sec:metamdp-policy}, the solution to a metalevel MDP takes the form of a Markov policy, $\pi$, that stochastically selects which computation to take next given the current belief state. The optimal metalevel policy, $\pi^*$, is the one that maximizes expected total metalevel reward (Equation~\ref{eq:optimal-policy}). In our model, we can write this as
 \begin{equation*}
-  \pi^* = \argmax{\pi} \E \left[
+  \pi^* = \argmax_{\pi} \E \left[
      \max_i \mu_T^{(i)} - \sum_t^{T-1} \cost(b_t, c_t)
    \ \Big\vert\ c_t \sim \pi(b_t) \right].
 \end{equation*}
@@ -381,7 +385,7 @@ There is one non-trivial consequence of using this approach when jointly fitting
 
 Given a metalevel MDP and policy, $\pi$, simulating a choice trial amounts to running a single episode of the policy on the metalevel MDP. To run an episode, we first initialize the belief state, $b_0 = (\boldsymbol{\mu}_0 = \mathbf{0}, \boldsymbol{\lambda}_0 = \mathbf{1}, \last_0 = \oslash)$. Note that $\last_0 = \oslash$ indicates that no item is fixated at the onset of a trial.
 
-The agent then selects an initial computation $c_{0}\sim\pi(b_{0})$ and the belief is updated according to the transition dynamics (Equation~\ref{eq:dynamics}). Note that $\pi(c \mid b_{0})$ assigns equal sampling probability to all of the items, since the subject starts with symmetrical beliefs. This process repeats until some time step, $T$, when the agent selects the termination action, $\bot$. The predicted choice is the item with maximal posterior value, $i^*_T = \argmax{i} \mu_T^{(i)}$. In the event of a tie, the choice is sampled uniformly from the set of items with maximal expected value in the final belief state; in practice, this never happens with well-fitting parameter values.
+The agent then selects an initial computation $c_{0}\sim\pi(b_{0})$ and the belief is updated according to the transition dynamics (Equation~\ref{eq:dynamics}). Note that $\pi(c \mid b_{0})$ assigns equal sampling probability to all of the items, since the subject starts with symmetrical beliefs. This process repeats until some time step, $T$, when the agent selects the termination action, $\bot$. The predicted choice is the item with maximal posterior value, $i^*_T = \argmax_{i} \mu_T^{(i)}$. In the event of a tie, the choice is sampled uniformly from the set of items with maximal expected value in the final belief state; in practice, this never happens with well-fitting parameter values.
 
 To translate the sequence of computations into a fixation sequence, we assume that each sample takes 100 ms and concatenate multiple contiguous samples from the same item into one fixation. The temporal duration of a sample is arbitrary; a lower value would result in finer temporal predictions, but longer runtime when simulating the model. In this way, it is very similar to the $dt$ parameter used in simulating diffusion decision models. Importantly the qualitative predictions of the model are insensitive to this parameter because $\sigma_x$ and $\samplecost$ can be adjusted to result in the same amount of information and cost per ms. 
 

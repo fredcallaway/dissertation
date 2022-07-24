@@ -11,7 +11,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
-\LoadClass[12pt, oneside, letterpaper]{book}
+\LoadClass[11pt, oneside, letterpaper]{book}
 \synctex=1
 %
 % Options
@@ -219,8 +219,9 @@
     citecolor=graylink,
     filecolor=black,
     linkcolor=black,
-    urlcolor=SchoolColor,
+    urlcolor=graylink,
 }
+\renewcommand{\UrlFont}{\footnotesize\ttfamily}
 
 % Formatting guidelines found in:
 % http://www.princeton.edu/~mudd/thesis/MuddDissertationRequirements.pdf
@@ -247,7 +248,7 @@
 	\sc
 		a dissertation\\
 	  presented to the faculty\\
-	  of princeton university\\
+	  of Princeton University\\
 	  in candidacy for the degree\\
     of \@degree\\
 
