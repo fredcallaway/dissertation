@@ -11,7 +11,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
-\LoadClass[11pt, oneside, letterpaper]{book}
+\LoadClass[12pt, oneside, letterpaper]{book}
 \synctex=1
 %
 % Options
@@ -90,14 +90,13 @@
 \RequirePackage{url}
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
-% \setmathsfont(Latin){EB Garamond}
-\setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{EB Garamond}
-\setmathrm{EB Garamond}
+\setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{Arno Pro}
+\setmathrm{Arno Pro}
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300
 \clubpenalty=300
-% \setromanfont[Ligatures={Common, TeX}, Scale=1]{EB Garamond}
-% \newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{EB Garamond}
+\setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.1]{Arno Pro}
+\newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Arno Pro}
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
 \setmonofont[Scale=MatchLowercase]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
@@ -152,8 +151,8 @@
 
 % An environment for paragraph-style section.
 \providecommand\newthought[1]{%
-   \addvspace{1.0\baselineskip plus 0.5ex minus 0.2ex}%
-   \noindent\textsc{#1}%
+    \addvspace{1.0\baselineskip plus 0.5ex minus 0.2ex}%
+    \noindent\textsc{#1}%
 }
 
 % Align reference numbers so that they do not cause an indent.
@@ -221,92 +220,91 @@
     linkcolor=black,
     urlcolor=graylink,
 }
-\renewcommand{\UrlFont}{\footnotesize\ttfamily}
 
 % Formatting guidelines found in:
 % http://www.princeton.edu/~mudd/thesis/MuddDissertationRequirements.pdf
 \renewcommand{\frontmatter}{
-	\input{frontmatter/personalize}
-	\maketitle
-	\copyrightpage
-	\abstractpage
-	\tableofcontents
-	% \listoffigures % optional
-	\dedicationpage
-	\acknowledgments
+    \input{frontmatter/personalize}
+    \maketitle
+    \copyrightpage
+    \abstractpage
+    \tableofcontents
+    % \listoffigures % optional
+    \dedicationpage
+    \acknowledgments
 }
 
 \renewcommand{\maketitle}{
-	\thispagestyle{empty}
-	\vspace*{\fill}
-	\vspace{75pt}
-	\begin{center}
-	\Huge \textcolor{SchoolColor}{\thetitle} \normalsize \\
-	\vspace{100pt}
-	\textsc{\theauthor}\\
-	\vspace{50pt}
-	\sc
-		a dissertation\\
-	  presented to the faculty\\
-	  of Princeton University\\
-	  in candidacy for the degree\\
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    \vspace{75pt}
+    \begin{center}
+    \Huge \textcolor{SchoolColor}{\thetitle} \normalsize \\
+    \vspace{100pt}
+    \textsc{\theauthor}\\
+    \vspace{50pt}
+    \sc
+        a dissertation\\
+      presented to the faculty\\
+      of Princeton University\\
+      in candidacy for the degree\\
     of \@degree\\
 
-	  \vspace{35pt}
-	  recommended for acceptance\\
-	  by the Department of\\
-		\@department\\
-		\vspace{25pt}
-	  Advisor: \@advisor \\
-		\vspace{15pt}
-	  \@degreemonth\ \@degreeyear
-	\rm
-	\end{center}
-	\vspace*{\fill}
+      \vspace{35pt}
+      recommended for acceptance\\
+      by the Department of\\
+        \@department\\
+        \vspace{25pt}
+      Advisor: \@advisor \\
+        \vspace{15pt}
+      \@degreemonth\ \@degreeyear
+    \rm
+    \end{center}
+    \vspace*{\fill}
 }
 
 \newcommand{\copyrightpage}{
-	\newpage
-	\thispagestyle{empty}
-	\vspace*{25pt}
-	\begin{center}
-	\scshape \noindent \small \copyright \  \small Copyright by \theauthor, \@degreeyear. All rights reserved.
-	\end{center}
-	\newpage
-	\rm
+    \newpage
+    \thispagestyle{empty}
+    \vspace*{25pt}
+    \begin{center}
+    \scshape \noindent \small \copyright \  \small Copyright by \theauthor, \@degreeyear. All rights reserved.
+    \end{center}
+    \newpage
+    \rm
 }
 
 \newcommand{\abstractpage}{
-	\phantomsection
-	\addcontentsline{toc}{chapter}{Abstract}
-	\newpage
-	\pagenumbering{roman}
-	\setcounter{page}{3}
-	\pagestyle{fancy}
-	\renewcommand{\headrulewidth}{0.0pt}
-	\vspace*{35pt}
-	\begin{center}
-	\scshape Abstract \\ \rm
-	\end{center}
-	\input{frontmatter/abstract}
-	\vspace*{\fill}
-	\newpage \lhead{} \rhead{}
-	\cfoot{\thepage}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{Abstract}
+    \newpage
+    \pagenumbering{roman}
+    \setcounter{page}{3}
+    \pagestyle{fancy}
+    \renewcommand{\headrulewidth}{0.0pt}
+    \vspace*{35pt}
+    \begin{center}
+    \scshape Abstract \\ \rm
+    \end{center}
+    \input{frontmatter/abstract}
+    \vspace*{\fill}
+    \newpage \lhead{} \rhead{}
+    \cfoot{\thepage}
 }
 
 \newcommand{\dedicationpage}{
-	\newpage \thispagestyle{fancy} \vspace*{\fill}
-	\scshape \noindent \input{frontmatter/dedication}
-	\vspace*{\fill} \newpage \rm
+    \newpage \thispagestyle{fancy} \vspace*{\fill}
+    \scshape \noindent \input{frontmatter/dedication}
+    \vspace*{\fill} \newpage \rm
 }
 
 \newcommand{\acknowledgments}{
-	\chapter*{Acknowledgments}
-	\noindent
-	\input{frontmatter/thanks}
-	\vspace*{\fill} \newpage
-	\setcounter{page}{1}
-	\pagenumbering{arabic}
+    \chapter*{Acknowledgments}
+    \noindent
+    \input{frontmatter/thanks}
+    \vspace*{\fill} \newpage
+    \setcounter{page}{1}
+    \pagenumbering{arabic}
 }
 
 \renewcommand{\backmatter}{
