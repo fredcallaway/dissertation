@@ -99,7 +99,7 @@
 \RequirePackage{url}
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
-\setmathsfont(Digits,Latin,Greek)[
+\setmathfont(Digits,Latin,Greek)[
     BoldFont       = * Bold,
     ItalicFont     = * Italic,
     BoldItalicFont = * Bold Italic,
