@@ -83,6 +83,15 @@
 \RequirePackage{setspace}
 \RequirePackage{verbatim}
 
+% \usepackage{bbm}
+% \usepackage{amsfonts}
+\usepackage{amsmath}
+% \usepackage{bm}
+% \usepackage{amsmath,amsthm,amssymb,amsfonts,bm}
+\usepackage{nicefrac}
+\usepackage{booktabs}
+\usepackage{bibentry}
+
 % Fonts.
 \RequirePackage{color}
 \RequirePackage{xcolor}
@@ -90,13 +99,18 @@
 \RequirePackage{url}
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
-\setmathsfont(Digits,Latin,Greek)[Numbers={Proportional}]{Arno Pro}
-\setmathrm{Arno Pro}
+\setmathsfont(Digits,Latin,Greek)[
+    BoldFont       = * Bold,
+    ItalicFont     = * Italic,
+    BoldItalicFont = * Bold Italic,
+    Numbers={Proportional}
+]{Minion Pro}
+\setmathrm{Minion Pro}
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300
 \clubpenalty=300
-\setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.1]{Arno Pro}
-\newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Arno Pro}
+\setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.0]{Minion Pro}
+\newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Minion Pro}
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
 \setmonofont[Scale=MatchLowercase]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},

@@ -3,15 +3,6 @@
 
 \documentclass[dsingle]{Dissertate}
 
-
-\usepackage{bbm}
-\usepackage{amsfonts}
-% \usepackage{caption}
-\usepackage{amsmath,amsthm,amssymb,amsfonts,bm}
-\usepackage{nicefrac}
-% \usepackage{enumitem}
-\usepackage{booktabs}
-\usepackage{bibentry}
 \nobibliography*
 
 \input{commands}
@@ -31,24 +22,17 @@
 % \dedicationpage
 % \acknowledgments
 
-% \setcounter{chapter}{-1}  % start chapter numbering at 0
-
-%
-\begin{equation}
-    \argmin_x f(x) \; \mathrm{argmin} \; \text{argmin}, \min
-\end{equation}
-%
 
 % \include{chapters/introduction}
 % \include{chapters/metamdp}
-% \include{chapters/attention}
+\include{chapters/attention}
 % \include{chapters/memory}
 % \include{chapters/planning}
 % \include{chapters/conclusion}
 
 \definecolor{chaptergrey}{rgb}{0.6, 0.6, 0.6}
 \begin{appendices}
-    % \include{chapters/app-attention}
+    \include{chapters/app-attention}
     % \include{chapters/app-memory}
     % \include{chapters/app-planning}
 \end{appendices}
