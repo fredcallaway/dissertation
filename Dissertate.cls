@@ -99,18 +99,22 @@
 \RequirePackage{url}
 \RequirePackage{amssymb}
 \RequirePackage{mathspec}
+
 \setmathfont(Digits,Latin,Greek)[
+    Numbers=OldStyle,
     BoldFont       = * Bold,
     ItalicFont     = * Italic,
     BoldItalicFont = * Bold Italic,
-    Numbers={Proportional}
+    % Numbers={Proportional}
 ]{Minion Pro}
 \setmathrm{Minion Pro}
+
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300
 \clubpenalty=300
 \setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.0]{Minion Pro}
 \newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Minion Pro}
+
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
 \setmonofont[Scale=MatchLowercase]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
