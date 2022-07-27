@@ -13,7 +13,9 @@ We must be prepared to accept the possibility that what we call ``the environmen
 
 \newthought{The key insight} underlying the proposed framework is that cognitive processes (including, for example, decision making) are themselves solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{meta-level Markov decision processes} (meta-level MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's beliefs about the world. At each moment, the agent must choose whether to continue deliberating, refining their beliefs but accruing computational cost, or to instead stop computing and make a decision. In the former case, they must additionally decide which computation to execute next (i.e., what to think about); in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
-In this chapter, I provide a formal description of the framework, identify technical challenges that arise when applying the framework, and discuss various strategies for addressing those strategies.
+Define ``computational architecture''
+
+In this chapter, I provide a formal description of the framework, identify technical challenges that arise when applying the framework, and discuss various strategies for addressing those challenges.
 
 % We begin by introducing Markov decision processes (MDPs). Next, we define meta-level MDPs as extensions of standard MDPs. Finally, we define a specific meta-level MDP model for multi-attribute decision-making, which we will employ in our experimental case studies.
 
@@ -24,9 +26,9 @@ In this chapter, I provide a formal description of the framework, identify techn
 \begin{figure*}
   % \centering
   \includegraphics[width=\textwidth]{figs/metamdp.pdf}
-  \caption{Formal framework: meta-level Markov decision processes.
-  (A) A Markov decision process formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions that change the state of the world and generate rewards, which the agent seeks to maximize.
-  (B) A meta-level Markov decision process formalizes the problem of \emph{deciding how to act} when computational resources are limited. The agent executes computations that update their belief state and incur computational cost. When the agent executes the termination operation $\bot$, they take an external action based on their current belief state.}
+  \caption{\captiontitle{Meta-level Markov decision processes.}
+  \subcap{A} A Markov decision process formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions that change the state of the world and generate rewards, which the agent seeks to maximize.
+  \subcap{B} A \emph{meta-level} Markov decision process formalizes the problem of \emph{deciding how to act} when computational resources are limited. The agent executes computations that update their belief state and incur computational cost. When the agent executes the termination operation $\bot$, they take an external action based on their current belief state.}
   \label{fig:metamdp-diagram}
 \end{figure*}
 
@@ -57,34 +59,39 @@ We define a meta-level MDP as $(\S, \A, r\object, \B, \C, T\meta, r\meta)$. The 
 A state $s \in \S$ captures the relavent state of the world.
 
 \paragraph{Beliefs}
-A belief state $b \in \B$ captures the agent's current knowledge about the relevant state of the world. Formally, a belief is a distribution states, $\B \subseteq \Delta(\S)$. Note that $\Delta(\S)$ denotes the set of all possible distributions over $\S$.
+A belief $b \in \B$ captures the agent's current mental state. We use the term \emph{belief} because the belief is often a posterior distribution over the state of the world. That is, it is a belief in the Bayesian sense. In general, however, this need not be the case. For example, in Chapter~\ref{sec:memory}, a belief will capture the progress towards recalling a memory. Nevertheless, it is often useful to model computation as revealing information about the world \citep{matheson1968economic}. In this case, the Bayesian interpretation of beliefs is very natural. Furthermore, to derive versions of the transition and reward functions that do not depend on the unknown world state (a necessary step in any model-based solution to the metalevel MDP), one must specify the probability of any given world state given the current belief. This is straightforward when beliefs directly correspond to distributions over states.
+
 % One typically makes distributional assumptions that restrict the space of beliefs the agent can entertain, such that $\B \subset \Delta(\S)$. 
-Importantly, contrary to a standard rational treatment of beliefs, the belief states in a meta-level MDP do not include all the information that is available to the DM. Instead, the belief state only contains information that is immediately accessible, excluding, for example, long-term memories and the number of calories in every box of cereal on a shelf.
+
+% Importantly, however, contrary to a standard rational treatment of beliefs, the belief states in a meta-level MDP do not include all the information that is available to the agent. Instead, the belief state only contains information that is immediately accessible, excluding, for example, long-term memories and the number of calories in every box of cereal on a shelf.
 
 \paragraph{Computations}
-A computational operation $c \in \C$ is a primitive operation afforded by the computational architecture. Formally, it is a meta-level action that updates the belief in much the same way as a regular action changes state. All meta-level MDPs include the termination operation $\bot$, which denotes that computation should be terminated and an action should be selected based on the current belief state. We further explain belief updating and termination in the following two paragraphs.
+A computational operation $c \in \C$ is a primitive operation afforded by the computational architecture. Formally, it is a meta-level action that updates the belief in much the same way as a regular action changes state. In a meta-level MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
+
+All meta-level MDPs include a special computation, $\bot$, which denotes that computation should be terminated and an external action should be selected based on the current belief state. We call this operation the \emph{termination operation}.
 
 \paragraph{Transition function}
-The meta-level transition function $T\meta: \B \times \C \times \S \rightarrow \Delta(\B)$ describes how computation updates beliefs. At each time step, the next belief is sampled from a distribution that depends on the current belief, the computational operation that was just executed, and the true state of the world, that is,
+The meta-level transition function $T\meta: \B \times \C \times \S \rightarrow \Delta(\B)$\footnote{$\Delta(\B)$ denotes the set of all distributions over the set $\B$} describes how computation updates beliefs. It thus defines the core structure of the computational architecture. Formally, $T\meta(b, c, s)$ is a distribution of possible new beliefs that would result from performing a computation $c$ in belief $b$ when the true state of the world is $s$. At each time step, the next belief is sampled from this distribution:
 \begin{equation}
 b_{t+1} \sim T\meta(b_t, c_t, s).
 \end{equation}
-The transition function thus defines the core structure of the computational architecture. Following previous work \citep{matheson1968economic,hay2012selecting}, we assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state. Thus, in expectation, computation has the effect of making one's beliefs more precise and accurate, although an individual computation may yield misleading information. 
+
+% Following previous work \citep{matheson1968economic,hay2012selecting}, we assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state. Thus, in expectation, computation has the effect of making one's beliefs more precise and accurate, although an individual computation may yield misleading information. 
 
 % This formalization is quite natural for many types of cognitive operations, such as memory recall and mental simulation. However, it can also be applied in less obvious cases; for example, performing an addition operation generates previously inaccessible information about the value of the sum of two numbers.
 
-% the marginalized meta-level transition function is always stochastic. Without knowledge of the true object-level state $s$, the DM cannot predict exactly how a computation will change her belief---if she could, she could simply adopt that updated belief without performing the computation. 
+% the marginalized meta-level transition function is always stochastic. Without knowledge of the true object-level state $s$, the agent cannot predict exactly how a computation will change her belief---if she could, she could simply adopt that updated belief without performing the computation. 
 
 \paragraph{Reward function}
 The meta-level reward function $r\meta: \B \times \C \times \S \rightarrow \R$ describes both the costs and benefits of computation. For the former, $r\meta$ assigns a strictly negative reward for all non-terminating computational operations,
 %
 \begin{equation}
-r\meta(b, c, s) = -\cost(c) \text{ for } c \neq \bot.
+r\meta(b, c, s) = -\cost(b, c) \text{ for } c \neq \bot.
 \end{equation}
 %
-The cost of computation may include multiple factors, such as energetic costs and opportunity costs. 
+We assume that the cost of a computation can depend on the current belief state (e.g., to model switching costs in Chapter~\ref{sec:attention}) but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world).
 
-Intuitively, the benefit of computation is that it allows one to make better decisions. This is captured by the meta-level reward for the termination operation $\bot$, defined as the true utility of the external action that the DM would execute given the current belief. We assume that the action is selected optimally. Thus,
+Intuitively, the benefit of computation is that it allows one to make better decisions. This is captured by the meta-level reward for the termination operation $\bot$, defined as the true utility of the external action that the agent would execute given the current belief. We assume that the action is selected optimally. Thus,
 %
 \begin{equation}\label{eq:term-reward}
 r\meta(b, \bot, s) = r\object(s, a^*(b)).
@@ -102,9 +109,9 @@ In English, the meta-level reward for termination is the \emph{true} utility of 
   For notational clarity, we have assumed a single optimal action. When multiple actions have the same expected value, we assume that ties are broken randomly; thus, $a^*(b)$ is more precisely a uniform distribution over all optimal actions, and $r\meta(b, \bot, s)$ takes an expectation over them.
 }
 
-\paragraph{Policy}\label{sec:metamdp-policy}
+\section{Metalevel policies}\label{sec:metamdp-policy}
 
-The solution to a meta-level MDP takes the form of a policy $\pi: \B \rightarrow \Delta(\C)$ that (perhaps stochastically) selects which computation to perform in each possible belief state. The optimal policy is the one that maximizes expected meta-level return,
+The solution to a meta-level MDP takes the form of a policy $\pi: \B \rightarrow \Delta(\C)$ that (perhaps stochastically) selects which computation to perform in each possible belief state. That is, $c_t \sim \pi(b_t)$. The optimal policy is the one that maximizes expected meta-level return,
 %
 \begin{equation}\label{eq:optimal-policy}
   \pi^* = \argmax_\pi \expect{
@@ -114,6 +121,9 @@ The solution to a meta-level MDP takes the form of a policy $\pi: \B \rightarrow
   }.
 \end{equation}
 
+
+
+ \emph{softmax}
 
 \subsection{Value of computation}
 
