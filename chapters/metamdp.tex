@@ -49,7 +49,12 @@ Meta-level Markov decision processes (meta-level MDPs) extend the standard MDP f
 
 As illustrated in Figure~\ref{fig:metamdp-diagram}B, the meta-level problem is itself a sequential decision problem, analogous to one defined by a standard MDP. However, in the meta-level problem, the states are replaced by beliefs (mental states) and the actions are replaced by computations (cognitive operations). The meta-level transition function describes how computations update beliefs, and the meta-level reward function captures both computational cost and the object-level reward of the action that is ultimately executed. We provide a formal definition below.
 
-We define a meta-level MDP as $(\S, \A, T\object, r\object, \B, \C, T\meta, r\meta)$. The first four components define the object-level problem. They have the same interpretation as $\S$, $\A$, $T$, and $r$ in a standard MDP. The latter four components define the meta-level problem. We now define these four components in turn.
+We define a meta-level MDP as $(\S, \A, r\object, \B, \C, T\meta, r\meta)$. The first three components define the object-level problem. They have the same interpretation as $\S$, $\A$, and $r$ in a standard MDP. Note that we omit the transition function because we limit our attention to problems in which all computation must be performed before any actions are taken.\footnote{%
+  Sequential object-level problems can be accomodated by letting each element of $\A$ be a sequence of actions. In such cases, the object-level transition function will be implicitly embedded in $r\object$. Forcing all computation to occur before any action is taken does not result in a loss of performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems.
+} The latter four components define the meta-level problem. We now define each of the seven components in turn.
+
+\paragraph{States}
+A state $s \in \S$ captures the relavent state of the world.
 
 \paragraph{Beliefs}
 A belief state $b \in \B$ captures the agent's current knowledge about the relevant state of the world. Formally, a belief is a distribution states, $\B \subseteq \Delta(\S)$. Note that $\Delta(\S)$ denotes the set of all possible distributions over $\S$.
