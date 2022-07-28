@@ -235,7 +235,7 @@
     colorlinks,
     citecolor=graylink,
     filecolor=black,
-    linkcolor=black,
+    linkcolor=graylink,
     urlcolor=graylink,
 }
 
