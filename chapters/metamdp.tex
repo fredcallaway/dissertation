@@ -11,58 +11,133 @@ We must be prepared to accept the possibility that what we call ``the environmen
 % \vspace{1.3\baselineskip}
 % \end{flushright}
 
-\newthought{The key insight} behind the proposed framework is that cognitive processes are solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{meta-level Markov decision processes} (meta-level MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's beliefs about the world. At each moment, the agent must choose whether to continue deliberating, refining their beliefs but accruing computational cost, or to instead stop computing and make a decision. In the former case, they must additionally decide which computation to execute next (i.e., what to think about); in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
+\newthought{The key insight} behind the proposed framework is that cognitive processes are solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{metalevel Markov decision processes} (metalevel MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's beliefs about the world. At each moment, the agent must choose whether to continue deliberating, refining their beliefs but accruing computational cost, or to instead stop computing and make a decision. In the former case, they must additionally decide which computation to execute next (i.e., what to think about); in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
 \todo{Define object-level?}
 
 In this chapter, I provide a formal description of the framework. The formalization presented here is an adaptation from the framework as proposed in \citet{hay2016principles}. We have modified the framework to support modeling cognitive processes other than decision-making (such as memory; Chapter~\ref{sec:memory}).
 
-% We begin by introducing Markov decision processes (MDPs). Next, we define meta-level MDPs as extensions of standard MDPs. Finally, we define a specific meta-level MDP model for multi-attribute decision-making, which we will employ in our experimental case studies.
+% We begin by introducing Markov decision processes (MDPs). Next, we define metalevel MDPs as extensions of standard MDPs. Finally, we define a specific metalevel MDP model for multi-attribute decision-making, which we will employ in our experimental case studies.
 
 % Below, we give a high-level and intuitive overview of the general framework and its application to multi-attribute choice, the domain we will use in our case studies. A formal treatment is provided in Appendix~\ref{metamdp}.
 
-% We begin by describing, in intuitive terms, how the framework can be applied to model multi-attribute decision-making. Next, we will formally define meta-level MDPs. Finally, we will return to the multi-attribute decision-making case, showing how the formalism can be applied to a specific case.
+% We begin by describing, in intuitive terms, how the framework can be applied to model multi-attribute decision-making. Next, we will formally define metalevel MDPs. Finally, we will return to the multi-attribute decision-making case, showing how the formalism can be applied to a specific case.
 
 \begin{figure*}
   % \centering
   \includegraphics[width=\textwidth]{figs/metamdp.pdf}
   \caption{\captiontitle{Meta-level Markov decision processes.}
   \subcap{A} A Markov decision process formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions that change the state of the world and generate rewards, which the agent seeks to maximize.
-  \subcap{B} A \emph{meta-level} Markov decision process formalizes the problem of \emph{deciding how to act} when computational resources are limited. The agent executes computations that update their belief state and incur computational cost. When the agent executes the termination operation $\bot$, they take an external action based on their current belief state.}
+  \subcap{B} A \emph{metalevel} Markov decision process formalizes the problem of \emph{deciding how to act} when computational resources are limited. The agent executes computations that update their belief state and incur computational cost. When the agent executes the termination operation $\bot$, they take an external action based on their current belief state.}
   \label{fig:metamdp-diagram}
 \end{figure*}
 
 
 \section{Markov decision processes}
 
-A meta-level Markov decision process is an extension of a standard Markov decision process (MDP) illustrated in \Fig{fig:metamdp-diagram}{A}. Thus, we begin with a brief overview of standard MDPs.
+A metalevel Markov decision process is an extension of a standard Markov decision process (MDP) illustrated in \Fig{fig:metamdp-diagram}{a}. Thus, we begin with a brief overview of standard MDPs. See \citet{sutton2018reinforcement} for a more thorough overview.
 
-MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T$ encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R$ specifies the reward or utility for executing a given action in a given state.
+MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T: \S \times \A \rightarrow \Delta(\S)$\footnotemark{} encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R: \S \times \A \rightarrow \R $ specifies the reward or utility for executing a given action in a given state. We additionally assume an initial state $s_0$ which the environment is initialized in and a terminal state $s_\bot$ such that the episode ends when the agent reaches that state.
 
-The standard goal in an MDP is to maximize the expected cumulative reward attained, that is, the \emph{return}. Importantly, this may require incurring immediate losses (negative rewards) in order to get to a state from which a highly rewarding action can be executed. It is typically assumed that the agent selects their actions based on the current state; the mapping from state to action is called a policy, denoted $\pi$. Solving an MDP amounts to finding a policy that maximizes the expected return, that is, a mapping from states to actions that, when followed, maximizes the total reward one will receive on average.
+\footnotetext{%
+  $\Delta(\S)$ denotes the set of all distributions over the set $\S$. Note that this definition is equivalent to the more standard style of defining the transition function as a probability mass function (i.e., $T: \S \times \A \times \S \rightarrow [0, 1])$. However, defining transition functions in this way is often highly unintuitive. We will thus instead define transition functions as generative probabilistic models. This notation reflects that choice.
+}
+
+
+\subsection{Optimal policies and value functions}
+
+The solution to an MDP is a policy $\pi: \S \rightarrow \Delta(\A)$ that (stochastically) selects which action to perform next given the current state. That is, $a_t \sim \pi(s_t)$. The goal is to find a policy that maximizes the expected cumulative reward attained, that is, the \emph{return}. The optimal policy is thus defined,
+\begin{equation}\label{eq:optimal-policy}
+  \pi^* = \argmax_\pi \expect{
+    \sum_{t=1}^{t_\bot} R(s_t, a_t)
+  }{
+   a_t \sim \pi(s_t)
+  },
+\end{equation}
+where $t_\bot$ is the timepoint at which the episode terminates (when $s_{t+1} = s_\bot$). Note that the expectation implicitly conditions on the transition function, i.e., $s_{t+1} \sim T(s_t, a_t)$.
+
+How can we identify such a policy? This question is the subject of a huge field of research in articifical intelligence, and countless methods have been developed. Many of these methods draw on the concept of a \emph{value function}. The \emph{state} value function (or just ``value function'') is defined
+%
+\begin{equation}\label{eq:state-value}
+  V^\pi(s) = \expect{
+    \sum_{t=1}^{t_\bot} R(s_t, a_t)
+  }{
+   s_1 = s,\ a_t \sim \pi(s_t)
+  }.
+\end{equation}
+%
+It specifies the expected total reward one will receive if one begins in state $s$ and selects actions according to the policy $\pi$. Similarly, the \emph{action} value function (or ``state-action value function'') is defined
+%
+\begin{equation}\label{eq:action-value}
+  Q^\pi(s, a) = \expect{
+    \sum_{t=1}^{t_\bot} R(s_t, a_t)
+  }{
+   s_1 = s,\ a_1 = a,\ a_{t \neq 1} \sim \pi(s_t)
+  }.
+\end{equation}
+%
+The action value function just like the state value function except that it also specifies the first action to be taken. 
+
+The value functions for the optimal policy are called the optimal value functions. They can be defined simply $V^* = V^{\pi^*}$ and $Q^* = Q^{\pi^*}$. By combining Equations~\ref{eq:optimal-policy}, \ref{eq:state-value}, and~\ref{eq:action-value}, we can see that the optimal value functions specify the maximal expected reward one could expect to gain begining with a given state (and action) under any policy.
+
+Putting aside for now the problem of identifying the these functions (see \citealp{puterman2014markov}), the optimal policy\footnote{%
+  To be more precise, the equation below defines the maximum entropy optimal policy, that is, the optimal policy whose action distributions are maximally random. As long as there is one belief state where two computations have the same maximal $Q*$ value, there will be an infinite number of optimal policies that have slightly different preferences for one computation over the other. For simplicity, we will refer to the maximum entropy optimal policy as simply ``the'' optimal policy.
+} can be defined as simply
+%
+\begin{equation}\label{eq:argmaxQ}
+  \pi^*(s) = \text{Uniform}\left(\argmax_a Q^*(s, a)\right).
+\end{equation}
+%
+That is, the optimal policy selects the action that produces the greatest expected long-term reward, breaking ties randomly. When modeling human data, one typically assumes that this maximization is performed imperfectly. In particular, we will assume that actions are drawn according to a softmax (or Boltzmann distribution),
+%
+\begin{equation}
+  \pi(a \mid s) \propto \expp{\beta \cdot Q^*(s, a)}
+\end{equation}
+% \displaystyle\sum_{a'} \expp{\beta \cdot Q^*(s, a')}
+%
+where the inverse-temperature parameter $\beta$ controls how well the policy maximizes, behaving completely randomly when $\beta = 0$ and approaching the optimal policy as $\beta \rightarrow \infty$.
+
+This concludes our brief overview of MDPs. We are now ready to describe metalevel MDPs.
 
 % An important property of MDPs is that there is at least one deterministic \emph{optimal policy}; that is, there is a mapping from states to actions that, when followed, will produce the maximum possible return. 
-
-In addition to their foundational role in artificial intelligence \citep{sutton2018reinforcement}, MDPs are widely used in models of human decision-making \citep{dayan2008decision}. MDPs are the formal foundation for models of reinforcement learning \citep{niv2009reinforcement} and model-based planning \citep{huys2015interplay,botvinick2012planning}, as well as competition between the two systems \citep{daw2005uncertaintybased,keramati2011speed,kool2017costbenefit}. They have also been used to study information-seeking \citep{gottlieb2013informationseeking,hunt2016approachinduced}, generalization \citep{tomov2021multitask}, and hierarchical abstraction \citep{solway2014optimal,botvinick2009hierarchically}. However, with a few notable exceptions \citep{dayan2008serotonin,drugowitsch2012cost,tajima2016optimal}, MDPs have primarily been used to model the sequential decision problems posed by the external world. In the following section, we show how this framework can be applied to model the sequential decision problem posed by one's own cognitive architecture.
 
 \section{Meta-level Markov decision processes}
 
 % The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
-Meta-level Markov decision processes (meta-level MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard, or \emph{object-level} MDP, a meta-level MDP is defined by sets of states and actions, and transition and reward functions. However, the states corresponded to beliefs (mental states) and the actions correspond to computations (cognitive operations). The meta-level transition function describes how computations update beliefs, and the meta-level reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
+Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard, or \emph{object-level} MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, the states corresponded to beliefs (mental states) and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update beliefs, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
 
-Formally, we define a meta-level MDP by a set of beliefs $\B$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analagous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a meta-level MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-reduced}, we can convert meta-level MDPs into equivalent MDPs by integrating out the world state (as in belief MDPs; see Section~\ref{sec:metamdp-pomdp} for additional discussion on the relation between meta-level MDPs and partially observable MDPs).
+Formally, we define a metalevel MDP by a set of beliefs $\B$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analagous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a metalevel MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-marginalized}, we can convert metalevel MDPs into equivalent MDPs by integrating out the world state.\footnote{This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:metamdp-pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.}
+
+
+% In the remainder of this chapter, we will describe the components of metalevel MDPs in greater detail, provide a simple example metalevel MDP, and discuss strategies for finding good metalevel policies.
+
+\subsection{Two models of computation}
+
+Before we further describe the components of metalevel MDPs, it is useful to first establish the basic conceptual model of computation on which they rely. As pointed out by \citet[Chapter~7]{hay2016principles}, there are at least two such models, each with its own advantages.
+
+In the \emph{mechanical} model, computations are viewed as internal actions that update the agent's internal state. These can be contrasted with external actions that update the state of the environment---but they are fundamentally the same type of thing. This view is highlighted in Figure~\ref{fig:sequential-intuition}. It should be familiar to cognitive scientists, as it is the view underlying most process-level psychological models, including, for example, evidence accumulation models and cognitive architectures \todo{reference intro?}.
+
+In the \emph{Bayesian} model, computations are viewed as experiments that generate information about the world \citep{matheson1968economic}. The results of these experiments are synthesized, by Bayesian inference, into estimates of the utility of different possible external actions, thus informing the agent's choice of which action to take. While the notion of Bayesian inference will not be new for most cognitive scientists, this view is quite different from the standard Bayesian approach in cognitive science (e.g., \citealp{tenenbaum2011how}). In particular, while the standard approach treats cognition as a problem of drawing inferences given data, this view treats cognition as a problem of generating the data that drives inference. In this way, the Bayesian model of computation resembles cognitive models of active learning \citep{gureckis2012selfdirected,gottlieb2013informationseeking}.\footnote{We further discuss links between metalevel MDPs and active learning in the \todo{conclusion}}
+
+Importantly, the two models are not mutaully exclusive. They are often compatible interpretations of a single system. The mechanical model emphasizes the process of computation, while the Bayesian model emphasizes its function. In this way, the mechanical and Bayesian models are analagous to Marr's algorithmic and computational levels. Unlike in Marr's levels, however, adopting the Bayesian model is more than just an interpretation; it has practical consequences for what one can do with the model. Specifically, it puts constraints on types of computation one can consider. All Bayesian models have a mechanical interpretation, but not vice versa. On the other hand, adopting the Bayesian interpretation makes it much easier to identify optimal policies for metalevel MDPs. Specifically, it allows us to convert a metalevel MDP into a standard MDP (Section~\ref{sec:metamdp-marginalized}), which is a critical step for the model-based solution strategies we employ.
+
+All metalevel MDPs in this dissertation have both mechanical and Bayesian interpretations, but which interpretation is foregrounded will vary. In Chapter~\ref{sec:attention}, we will strongly emphasize the Bayesian interpretation, modeling eye fixations as sampling information about the utility of the available options. In Chapters~\ref{sec:memory} and~\ref{sec:planning}, we will emphasize the mechanical interpretation, modeling the fluctuating accessibility of memories and the construction of decision trees. However, in all cases, both interpretations are useful---not just practically, but also as conceptual tools to better understand the cognitive process.
+
+\subsection{Defining metalevel MDPs}
+
+We are now ready to formally specify the components of a metalevel MDP.
 
 % When applied to decision-making problems (as in Chapters~\ref{sec:attention} and~\ref{sec:planning}), it will be useful to additionally characterize external actions $\A$ and the utility $U$ associated with those actions. 
 
 
-% These define the \emph{meta-level} problem: how to allocate limited computational resources in the service of solving the object-level problem.
+% These define the \emph{metalevel} problem: how to allocate limited computational resources in the service of solving the object-level problem.
 
-% As illustrated in Figure~\ref{fig:metamdp-diagram}B, the meta-level problem is itself a sequential decision problem, analogous to one defined by a standard MDP. However, in the meta-level problem, the states are replaced by beliefs (mental states) and the actions are replaced by computations (cognitive operations). The meta-level transition function describes how computations update beliefs, and the meta-level reward function captures both computational cost and the object-level reward of the action that is ultimately executed. We provide a formal definition below.
+% As illustrated in Figure~\ref{fig:metamdp-diagram}B, the metalevel problem is itself a sequential decision problem, analogous to one defined by a standard MDP. However, in the metalevel problem, the states are replaced by beliefs (mental states) and the actions are replaced by computations (cognitive operations). The metalevel transition function describes how computations update beliefs, and the metalevel reward function captures both computational cost and the object-level reward of the action that is ultimately executed. We provide a formal definition below.
 
-% We define a meta-level MDP as $(\S, \A, R\object, \B, \C, T, R)$. The first three components define the object-level problem. They have the same interpretation as $\S$, $\A$, and $R$ in a standard MDP. Note that we omit the transition function because we limit our attention to problems in which all computation must be performed before any actions are taken.\footnote{%
+% We define a metalevel MDP as $(\S, \A, R\object, \B, \C, T, R)$. The first three components define the object-level problem. They have the same interpretation as $\S$, $\A$, and $R$ in a standard MDP. Note that we omit the transition function because we limit our attention to problems in which all computation must be performed before any actions are taken.\footnote{%
 %   Sequential object-level problems can be accomodated by letting each element of $\A$ be a sequence of actions. In such cases, the object-level transition function will be implicitly embedded in $R\object$. Forcing all computation to occur before any action is taken does not result in a loss of performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems.
-% } The latter four components define the meta-level problem. We now define each of the seven components in turn.
+% } The latter four components define the metalevel problem. We now define each of the seven components in turn.
 
 \paragraph{World states}
 A world state $w \in \W$ captures the state of the world that is relevant to the agent's current task. For example, in a decision-making task, the state might define the utility of the various actions available to the agent (as in Chapter~\ref{sec:attention}). In a memory task, the state might correspond to the strength of the memory that the agent is trying to recall (Chapter~\ref{sec:memory}). More formally, the state includes any information that is not known to the agent, but affects either the reward or transition functions.
@@ -70,46 +145,46 @@ A world state $w \in \W$ captures the state of the world that is relevant to the
 \paragraph{Beliefs}
 A belief $b \in \B$ captures the agent's current mental state. We use the term \emph{belief} because the belief often specifies a posterior distribution over the world state. That is, it is a belief in the Bayesian sense. In general, however, this need not be the case. For example, in Chapter~\ref{sec:memory}, a belief will capture the progress towards recalling a memory. Nevertheless, it is often useful to model computation as revealing information about the world \citep{matheson1968economic}. In this case, the Bayesian interpretation of beliefs is very natural. Furthermore, to derive versions of the transition and reward functions that do not depend on the unknown world state (a necessary step in any model-based solution to the metalevel MDP), one must specify the probability of any given world state given the current belief. This is straightforward when beliefs directly correspond to distributions over states.\footnote{See \citet[Chapter~7]{hay2016principles} for additional discussion on the ``mechanical'' and Bayesian interpretation of belief states in metalevel MDPs.}
 
-When we are adopting the Bayesian interpretation of beliefs, we will treat them as probability distributions. In particular, we will write $b(w)$ to denote the probability of world state $w$ under the belief $b$, and we will write $\expectunder{f(w)}{w \sim b}$ to denote the expectation of a function of the world state conditional on the belief state.
+When we are adopting the Bayesian interpretation of beliefs, we will treat them as probability distributions. For example, we will write $b(w)$ to denote the probability of world state $w$ under the belief $b$; that is, $b(w) = p(w | b)$. Similarly, we will write $\expectunder{f(w)}{w \sim b}$ to denote the expectation of a function of the world state conditional on the belief state.
+
+In addition to specifying the set of possible beliefs, one must additionally specify an initial belief state, $b_0$. When adopting the Bayesian interpretation, we will typically require that the initial belief accurately captures the distribution of world states, i.e., $b_0(w) = p(w)$. However, in Chapter~\ref{sec:attention}, we will see a case where it is necessary to assume some bias in the initial belief to fully capture human behavior.
 
 % One typically makes distributional assumptions that restrict the space of beliefs the agent can entertain, such that $\B \subset \Delta(\S)$. 
 
-% Importantly, however, contrary to a standard rational treatment of beliefs, the belief states in a meta-level MDP do not include all the information that is available to the agent. Instead, the belief state only contains information that is immediately accessible, excluding, for example, long-term memories and the number of calories in every box of cereal on a shelf.
+% Importantly, however, contrary to a standard rational treatment of beliefs, the belief states in a metalevel MDP do not include all the information that is available to the agent. Instead, the belief state only contains information that is immediately accessible, excluding, for example, long-term memories and the number of calories in every box of cereal on a shelf.
 
 \paragraph{Computations}
-A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a meta-level action that updates the belief in much the same way as an object-level action changes state. In a meta-level MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
+A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that updates the belief in much the same way as an object-level action changes state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
-All meta-level MDPs include a special computation, the termination operation $\bot$, which denotes that computation should be terminated. In a decision-making context, this results in an external action being selected, specifically, the one that has maximal expected utility given the current belief state. In other contexts (e.g. memory recall in Chapter~\ref{sec:memory}), it may correspond to giving up on a cognitively demanding task. In either case, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$.
+All metalevel MDPs include a special computation, the termination operation denoted by $\bot$, which indicates that computation should be terminated. In a decision-making context, this results in an external action being selected, specifically, the one that has maximal expected utility given the current belief state. In other contexts (e.g. memory recall in Chapter~\ref{sec:memory}), it may correspond to giving up on a cognitively demanding task. In either case, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$.
 
 \paragraph{Transition function}
-The transition function $T: \B \times \C \times \W \rightarrow \Delta(\B)$\footnote{%
-  $\Delta(\B)$ denotes the set of all distributions over the set $\B$. Note that this definition is equivalent to the more standard style of defining the transition function explicitly as a probability density (i.e., with the range $[0, 1]$). However, explictly defining transition functions in this way is arduous and unintuitive. We will thus instead define transition functions as generative processes. This notation reflects that choice.
-} describes how computation updates beliefs. Formally, $T(b, c, w)$ is a distribution of possible new beliefs that would result from performing a computation $c$ in belief $b$ when the true state of the world is $w$. At each time step, the next belief is sampled from this distribution:
+The transition function $T: \B \times \C \times \W \rightarrow \Delta(\B)$ describes how computation updates beliefs. Formally, $T(b, c, w)$ is a distribution of possible new beliefs that would result from performing a computation $c$ in belief $b$ when the true state of the world is $w$. At each time step, the next belief is sampled from this distribution:
 \begin{equation}
 b_{t+1} \sim T(b_t, c_t, w).
 \end{equation}
 
-Following previous work \citep{matheson1968economic,hay2012selecting}, we will often assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state by Bayesian inference. In this case, each computation can be thought of as an experiment. Formally, each computation defines a state-dependent distribution of observations $p_c(x \mid w)$. Given the previous belief $b_t$ and the observation $x_t$, the new belief $b_{t+1}$ is then defined
+Following previous work \citep{matheson1968economic,hay2012selecting}, we will often assume that the effect of computation is to generate or reveal information about the true state of the world, which is then integrated into the belief state by Bayesian inference. In this case, each computation can be thought of as an experiment. Formally, each computation defines a state-dependent distribution of observations $p_c(o \mid w)$. Given the previous belief $b_t$ and the observation $o_t$, the new belief $b_{t+1}$ is then defined
 %
 \begin{equation}\label{eq:bayes-update}
-  b_{t+1}(w) = p(w | b_t, x_t) = \frac{b_t(w) p_c(x_t \mid w)}{
-    \displaystyle\int b_t(w') p_c(x_t \mid w') \ dw'
+  b_{t+1}(w) = p(w | b_t, o_t) = \frac{b_t(w) p_c(o_t \mid w)}{
+    \displaystyle\int b_t(w') p_c(o_t \mid w') \ dw'
   },
 \end{equation}
 %
 where the second equality is the application of Bayes rule, updating the prior $b_t$ given the likelihood $p_c(x \mid w)$. The transition function describes the full process of sampling an observation and updating the belief accordingly. Denoting the update in Equation~\ref{eq:bayes-update} as $\text{bayes-update}$, the full transition function is defined
 %
 \begin{align}
-  x_t &\sim p_c(\cdot \mid w) \\
-  b_{t+1} &= \text{bayes-update}(b_t, x_t, p_c)
+  o_t &\sim p_c(\cdot \mid w) \\
+  b_{t+1} &= \text{bayes-update}(b_t, o_t, p_c)
 \end{align}
 
 % This formalization is quite natural for many types of cognitive operations, such as memory recall and mental simulation. However, it can also be applied in less obvious cases; for example, performing an addition operation generates previously inaccessible information about the value of the sum of two numbers.
 
-% the marginalized meta-level transition function is always stochastic. Without knowledge of the true object-level state $s$, the agent cannot predict exactly how a computation will change her belief---if she could, she could simply adopt that updated belief without performing the computation. 
+% the marginalized metalevel transition function is always stochastic. Without knowledge of the true object-level state $s$, the agent cannot predict exactly how a computation will change her belief---if she could, she could simply adopt that updated belief without performing the computation. 
 
 \paragraph{Reward function}
-The meta-level reward function $R: \B \times \C \times \W \rightarrow \R$ describes both the costs and benefits of computation. For the former, $R$ assigns a strictly negative reward for all non-terminating computational operations,
+The metalevel reward function $R: \B \times \C \times \W \rightarrow \R$ describes both the costs and benefits of computation. For the former, $R$ assigns a strictly negative reward for all non-terminating computational operations,
 %
 \begin{equation}
 R(b, c, w) = -\cost(b, c) \text{ for } c \neq \bot.
@@ -117,46 +192,339 @@ R(b, c, w) = -\cost(b, c) \text{ for } c \neq \bot.
 %
 We assume that the cost of a computation can depend on the current belief state (e.g., to model switching costs in Chapter~\ref{sec:attention}) but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world). The simplest choice is to assume a constant cost for each computation executed.
 
-Intuitively, the benefit of computation is that it allows one to take more effective actions in the world. How one models this benefit depends on the type of cognitive process one is modeling. In a decision-making context (Chapters~\ref{sec:attention} and~\ref{sec:planning}), the benefit is captured by the reward for the termination operation $\bot$. Here, terminating computation corresponds to making a choice; thus the reward for termination is defined as the true utility of the external action\footnotemark{} that the agent would execute given the current belief. We assume that the action is selected optimally. Thus,
+Intuitively, the benefit of computation is that it yields more useful beliefs, that allow us to behave more effectively in the world. The benefit of computation is thus captured by the reward for the termination operation $\bot$,
+%
+\begin{equation}
+  R(b, \bot, w) = \utility(b, w),
+\end{equation}
+%
+where $\utility(b, w)$ describes how ``good'' the belief is, given the true state of the world. What ``good'' means depends on the type of cognitive process one is modeling. 
+
+In a decision-making context (Chapters~\ref{sec:attention} and~\ref{sec:planning}), terminating computation corresponds to making a choice; a good belief is thus one that leads one to choose a good action. Formally, the reward for termination is defined as the true utility of the external action\footnotemark{} that the agent would execute given the current belief. We assume that the action is selected optimally given the belief. Thus, letting $U(w, a)$ denote the object-level utility of executing action $a$ given the world state $a$, we have
 %
 \begin{equation}\label{eq:term-reward}
-R(b, \bot, w) = \text{utility}(w, a^*(b)).
+\utility(b, w) = U\left(w, a^*(b)\right).
 \end{equation}
 %
 where
-%
-\begin{equation}\label{eq:object-action}
-a^*(b) = \argmax_a \expectunder{\text{utility}(w, a)}{w \sim b}
+\begin{equation}
+  a^*(b) = \argmax_a \expectunder{U(w', a)}{w' \sim b}
 \end{equation}
 %
-In English, the meta-level reward for termination is the \emph{true} utility of the action\footnotemark{} with maximal \emph{estimated} utility.
+In English, the metalevel reward for termination is the \emph{true} utility of the action\footnotemark{} with maximal \emph{estimated} utility.
 
 \footnotetext{
   For notational clarity, we have assumed a single optimal action. When multiple actions have the same expected value, we assume that ties are broken randomly; thus, $a^*(b)$ is more precisely a uniform distribution over all optimal actions, and $R(b, \bot, w)$ takes an expectation over them.
 }
 
-Note that these equations can be applied to sequential problems by letting $a$ be a sequence of actions. This does require that all computation is executed before any object-level action is performed, but this constraint does not reduce performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems.
+Note that this type of reward can be also applied to sequential problems by letting $a$ be a sequence of actions. This does require that all computation is executed before any object-level action is performed, but this constraint does not reduce performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems.
 
-Outside of decision-making contexts, the benefits of computation can take a broader form. One general class defines a set of belief states as a goal, with a positive reward associated with reaching that goal. For example, in Chapter~\ref{sec:memory}, we will associate a positive reward with reaching a mental state where the activation of a memory exceeds a threshold associated with recall.
-
+Outside of decision-making contexts, the benefits of computation can take a broader form. For example, if one simply seeks to form accurate beliefs, the termination reward could be the probability assigned to the true state $R(b, \bot, w) = b(w)$. Another general class defines a set of belief states as goal states $\mathcal{G}$, with a positive reward associated with reaching any goal state\footnote{We implicitly assume that the policy always terminates in a goal state, as the optimal policy and any reasonable policy would do.},
+%
+\begin{equation}\label{eq:goal-term}
+  \utility(b, w) = \begin{cases}
+    1 &\text{if } b \in \mathcal{G} \\
+    0 &\text{otherwise}
+  \end{cases}
+\end{equation}
+%
+For example, in Chapter~\ref{sec:memory}, we will associate a positive reward with reaching a mental state where the activation of a memory exceeds a threshold associated with recall.
 
 \section{Metalevel policies}\label{sec:metamdp-policy}
 
-The solution to a meta-level MDP takes the form of a policy $\pi: \B \rightarrow \Delta(\C)$ that (perhaps stochastically) selects which computation to perform in each possible belief state. That is, $c_t \sim \pi(b_t)$. The optimal policy is the one that maximizes expected meta-level return,
+If a metalevel MDP defines the problem a cognitive process must solve, a metalevel policy defines the solution. It is a strategy for selecting which cognitive operation to execute next given the current mental state. Formally, the policy, $\pi: \B \rightarrow \Delta(\C)$, is a mapping from beliefs to distributions over computations. At each time step, the next computation is drawn from this distribution: $c_t \sim \pi(b_t)$.
+
+How should we determine this policy? The classical cognitive modeling approach is to specify a plausible strategy, perhaps motivated by aspects of human behavior. In Chapter~\ref{sec:planning}, we show how classical heuristics for decision-tree search can be naturally modeled as policies in a metalevel MDP. However, in the resource-rational approach pursued here, we take a different approach. Specifically, we are interested in the \emph{optimal policy} for the metalevel MDP, as this one specifies the cognitive strategy that best trades off between the costs and benefits of computation. 
+
+Paralleling Equation~\ref{eq:optimal-policy}, the optimal metalevel policy is defined
 %
-\begin{equation}\label{eq:optimal-policy}
+\begin{equation}\label{eq:optimal-meta-policy}
   \pi^* = \argmax_\pi \expect{
-    \sum_{t=1}^T R(B_t, C_t, S)
+    \sum_{t=1}^T r(b_t, c_t, w)
   }{
-    C_t \sim \pi
+    c_t \sim \pi(b_t)
+  }.
+\end{equation}
+That is, it maximizes the expected return. In a metalevel MDP the return can be broken down into two components capturing the costs and benefits of computation,
+\begin{equation}
+  \pi^* = \argmax_\pi \expect{
+    \utility(b_T, w) - \sum_{t=1}^{T-1} \cost(b_t, c_t)
+  }{
+    c_t \sim \pi(b_t)
   }.
 \end{equation}
 
+Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In the Section~\ref{sec:computing}, we discuss various strategies for tackling this problem. But first, we will discuss how metalevel MDPs can be converted to standard MDPs, an important step in many solution strategies.
+
+% In addition to being a solution to a metalevel MDP, we can also think of a policy as a cognitive model, one which makes predictions about the sequence of cognitive operations a person will perform when performing some task. If we make assumptions about how those cognitive operations generate process-tracing data, for example eye fixations (Chapter~\ref{sec:attention}) or mouse clicks (Chapter~\ref{sec:planning}), the policy (along with the transition function) corresponds to a likelihood model over those data. 
 
 
- \emph{softmax}
+\section{Marginalized metalevel MDPs}\label{sec:metamdp-marginalized}
 
-\subsection{Value of computation}
+So far, we have defined metalevel MDPs as being formally distinct from MDPs. They are distinct in that the transition and reward functions depend on a world state that is unknown to the agent, $w$. One unfortunate consequence of this formal distinction, however, is that the standard tools for finding optimal policies of MDPs cannot be directly applied. Fortunately, it is often easy to convert a metalevel MDP into a standard MDP by marginalizing the world state out of the transition and reward functions. This results in a standard MDP where the states are beliefs and computations are actions. We define the marginalzide transition and reward functions below.
+
+\paragraph{Marginal transition function}
+The marginal transition function can be defined easily in generative form,
+%
+\begin{equation}
+\begin{aligned}
+  w  &\sim b_t\\
+  b_{t+1} &\sim T(b_t, c_t, w).
+\end{aligned}
+\end{equation}
+%
+One simply samples the world state from the belief before applying the transition dynamics. However, we will often need an explicit proabability mass function. This can be defined
+%
+\begin{equation}
+T(b_{t+1} \mid b_t, c_t) = \expectunder{T(b_{t+1} \mid b_t, c_t, w)}{w \sim b_t}.
+\end{equation}
+This expression cannot be simplified in the general case. In practice, we will work with Gaussian or discrete belief states that make this integration analytically tractable.
+
+
+\paragraph{Marginal reward function}
+The marginal reward function is defined
+%
+\begin{equation}
+R(b, c) = \expectunder{R(b, c, w)}{w \sim b}.
+\end{equation}
+%
+For $c \neq \bot$, $R(b, c, w)$ does not depend on $w$, and we have simply
+%
+\begin{equation}
+  R(b, c) = -\text{cost}(b, c).
+\end{equation}
+The reward for terminating, however, may depend on the state of the world; we must marginalize it out.
+
+In the decision-making context (Equation~\ref{eq:term-reward}), this marginalization is straightforward. The utility of a belief is simply the maximal expected utility of any action given that belief:
+%
+\begin{equation}
+\begin{aligned}
+r\meta(b, \bot) 
+&= \expectunder{\utility(b, w)}{w \sim b} \\
+&= \expectunder{\utility(w, a^*(b))}{w \sim b} \\
+&= \expectunder{U\left(w,\, \argmax_a \expectunder{U(w', a)}{w' \sim b}\right)}{w \sim b} \\
+&= \max_a \expectunder{U(w, a)}{w \sim b}
+.
+\end{aligned}
+\end{equation}
+The final line follows from
+%
+\begin{math}
+  f\left(\argmax_a f(a)\right) = \max_a f(a)
+  ,
+\end{math}
+%
+where $f(a)$ is $\expectunder{U(w, a)}{w \sim b}$.
+
+Outside of a decision-making context, we will only consider goal-based belief utility functions (Equation~\ref{eq:goal-term}), which do not depend on the world state. In general, one must derive an expression for $\expectunder{\utility(b, w)}{w \sim b}$.
+
+\section{Relation to partially observable Markov decision processes}
+
+Partially observable Markov decision process (POMDPs) are generalizations of MDPs where the agent does not know the state, but instead receives an observation conditional on the state and action at each time step: $o_t \sim O(s_{t+1}, a_t)$. Given these observations, the agent maintains a belief about the current state using a Bayesian update similar to Equation~\ref{eq:bayes-update} but additionally accounting for the possibility that the state changes,
+%
+\begin{equation}\label{eq:pomdp-update}
+  b_{t+1}(s_{t+1}) = p(s_{t+1} | b_t, o_t) \propto 
+  O(o_t \mid s_{t+1}, a_t) \sum_{s_t \in \S} T(s_{t+1} \mid s_t, a_t) b_t(s_t)
+\end{equation}
+%
+Note that we have omitted the normalizing constant, $1/p(o_t \mid b_t, a_t)$, for brevity.
+
+Metalevel MDPs that fully adopt the Bayesian intepretation of beliefs can be understood as a constrained form of a POMDP in which the state never changes. In this case, the belief update reduces to
+\begin{equation}\label{eq:pomdp-update}
+  b_{t+1}(s_{t+1}) \propto 
+  O(o_t \mid s, a_t) b_t(s),
+\end{equation}
+which is exactly Equation~\ref{eq:bayes-update} but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$. Metalevel MDPs add the additional constraint that there only all but one action yield strictly negative reward and that the remaining action, $\bot$, leads to a terminal state.
+
+When mental states are not simply beliefs (e.g., modeling the activation of a memory in Chapter~\ref{sec:memory}), this formulation is not as natural. In this case, one can think of the state as being composed of two elements, $b$ and $w$, the former being observable and the latter not.
+
+\section{Identifying good metalevel policies}\label{sec:computing}
+
+Here we discuss a few general methods for identifying optimal (or at least reasonable) policies for metalevel MDPs. Following Equation~\ref{eq:argmaxQ}, the optimal metalevel policy can be expressed as
+%
+\begin{equation}
+  \pi^*(b) = \text{Uniform}\left(\argmax_b Q^*(b, c)\right).
+\end{equation}
+
+
+\subsection{Dynamic programming}\label{sec:backinduct}
+
+For metalevels MDPs with sufficiently small state spaces, the most robust and accurate method for identifying an optimal policy is dynamic programming. See \citet{sutton2018reinforcement} and \citet{puterman2014markov} for a general overview of these methods. Here, we provide a brief introduction and a few practical suggestions for applying this approach to metalevel MDPs.
+
+\todo{decide what to do with this section}
+
+When the belief space is finite and discrete, dynamic programming can be applied directly. Sometimes, the belief space will be infinite in principle, but can be made finite by placing an upper bound on the number of computations that can be performed.
+
+
+
+
+
+However, almost always, the belief space naturally decomposes along the time step. That is, there is 
+
+Formally, the belief space can be broken down into disjoint subsets, one for each time point,
+% %
+% \begin{equation}
+%   \B = \bigcup_t^T \B_t.
+% \end{equation}
+% %
+% In this case, backwards induction is generally the most efficient strategy.\footnote{
+%   Backwards induction performs each possible Bellman backup exactly once (one for each pair of beliefs that have non-zero transition probability), wheres other algorithms like value iteration generally perform each backup many times.
+% } In this strategy, one begins by computing the value of each possible belief at the maximum time step, $T$. By definition, this value is
+% %
+% \begin{equation}
+%   V(b_T) = R(b, \bot)  %\ \forall\  b_T \in \B_t
+% \end{equation}
+% %
+% Then one computes the value of executing each possible computation beliefs at the previous time step, $T-1$, as
+% %
+% \begin{equation}
+%   Q(b_{T-1}, c) = \sum_{b_T} T(b_T \mid b_{T-1}, c) V(b_T) - \cost(b_{T-1}, c)
+% \end{equation}
+% %
+
+but structured, one can take advantage of symmetry in the space to reduce its effective size, sometimes dramatically so. One way to accomplish this is to use a cache-based dynamic programming scheme with a key function that collapses across states that are functionally equivalent. For example, in Chapter~\ref{sec:planning}, we use a key function that processes a decision tree recursively, using a commutative operation (summation) to combine the keys for subtrees whose roots are siblings.
+
+When the belief space is continuous and low-dimensional, we discretize the space into evenly spaced bins, being careful to set the range such that the optimal policy almost never reaches the end points. We then specify a maximum number of computations (ideally one imposed by the task itself, e.g., a time limit), and use backwards induction to compute the value function. In many cases, computing the marginalized transition function is the computational bottleneck. Thus, when possible, we precompute any aspects of this calculation that will be needed multiple times. For example, in Chapter~\ref{sec:memory}, we precompute the transition function for single item and reuse this precomputed table to determine transition probabilities when there are two items.
+
+
+If the belief space is continuous and high-dimensional, or discrete and without symmetry structure, dynamic programming is not likely to be tracatable. In this case, an approximate method is required. We disucss a few approximations in the following sections.
+
+\subsection{The myopic policy}
+
+In their pioneering work on metareasoning \citet{russell1991principles} suggested an approximation to rational metareasoning by one-step look-ahead, what they called the metalevel greedy approximation. This policy, which we call the myopic policy (following \citealp{hay2012selecting}), is defined
+\begin{equation}
+  \pi\myopic(b) = \text{Uniform}\left(\argmax_b Q\myopic(b, c)\right),
+\end{equation}
+where
+\begin{equation}
+Q\myopic(b, c) = \E_{b' \sim T(\cdot \mid b, c)}\left[ 
+  R(b', \bot)
+\right] - \cost(b, c)
+\end{equation}
+with $Q\myopic(b, \bot) = R(b', \bot)$. The myopic action value function, $Q\myopic$ gives the expected termination reward after performing one more computation, less the cost of that computation. Thus, the myopic policy selects each computation as if it will be the last one executed.
+
+\subsection{Multi-step lookahead}
+
+The problem with the myopic policy is that it systematically underestimates the value of computation. This leads it to stop computing too early. To take a simple example, consider a metalevel MDP in which each computation generates one piece of binary evidence in favor of one action vs. another. If the current belief has two pieces of evidence in favor of action A ($b = +2$),\footnote{Note that for this metalevel MDP to have a Bayesian interpretation, the belief state must also include the number of computations performed.} then there is no way that a single computation will change the decision the agent will make. The next belief will be either $+1$ or $+2$, and A will be the action with maximal expected value in either case. Clearly there is no benefit to executing a single computation, so the myopic policy will terminate. However, given the opportunity to execute multiple computations, the tide could easily be swayed in favor of action B. If computation is not very costly, it would likely be worth computing more.
+
+\citet{gabaix2005bounded} proposed a solution to this problem for information-gathering problems similar to metalevel MDPs. In the so-called \emph{directed cognition} model, the policy selects from sequences of computations, similar to options in hierarchical reinforcement learning \citep{sutton1999mdps}. Thus, if a any sequence of computations has a better expected value than terminating, the policy will continue to compute. Note that when applying this strategy, one need not actually commit to taking the full sequence of computations that previously had maximal value, as the outcome of the first comuptation may make another computation (or sequence of computations) more valuable.
+
+\citet{hay2012selecting} proposed another solution to this problem, based on the idea that a solution to a complex metalevel MDP can approximated by composing solutions to a set of simplified metalevel MDPs, specifically MDPs taht formalize the problem of deciding how to decide between one object-level action and the expected return of its best alternative.
+
+one possible solution to this problem, the \emph{blinkered approximation}. The intuition behind this approximation is approximate the solution to a complex metalevel MDP 
+
+
+Each of these smaller metalevel MDPs includes only the computations for reasoning about the expected return of the corresponding object-level action.
+While this \textit{blinkered} approximation is more accurate than the meta-greedy policy, it is also significantly less scalable and not directly applicable to metareasoning about planning.
+
+
+
+This policy selects computations by making a myopic approximation to the VOC:
+\begin{equation}
+\pi\myopic(b) = \text{Uniform}\left(\argmax_c \VOC\myopic(b, c)\right).
+\end{equation}
+where
+\begin{equation*}
+  \VOC\myopic(b,c) = \E_{b' \sim T(b, c)}\left[
+    R(b',\bot)
+  \right] - \cost(b,c) - R(b, \bot)
+\end{equation*}
+and $\VOC\myopic(b,\bot)$ is defined to be 0. $\VOC\myopic$ specifies the amount of reward one would gain by executing one more computation before terminating, rather than terminating immediately. When working with the VOC, 
+
+
+
+To build additional intuition, we can break down the VOC into two terms, capturing the value of information produced by computation and the cost of computation, respectively:
+%
+\begin{equation}
+  Q^*(b_t, c_t) = 
+    \underbrace{R(b_t, \bot)
+    }_{
+      \substack{\text{current}\\ \text{decision}\\ \text{quality}}
+    } +
+    \underbrace{
+      \underbrace{
+        \E[R(b_T, \bot)] - R(b_t, \bot)
+      }_{
+        \text{value of information}
+      } - 
+      \underbrace{
+        \E\left[\sum_{i=t}^T \cost(b_i, c_i) \right]
+      }_{
+        \text{cost of computation}
+      }
+    }_{
+      \text{value of computation}
+    }.
+\end{equation}
+%
+
+
+
+Historically, rational metareasoning \citep{russell1991principles} has been defined in terms of a slightly different quantity, the \emph{value of computation} (VOC). 
+
+\subsection{The value of computation}
+The VOC is exactly what it sounds like; it specifies the value of performing a computation, where ``value'' refers to the long-term value in the same sense as the action value function, $Q^*$. Indeed, VOC can be defined in terms of $Q^*$: $\VOC(b, c) = Q^*(b, c) - R(b, \bot)$. Intuitively, the VOC is the amount of reward one can gain by executing a computation (and then continuing to select computations optimally) rather than making a choice immediately. It is easy to see that maximizing VOC is equivalent to maximizing $Q^*$, and so we can equivalently define the optimal metalevel policy as
+%
+\begin{equation}
+  \pi^*(b) = \text{Uniform}\left(\argmax_b \VOC(b, c)\right).
+\end{equation}
+%
+Thus, VOC and $Q^*$ contain essentially the same information. In practice, we will use $Q^*$ when solving metalevel MDPs with dynamic programming, and VOC when approximating solutions using ideas from rational metareasoning.
+
+To build additional intuition, we can break down the VOC into two terms, capturing the value of information produced by computation and the cost of computation, respectively:
+%
+\begin{equation}
+  Q^*(b_t, c_t) = 
+    \underbrace{R(b_t, \bot)
+    }_{
+      \substack{\text{current}\\ \text{decision}\\ \text{quality}}
+    } +
+    \underbrace{
+      \underbrace{
+        \E[R(b_T, \bot)] - R(b_t, \bot)
+      }_{
+        \text{value of information}
+      } - 
+      \underbrace{
+        \E\left[\sum_{i=t}^T \cost(b_i, c_i) \right]
+      }_{
+        \text{cost of computation}
+      }
+    }_{
+      \text{value of computation}
+    }.
+\end{equation}
+%
+
+
+
+
+Thus, the policy executes the computation that will provide the greatest expected improvement in the termination reward at the next step less the cost of that computation; if this value is not positive for any computation, it terminates.
+
+The myopic policy can be quite effective in some cases. However, it terminates computation too early because it systematically underestimates
+
+
+% \begin{equation}
+%     % \text{VOC}_1(c,b_t)=\mathds{E}\left[r\meta(B_{t+1},\bot) | b_t,c_t \right] +r\meta(b_t,c) - r\meta(b_t,\bot),
+%     \text{VOC}_1(c,b) = \expectunder{r\meta(B', \bot)} - r\meta(b,\bot) + r\meta(b,c),
+%     % \text{VOC}_1(c,b) = \expect[B'\sim T\meta(b,c,\cdot)]{U(B')} - U(b) + r\meta(b,c),
+  
+% \end{equation}
+% %
+%
+is the myopic value of computation \cite{Russell1991}. The meta-greedy policy selects each computation assuming that it will be the last computation. 
+This policy is optimal when computation provides diminishing returns (i.e. the improvement from each additional computation is less than that from the previous one), but it deliberates too little when this assumption is violated.
+For example, in the tornado problem (where false negatives have high cost), a single simulation may be unable to ensure that evacuation is unnecessary with sufficient confidence, while two or more could.
+% For instance, when the outcome of simulating an action is binary, either outcome of a single simulation may be insufficient to change the agent's decision---rendering the myopic VOC negative---whereas two or more simulations might change it and thus have a positive VOC when the stakes are high.
+
+Hay et al. (2012) approximated rational metareasoning by combining the solutions to smaller metalevel MDPs that formalize the problem of deciding how to decide between one object-level action and the expected return of its best alternative.
+Each of these smaller metalevel MDPs includes only the computations for reasoning about the expected return of the corresponding object-level action.
+While this \textit{blinkered} approximation is more accurate than the meta-greedy policy, it is also significantly less scalable and not directly applicable to metareasoning about planning. %when applied to sequential decision problems where the value of each object-level action depends on which actions will be taken afterwards.
+%\footnote{Hay et al. present an application of their method to MCTS in Go, but they only use their method at the root node, effectively reducing the problem to a bandit problem.}
+
+%It has been proposed that people approximate optimally selecting individual computations by metareasoning over a small subset of all possible sequences of computations \cite{Milli2017}. The solution to this simplified problem can be approximated efficiently \cite{LiederGriffiths2017}, but this approximation neglects the sequential nature of selecting individual computations.
+These are the main approximations to rational metareasoning. So, to date, there appears to be no accurate and scalable method for solving general metalevel MDPs.
+
 
 This suggests a strategy for selecting computations optimally. For each item, estimate how much one's decision would improve if one sampled from it (and then continued sampling optimally). Subtract from this number the cost of taking the sample (and also the estimated cost of the future samples). Now identify the item for which this value is maximal. If it is positive, it is optimal to take another sample for this item; otherwise, it is optimal to stop sampling and make a decision.
 
@@ -171,7 +539,7 @@ We can then define the optimal policy as selecting computations with maximal VOC
 $$
 \pi^*(b) \sim \text{Uniform}(\argmax{c} \VOC(b, c)).
 $$
-For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the state-action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
+For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
 
 \subsection{Optimal metalevel policy}
 
@@ -208,7 +576,7 @@ We can then define the optimal policy as selecting computations with maximal VOC
 $$
 \pi^*(b) \sim \text{Uniform}(\argmax{c} \VOC(b, c)).
 $$
-For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the state-action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
+For those familiar with reinforcement learning, this recursive joint definition of $\pi^*$ and VOC is exactly analogous to the joint definition of the optimal policy with the action value function, $Q$ \citep{sutton2018reinforcement}. Indeed, $\VOC(b, c) = Q(b, c) - R(b, \bot)$. 
 
 Finally, by definition, $\VOC(b,\bot)=0$ for all $b$. Thus, the optimal policy terminates sampling when no computation has a positive VOC.
 
@@ -227,7 +595,7 @@ We briefly define the features here, and provide full derivations in Appendix~\r
 
 $\VOImy(b,c)$ denotes the expected improvement in choice utility from drawing one additional sample from item $c$ before making a choice, as opposed to making a choice immediately based on the current belief, $b$. $\VPIitem(b,c)$ denotes the expected improvement from learning the true value of item $c$, and then choosing the best item based on that information. Finally, $\VPI(b)$ denotes the improvement from learning the true value of \text{every} item and then making an optimal choice based on that complete information.
 
-Together, these three features approximate the expected value of information that could be gained by the (unknown) sequence of future samples. Importantly, this true value of information always lies between the lower bound of $\VOImy$ and the upper bound of $\VPI$ (see \Fig{fig:attention-voi}), implying that the true VOI is a convex combination of these two terms. Note, however, that the weights on this combination are not constant across beliefs, as assumed in our approximation. Thus, including the $\VPIitem$ term, improves the accuracy of the approximation, by providing an intermediate value between the two extremes. Finally, the last two terms in Equation~\ref{eq:vochat} approximate the cost of computation: $\text{cost}(c)$ is the cost of carrying out computation $c$ and $w_{4}$ approximates the expected future costs incurred under the optimal policy.
+Together, these three features approximate the expected value of information that could be gained by the (unknown) sequence of future samples. Importantly, this true value of information always lies between the lower bound of $\VOImy$ and the upper bound of $\VPI$ (see \Fig{fig:attention-voi}), implying that the true VOI is a convex combination of these two terms. Note, however, that the weights on this combination are not constant across beliefs, as assumed in our approximation. Thus, including the $\VPIitem$ term, improves the accuracy of the approximation, by providing an intermediate value between the two extremes. Finally, the last two terms in Equation~\ref{eq:vochat} approximate the cost of computation: $\cost(c)$ is the cost of carrying out computation $c$ and $w_{4}$ approximates the expected future costs incurred under the optimal policy.
 
 Although maximizing $\VOCapprox$ identifies the policy with the best performance, it is unlikely that humans make attentional decisions using such perfect and noiseless maximization. Thus, 
 we assume that computations are chosen using a Boltzmann (softmax) distribution   \citep{mcfadden2001economic} given  by
