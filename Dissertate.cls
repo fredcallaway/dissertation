@@ -9,6 +9,10 @@
 %     docstring       = "Class for a dissertation."
 % --------------------------------------------------------------------
 
+% \usepackage{algorithm}
+% \usepackage{algpseudocode}
+\usepackage{minted}
+
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
 \LoadClass[12pt, oneside, letterpaper]{book}
@@ -124,7 +128,7 @@
                 margin=0pt,
                 figurewithin=chapter,
                 tablewithin=chapter]{caption}
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+% \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \RequirePackage{microtype}
 
 
@@ -235,7 +239,7 @@
     colorlinks,
     citecolor=graylink,
     filecolor=black,
-    linkcolor=graylink,
+    linkcolor=black,
     urlcolor=graylink,
 }
 
