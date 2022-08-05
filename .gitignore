@@ -40,3 +40,10 @@
 *.synctex.gz(busy)
 *.pdfsync
 dissertation.pdf
+_minted-dissertation/
+_minted-test-base/
+chapters/scratch.tex
+test-base.pdf
+test-base.tex
+test.tex
+chapters/ms.tex

@@ -1,5 +1,6 @@
 %!TEX TS-program = xelatex
 %!TEX encoding = UTF-8 Unicode
+%!TEX options=--shell-escape 
 
 \documentclass[dsingle]{Dissertate}
 
@@ -9,10 +10,10 @@
 \begin{document}
 
 % the front matter
-\input{frontmatter/personalize}
+% \input{frontmatter/personalize}
 % \maketitle
 % \copyrightpage
-\frontmatter
+% \frontmatter
 \setstretch{\dnormalspacing}
 
 % \abstractpage
@@ -22,20 +23,20 @@
 % \dedicationpage
 % \acknowledgments
 
-
-\include{chapters/introduction}
+\setcounter{chapter}{1}
+% \include{chapters/introduction}
 \include{chapters/metamdp}
-\include{chapters/attention}
-\include{chapters/memory}
-\include{chapters/planning}
-\include{chapters/conclusion}
+% \include{chapters/attention}
+% \include{chapters/memory}
+% \include{chapters/planning}
+% \include{chapters/conclusion}
 
 \definecolor{chaptergrey}{rgb}{0.6, 0.6, 0.6}
-\begin{appendices}
-    \include{chapters/app-attention}
-    \include{chapters/app-memory}
-    \include{chapters/app-planning}
-\end{appendices}
+% \begin{appendices}
+%     \include{chapters/app-attention}
+%     \include{chapters/app-memory}
+%     \include{chapters/app-planning}
+% \end{appendices}
 
 \clearpage
 \bibliography{references}
