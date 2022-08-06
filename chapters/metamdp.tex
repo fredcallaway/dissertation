@@ -27,17 +27,19 @@ In this chapter, I provide a formal description of the framework. The formalizat
 
 \begin{figure*}
   % \centering
-  \includegraphics[width=\textwidth]{figs/metamdp.pdf}
+  \includegraphics[width=0.5\textwidth,page=1,trim=0 100 150 50]{diagrams/metamdp.pdf}
+  \includegraphics[width=0.5\textwidth,page=2,trim=0 100 150 50]{diagrams/metamdp.pdf}
+  % \includegraphics[width=\textwidth]{figs/metamdp.pdf}
   \caption{\captiontitle{Meta-level Markov decision processes.}
   \subcap{A} A Markov decision process formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions that change the state of the world and generate rewards, which the agent seeks to maximize.
-  \subcap{B} A \emph{metalevel} Markov decision process formalizes the problem of \emph{deciding how to act} when computational resources are limited. The agent executes computations that update their belief state and incur computational cost. When the agent executes the termination operation $\bot$, they take an external action based on their current belief state.}
+  \subcap{B} A \emph{metalevel} Markov decision process formalizes the problem of thinking efficiently, navigating one's own internal environment. The agent executes computations that update their mental state and incur computational cost. When the agent executes the termination operation $\bot$, they take an action in the external environment and receive an external reward.}
   \label{fig:metamdp-diagram}
 \end{figure*}
 
 
 \section{Markov decision processes}
 
-A metalevel Markov decision process is an extension of a standard Markov decision process (MDP) illustrated in \Fig{fig:metamdp-diagram}{a}. Thus, we begin with a brief overview of standard MDPs. See \citet{sutton2018reinforcement} for a more thorough overview.
+A metalevel Markov decision process is an extension of a standard Markov decision process (MDP), illustrated in \Fig{fig:metamdp-diagram}{a}. Thus, we begin with a brief overview of standard MDPs. See \citet{sutton2018reinforcement} for a more thorough overview.
 
 MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T: \S \times \A \rightarrow \Delta(\S)$\footnotemark{} encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R: \S \times \A \rightarrow \R $ specifies the reward or utility for executing a given action in a given state. We additionally assume an initial state $s_0$ which the environment is initialized in and a set of terminal state $\S_\bot$ such that the episode ends when the agent reaches one of those states.
 
@@ -103,14 +105,15 @@ This concludes our brief overview of MDPs. We are now ready to describe metaleve
 
 % An important property of MDPs is that there is at least one deterministic \emph{optimal policy}; that is, there is a mapping from states to actions that, when followed, will produce the maximum possible return. 
 
-\section{Meta-level Markov decision processes}
+\section{Metalevel Markov decision processes}
 
 % The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
-Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, the states corresponded to beliefs (mental states) and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update beliefs, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
+Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, as illustrated in \Fig{fig:metamdp-diagram}{b}, the states corresponded to mental states and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update mental states, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
 
-Formally, we define a metalevel MDP by a set of beliefs $\M$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analagous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a metalevel MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-marginalized}, we can convert metalevel MDPs into equivalent MDPs by marginalizing over the world state.\footnote{This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:metamdp-pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.}
+Formally, we define a metalevel MDP by a set of mental states $\M$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analagous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a metalevel MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-marginalized}, we can convert metalevel MDPs into equivalent MDPs by marginalizing over the world state.\footnote{This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:metamdp-pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.}
 
+Section~\ref{sec:}
 
 % In the remainder of this chapter, we will describe the components of metalevel MDPs in greater detail, provide a simple example metalevel MDP, and discuss strategies for finding good metalevel policies.
 
