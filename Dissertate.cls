@@ -239,7 +239,7 @@
     colorlinks,
     citecolor=graylink,
     filecolor=black,
-    linkcolor=black,
+    linkcolor=SchoolColor,
     urlcolor=graylink,
 }
 
