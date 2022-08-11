@@ -120,7 +120,7 @@ This concludes our brief overview of MDPs. We are now ready to describe metaleve
 
 % An important property of MDPs is that there is at least one deterministic \emph{optimal policy}; that is, there is a mapping from states to actions that, when followed, will produce the maximum possible return. 
 
-\section{Metalevel Markov decision processes}
+\section{Metalevel Markov decision processes}\label{sec:metalevel-mdps}
 
 % The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
@@ -142,9 +142,9 @@ An action $a \in \A$ captures the external behavior the agent will engage in aft
 \subsection{Mental states}
 
 % \todo{maybe instead of m(w), use p_m(w)}
-A mental state $m \in \M$ captures the agent's internal state, as relevant to the task at hand. The interpretation of a mental state can vary from model to model. In some cases, they will correspond to \emph{beliefs}, that is, posterior distribution over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a posterior distribution over the utilities of the items in a choice set. More generally, mental states may correspond to \emph{representations} of the world or task. This interpretation is quite natural in Chapter~\ref{sec:planning}, where mental states correspond to partially constructed decision trees. Most generally, the mental state can capture arbitrary variables in a cognitive model. For example, in Chapter~\ref{sec:memory}, the mental state specifies the activation level of a memory.
+A mental state $m \in \M$ captures the agent's internal state, as relevant to the task at hand. The interpretation of a mental state can vary from model to model. In some cases, they will correspond to \emph{beliefs}, that is, posterior distribution over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a posterior distribution over the utilities of the items in a choice set. More generally, mental states may correspond to \emph{representations} of the world or task. This interpretation is quite natural in Chapter~\ref{sec:planning}, where mental states correspond to partially constructed decision trees. Most generally, the mental state can capture arbitrary variables in a cognitive model. For example, in Chapter~\ref{sec:memory}, the mental state specifies the activation level of a memory. 
 
-% In addition to specifying the set of possible mental states $\M$, one must additionally specify an initial mental state, $m_1$. 
+Analogously to standard MDPs, we additionally specify an initial mental state, $m_1$. This is the mental state the agent has at the beginning of each task instance. All metalevel MDPs have a single terminal state, which is only entered when computation is terminated (as described below).
 
 \subsection{Computations}
 A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that updates the mental state in much the same way as an object-level action changes the world state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
@@ -156,7 +156,7 @@ The transition function $T: \M \times \C \times \W \rightarrow \Delta(\M)$ descr
 \begin{equation}\label{eq:transition}
 m_{t+1} \sim t(m_t, c_t, w).
 \end{equation}
-Terminating computation (executing $\bot$) always transitions to a terminal state, $m_\bot$. That is,
+Terminating computation (executing $\bot$) always transitions to the terminal state, $m_\bot$. That is,
 %
 \begin{equation}
   T(m, \bot, w) = \Uniform(\{m_\bot\})
@@ -190,6 +190,7 @@ where $\pi\act: \M \rightarrow \Delta(\A)$ is an \emph{action selection policy} 
 
 Note that this type of termination reward can be also applied to sequential object-level problems by defining $\A$ as a set of abstract actions (or \emph{options}; \citealp{sutton1999mdps}) that correspond to sequences of concrete actions. This does require that all computation is executed before any object-level action is performed, but this constraint does not reduce performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems and \todo{conclusion} for a discussion of the problem of interleaved computation and action.
 
+\todo{remove $b_m$}
 Outside of decision-making contexts, the benefits of computation can take a broader form. For example, if one simply seeks to form accurate beliefs, the utility of a mental state could be the probability assigned to the true world state: $\utility(m, w) = b_m(w)$. Another general class defines a set of mental states as goal states $\M_{\mathrm{goal}} \subset \M$, with a positive reward associated with reaching a goal state,
 %
 \begin{equation}\label{eq:goal-term}
@@ -225,42 +226,127 @@ That is, it maximizes the expected return. In a metalevel MDP the return can be 
 \end{equation}
 This emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation. 
 
-Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In Section~\ref{sec:computing}, we discuss various strategies for tackling this problem. But first, we will discuss how metalevel MDPs can be converted to standard MDPs, an important step in many solution strategies. \todo{check this}
+Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In Section~\ref{sec:computing}, we discuss various strategies for tackling this problem. But first, we will discuss a special case of metalevel MDP that can be converted to standard MDPs, an important step in many solution strategies. \todo{check this}
 
 % In addition to being a solution to a metalevel MDP, we can also think of a policy as a cognitive model, one which makes predictions about the sequence of cognitive operations a person will perform when performing some task. If we make assumptions about how those cognitive operations generate process-tracing data, for example eye fixations (Chapter~\ref{sec:attention}) or mouse clicks (Chapter~\ref{sec:planning}), the policy (along with the transition function) corresponds to a likelihood model over those data. 
 
+\section{Two views of computation}
+
+So far, we have characterized computation as a process of executing mental actions that update an agent's internal state. These mental can be contrasted with external actions that update the state of the environment---but they are fundamentally the same type of thing. In the language of Hay (\citeyear{hay2016principles}; Chapter~7), this is the \emph{mechanical view} of computation. This view is non-restrictive; it is relatively easy to see how any algorithm or cognitive model one might concoct could be formalized in this way.
+
+An alterative view, the \emph{Bayesian view}, takes a stronger stance on the nature of computation. It formalizes computations as experiments that generate information about the world \citep{matheson1968economic}. The results of these experiments are synthesized, by Bayesian inference, into posterior distributions over the utility of different possible external actions, thus informing the agent's choice of which action to take. 
+
+It is worth emphasizing that this view is quite different from the standard Bayesian approach in cognitive science (e.g., \citealp{tenenbaum2011how}). While the standard approach treats cognition as a problem of drawing inferences given data, this view treats cognition as a problem of generating the data that drives inference. A closer analogue in cognitive science is found in models active learning \citep{gureckis2012selfdirected,gottlieb2013informationseeking}, but in that case, the data is assumed to be found in the world, rather than generated in the mind.\footnote{We further discuss links between metalevel MDPs and active learning in the \todo{conclusion}}
+
+Importantly, the two views are not mutually exclusive. They are often compatible interpretations of a single system. The mechanical model emphasizes the process of computation, while the Bayesian model emphasizes its function. In this way, the mechanical and Bayesian models are analogous to Marr's algorithmic and computational levels. Unlike in Marr's levels, however, adopting the Bayesian model is more than just an interpretation; it has practical consequences for what one can do with the model. Specifically, it puts constraints on the types of computation one can consider. All Bayesian metalevel MDPs have a mechanical interpretation, but not vice versa. On the other hand, adopting the Bayesian view has conceptual and technical advantages. 
+
+In the following section, we define Bayesian metalevel MDPs, as a special case of the general metalevel MDP framework outlined above.
+
+\section{Bayesian metalevel MDPs}
+
+Taking the Bayesian view amounts to putting a restriction on the set of mental states and the transition function. Specifically, the mental states must correspond to posterior distributions over the state, and the transition function must encode describe a Bayesian updating procedure. We detail these two requirements in turn.
+
+\subsection{Belief states}
+
+When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally, distributions over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a distribution over the utilities of the items in a choice set. We will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, we will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$.
+
+Mapping mental states to Bayesian beliefs is powerful because it provides a formal link between mental states and world states. For example, we can denote the probability of a world state under a belief state as $b_m(w) = \Pr(W = w \mid M = m)$.\footnote{%
+  For notational convenience, we assume in this chapter that $\W$ is countable. The definitions can easily be extended to the continous case.
+} Similarly, we can express expectations about functions of world state given the mental state as $\expectunder{f(w)}{w \sim b_m}$. This allows us to, for example, define an action policy that takes the optimal action given the current mental state,
+\begin{equation}
+  \pi\act(m) = \Uniform \left(\argmax_a \expectunder{U(w, a)}{w \sim b_m}\right).
+\end{equation}
+%
+To be more precise, this policy randomly selects one of the actions that has maximal expected utility given the mental state. This is the default action policy in a Bayesian metalevel MDP, meaning that it is one less choice we have to make as cognitive modelers.
+
+In the Bayesian view, the intial mental state $m_1$ has a special interpretation. It is the \emph{prior}, the distribution over the world state the agent assumes before performing any computation. By default, we will assume that this prior is accurate, i.e., $b_1(w) = \Pr(W=w)$. However, in Chapter~\ref{sec:attention}, we will need to assume some bias in the prior to fully capture human behavior. \todo{clarify bias}
+
+\subsection{Bayesian updating}
+
+In the Bayseian view, computations correspond to experiments that generate information about the world state; this information is then integrated into a belief by Bayesian inference. The transition function describes this process. Formally, each computation defines a state-dependent distribution of observations $p_c(o \mid w)$. Given the previous mental state $m_t$ and the observation $o_t$, the new mental state $m_{t+1}$ is defined such that
+%
+\begin{equation}\label{eq:bayes-update}
+  b_{t+1}(w) = p(w \mid m_t, o_t) = \frac{
+    p_c(o_t \mid w) b_t(w) 
+  }{
+    p(o_t \mid m_t, c_t)
+    % \displaystyle\sum_{w' \in \W} b_t(w') p_c(o_t \mid w')
+  },
+\end{equation}
+%
+where the second equality is the application of Bayes rule, updating the prior $b_t$ given the likelihood $p_c(o \mid w)$. The transition function describes the full process of sampling an observation and updating the belief accordingly. Denoting the update in Equation~\ref{eq:bayes-update} as ``bayes-update'', the full transition function is defined as
+%
+\begin{align}
+  o_t &\sim p_c(\cdot \mid w) \\
+  m_{t+1} &= \text{bayes-update}(m_t, o_t, p_c)
+\end{align}
+
+\subsection{Relation to partially observable Markov decision processes}\label{eq:metamdp-pomdp}
+
+For those who are familiar with the reinforcement learning and planning literatures, the equations above will likely look familiar. Specifically, they closely resemble the equations associated with belief updating in a partially observable Markov decision process (POMDP; \citealp{kaelbling1998planningb}). POMDPs are generalizations of MDPs where the agent does not know the state, but instead receives an observation conditional on the state and action at each time step: $o_t \sim O(s_{t+1}, a_t)$. Given these observations, the agent maintains a belief about the current state using a Bayesian update similar to Equation~\ref{eq:bayes-update}, but additionally accounting for the possibility that the state changes,
+%
+\begin{equation}\label{eq:pomdp-update}
+  b_{t+1}(s_{t+1}) = p(s_{t+1} \mid b_t, o_t) = \frac{
+    O(o_t \mid s_{t+1}, a_t) \displaystyle\sum_{s_t \in \S} T(s_{t+1} \mid s_t, a_t) b_t(s_t)
+  }{
+    p(o_t \mid b_t, a_t)
+  } 
+\end{equation}
+%
+
+Bayesian metalevel MDPs can thus be understood as the subset POMDPs in which the state never changes. In this case, the belief update reduces to
+\begin{equation}
+  b_{t+1}(s) =  
+  \frac{O(o_t \mid s, a_t) b_t(s)}{p(o_t \mid b_t, a_t)}
+\end{equation}
+which is exactly analogous to Equation~\ref{eq:bayes-update}.
+ % but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$
+Metalevel MDPs additionally require that all but one action yield strictly negative reward and that the remaining action, $\bot$, leads to a terminal state.
+
+Given that Bayesian metalevel MDPs are a special case of POMDPs, one might reasonably ask why one should bother with metalevel MDPs at all. Indeed, the POMDP framework is more general and more powerful than the metalevel MDP framework. But as many practitioners will tell you, this generality is a curse as well as a blessing; a method that can solve any arbitrary POMDP may not be well suited to solve your particular problem.\footnote{%
+  ``The best thing about POMDPs is that everything's a POMDP. But the worst thing about POMDPs is that everything's a POMDP.'' (Michael Littman, personal communication).
+} Focusing on the specific case defined by metalevel MDPs allows us to develop more targeted and efficient solution strategies. Furthermore, not all metalevel MDPs have a Bayesian interpretation. Although they can still be cast as a POMDP, the formulation is much less natural, as the roles of states and beliefs become muddied.\footnote{%
+  \todo{this needs work}
+  %  Is a decision tree really just a ``belief'' about the rewards at future states? Although it can be formalized this way, doing so obscures the intended semantics of the model, and it will become increasingly difficult as one adopts an increasingly precise model of the actual computation involved. 
+  It is especially difficult outside of decision-making contexts, where the termination reward depends directly on the mental state (not on an action selected based on that mental state). In this case, the mental state $m$ must be part of the \emph{state} of the POMDP, rather than the belief. However, if we want to have a consistent framework, we would then need to model $m$ as part of the state in the fully Bayesian cases as well. This would result in very unnatural model specifications, and it would lose much of the appeal of using the POMDP framework in the first place (e.g., using Equation~\ref{eq:pomdp-update} to define the belief update).
+} Thus, metalevel MDPs can be viewed as special cases of POMDPs, and they draw on many of the same ideas as POMDPs. However, for both conceptual and technical reasons, metalevel MDPs may be a more useful framework for modeling the specific kind of sequential decision problem posed by cognition.
+
+Nevertheless, noting the formal similarities between Bayesian metalevel MDPs and POMDPs allows us to take advantage of a powerful tool from the POMDP literature. Specifically, we can draw on the the concept of \emph{belief MDPs} \citep{kaelbling1998planningb} to convert a Bayesian metalevel MDP into an equivalent MDP, where the world state has been marginalized out. We refer to this as the ``marginalized'' metalevel MDP.\footnote{We don't just call them ``belief metalevel MDPs'' because the state still corresponds to a mental state, which can function as more than just a belief state (see Section~\ref{sec:marginal-mechanical}).}
 
 \section{Marginalized metalevel MDPs}\label{sec:metamdp-marginalized}
 
-Although metalevel MDPs have the same basic structure as an MDP, they are distinct in that the transition and reward functions depend on a world state, $w$, that is unknown to the agent. One unfortunate consequence of this difference is that many of the standard tools for finding optimal policies of MDPs cannot be directly applied. Fortunately, when certain requirements are met, one can convert a metalevel MDP into a standard MDP by marginalizing the world state out of the transition and reward functions.
+As observed by \citet{kaelbling1998planningb}, it is possible to convert a POMDP into an MDP by defining modified transition and reward functions that take beliefs (rather than states) as input and return expected transition probabilities and rewards, marginalizing over the state of the world. This is desirable because it allows one to identify the optimal policy for a POMDP using tools developed to solve MDPs. As outlined below, we can apply a similar strategy to metalevel MDPs. Specifically, we define versions of the reward and transition functions that do not depend on the world state. Together with the set of mental states $\M$ and computational ``actions'' $\C$, this yields a standard MDP. We define the marginalized transition and reward functions below.
 
-In the following sections we define the marginal transition and reward functions, providing analytic expressions when possible. We then specify the sufficient-statistic constraint necessary for the transformation to be correct.
+% Although metalevel MDPs have the same basic structure as an MDP, they are distinct in that the transition and reward functions depend on a world state, $w$, that is unknown to the agent. One unfortunate consequence of this difference is that many of the standard tools for finding optimal policies of MDPs cannot be directly applied. Fortunately, when certain requirements are met, one can convert a metalevel MDP into a standard MDP by marginalizing the world state out of the transition and reward functions.
+
+% In the following sections we define the marginal transition and reward functions, providing analytic expressions when possible. We then specify the sufficient-statistic constraint necessary for the transformation to be correct.
 
 \subsection{Marginal transition function}
-The marginal transition function $T: \M \times \C \rightarrow \Delta(\M)$ can be defined easily in generative form:
+The marginal transition function $T: \M \times \C \rightarrow \Delta(\M)$ is most easily defined in generative form:
 %
 \begin{equation}
 \begin{aligned}
-  w &\sim b_{m_t}\\
+  w &\sim b_t\\
   m_{t+1} &\sim T(m_t, c_t, w).
 \end{aligned}
 \end{equation}
 %
-One simply samples the world state from the belief before applying the transition dynamics. This is sufficient to sample from $T(m, c)$. However, we will often need an explicit probability mass function, which is defined as
+One simply samples the world state from the belief before applying the transition dynamics. This is sufficient to sample from $T(m, c)$. However, we will often need an explicit probability mass function. This is defined as
 %
-\begin{equation}
-T(m_{t+1} \mid m_t, c_t) = \expectunder{T(m_{t+1} \mid m_t, c_t, w)}{w \sim b_{m_t}}.
+\begin{equation}\label{eq:marginal-transition}
+T(m_{t+1} \mid m_t, c_t) = \expectunder{T(m_{t+1} \mid m_t, c_t, w)}{w \sim b_t}.
 \end{equation}
 This expression cannot be simplified in the general case. In practice, we will work with Gaussian or discrete beliefs that make this integration tractable.
 
 \subsection{Marginal reward function}
+
 The marginal reward function $R: \M \times \C \rightarrow \R$ is defined as
 %
 \begin{equation}
 R(m, c) = \expectunder{R(m, c, w)}{w \sim b_m}.
 \end{equation}
 %
-For $c \neq \bot$, $R(m, c, w)$ does not depend on $w$, and we have simply
+For $c \neq \bot$, $R(m, c, w)$ does not depend on $w$; we thus have:
 %
 \begin{equation}
   R(m, c) = -\text{cost}(m, c).
@@ -277,7 +363,7 @@ In the decision-making context (Equation~\ref{eq:term-reward}), this marginaliza
   R(m, \bot) = \max_a \expectunder{U(w, a)}{w \sim b_m}.
 \end{equation}
 %
-Intuitively, if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (i.e., $b_m(w) = \Pr(W = w \mid M = m)$), the subjective and objective expectations are one and the same. We can show this more formally in the case where $\pi\act$ returns a single object-level action with maximal expected utility:
+Intuitively, if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in the case where $\pi\act$ returns a single object-level action with maximal expected utility:
 \begin{equation}
 \begin{aligned}
 R(m, \bot)
@@ -306,24 +392,41 @@ where $f(a)$ is $\expectunder{U(w, a)}{w \sim b_m}$. It is not difficult to see 
 
 Outside of a decision-making context, we will only consider goal-based belief utility functions (Equation~\ref{eq:goal-term}), which do not depend on the world state. In the general case, one would have to derive a model-specific expression for Equation~\ref{eq:marginal-term}, just as one must do for the transition function.
 
-\subsection{Sufficient statistic requirement}\label{sec:metamdp-sufficient}
+\subsection{Marginalizing mechanical metalevel MDPs}\label{sec:marginal-mechanical}
 
-As briefly mentioned above, marginalizing a metalevel MDP is only possible when the mental state is a sufficient statistic for the full history of mental states and computations with respect to the world state. Formally, we must have that
-%
+Being able to marginalize a metalevel MDP model is very desirable, as it allows us to use general MDP-solving techniques to identify optimal metalvel policies (Section~\ref{sec:computing}). But if marginalization is only possible for Bayesian metalevel MDPs, this would limit our ability to use the more general mechanical definition (Section~\ref{sec:metalevel-mdps}). Fortunately, marginalization is sometimes still possible when we are not taking the Bayesian view. Inspecting Equations~\ref{eq:marginal-transition} and ~\ref{eq:marginal-term}, we see that computing the marginalized transition and reward functions simply requires taking an expectation over the world state with respect to the belief state. Thus, as long as we can define a belief state associated with any mental state, we can apply the marginalization. However, for the marginalization to result in a valid MDP that is truly equivalent to the original metalevel MDP, the belief state must satisfy two conditions: it must be \emph{accurate} and \emph{complete}.
+
+The accuracy requirement is relatively straightforward. It simply states that the probability the belief state $b_m$ assigns to a world state $w$ is the actual probability that the world is in state $w$ given that you arrived in mental state $m$. Formally, accuracy requires that
+\begin{equation}\label{eq:belief-accuracy}
+  b_t(w) = p(w \mid m_t) = \Pr(W = w \mid M_t = m_t).
+\end{equation}
+It is easy to see why this property is necessary. If one computes the marginal transition and reward functions given incorrect assumptions about the world state, those functions will also be incorrect.
+
+In principle, accuracy requirement does not impose any retrictions on the metalevel MDP. It can always be satisfied by defining the belief state using Bayes' rule,
+\begin{equation}
+  b_t(w) = \frac{p(m_t \mid w) p(w)}{p(m_t)}.
+\end{equation}
+In practice, however, one must specify the mental state in such a way that these probabilities can be computed very quickly.
+
+The completness requirement is more nuanced, and restrictive. It requires that the belief state contain all the information about the world state that it could possibly have, given the full history of the episode up to that time point. Formally, completeness requires that
+\begin{equation}\label{eq:belief-completeness}
+  b_t(w) = p(w \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
+\end{equation}
+Combining Equations~\ref{eq:belief-accuracy} and~\ref{eq:belief-completeness}, we can restate the completeness requirement purely in terms of the mental state:
 \begin{equation}\label{eq:sufficient}
   p(w \mid m_t) = p(w \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
 \end{equation}
-%
-where $\vec{m}_{1:t}$ is the complete history of mental states. To see why this property is necessary, note that Markov decision processes must satisfy the Markov property. That is, the probability of the next state must depend only on the current state and action; formally,
+This imposes a true constraint on the metalevel MDPs we can marginalize. Specifically, Equation~\ref{eq:belief-completeness} says that the mental state must be a \emph{sufficient statistic} for the full history of mental states and computations with respect to the world state. To see why this property is necessary, note that Markov decision processes must satisfy the Markov property. That is, the probability of the next state must depend only on the current state and action; formally,
 \begin{equation}\label{eq:markov}
   p(m_{t+1} \mid m_t, c_t) = p(m_t \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
 \end{equation}
+We will now show that this property implies Equation~\ref{eq:sufficient}.
 Making explicit the marginalization over $w$ on each side of the equation, we have
 \begin{equation}
   \sum_w p(m_{t+1} \mid m_t, c_t, w) p(w \mid m_t, c_t) =
   \sum_w p(m_{t+1} \mid \vec{m}_{1:t}, \vec{c}_{1:t}, w) p(w \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
 \end{equation}
-Next we note that $p(m_{t+1} \mid \vec{m}_{1:t}, \vec{c}_{1:t}), w) = p(m_{t+1} \mid m_t, c_t, w) = T(m_{t+1} \mid m_t, c_t, w)$ by Equation~\ref{eq:transition}. That is, the full (non-marginalized) transition function satisfies the Markov property. This gives us
+Next we note that $p(m_{t+1} \mid \vec{m}_{1:t}, \vec{c}_{1:t}, w) = p(m_{t+1} \mid m_t, c_t, w) = T(m_{t+1} \mid m_t, c_t, w)$ by Equation~\ref{eq:transition}. That is, the full (non-marginalized) transition function satisfies the Markov property. This gives us
 \begin{equation}
   \sum_w T(m_{t+1} \mid m_t, c_t, w) p(w \mid m_t, c_t) =
   \sum_w T(m_{t+1} \mid m_t, c_t, w) p(w \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
@@ -336,38 +439,6 @@ And from this it is clear that
 %
 Finally, noting that $p(w \mid m_t, c_t) = p(w \mid m_t)$, we arrive at Equation~\ref{eq:sufficient}. Thus, the Markov property (Equation~\ref{eq:markov}) implies the sufficiency of the mental state (Equation~\ref{eq:sufficient}), meaning that we cannot have the Markov property without ensuring that the mental state is a sufficient statistic. This in turn means that the marginalized metalevel MDP can only be a \emph{Markov} decision process if the mental state is a sufficient statistic.
 
-\subsection{Relation to partially observable Markov decision processes}\label{eq:metamdp-pomdp}
-
-
-Partially observable Markov decision process (POMDPs; \citealp{kaelbling1998planningb}) are generalizations of MDPs where the agent does not know the state, but instead receives an observation conditional on the state and action at each time step: $o_t \sim O(s_{t+1}, a_t)$. Given these observations, the agent maintains a belief about the current state using a Bayesian update similar to Equation~\ref{eq:bayes-update} but additionally accounting for the possibility that the state changes,
-%
-\begin{equation}\label{eq:pomdp-update}
-  b_{t+1}(s_{t+1}) = p(s_{t+1} \mid b_t, o_t) = \frac{
-    O(o_t \mid s_{t+1}, a_t) \displaystyle\sum_{s_t \in \S} T(s_{t+1} \mid s_t, a_t) b_t(s_t)
-  }{
-    p(o_t \mid b_t, a_t)
-  } 
-\end{equation}
-%
-
-Metalevel MDPs that fully adopt the Bayesian interpretation of beliefs can be understood as a constrained form of a POMDP in which the state never changes. In this case, the belief update reduces to
-\begin{equation}
-  b_{t+1}(s) =  
-  \frac{O(o_t \mid s, a_t) b_t(s)}{p(o_t \mid b_t, a_t)}
-\end{equation}
-which is exactly analogous to Equation~\ref{eq:bayes-update}.
- % but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$
-Metalevel MDPs additionally require that all but one action yield strictly negative reward and that the remaining action, $\bot$, leads to a terminal state.
-
-When adopting the mechanical view, this interpretation is less natural. Is a decision tree really just a ``belief'' about the rewards at future states? Although it can be formalized this way, doing so obscures the intended semantics of the model, and it will become increasingly difficult as one adopts an increasingly precise model of the actual computation involved. This becomes especially problematic outside of decision-making contexts, where the termination reward depends directly on the mental state (not on an action selected based on that mental state). In this case, the mental state $m$ must be part of the \emph{state} of the POMDP, rather than the belief. However, if we want to have a consistent framework, we would then need to model $m$ as part of the state in the fully Bayesian cases as well. This would result in very unnatural model specifications, and it would lose much of the appeal of using the POMDP framework in the first place (e.g., using Equation~\ref{eq:pomdp-update} to define the belief update).
-
-The POMDP framework is more general and more powerful than the metalevel MDP. But as many practitioners will tell you, this generality is a curse as well as a blessing; a method that can solve any arbitrary POMDP may not be well suited to solve your particular problem.\footnote{%
-  ``The best thing about POMDPs is that everything's a POMDP. But the worst thing about POMDPs is that everything's a POMDP.'' (Michael Littman, personal communication).
-} Focusing on the specific case defined by metalevel MDPs allows us to develop more targeted and efficient solution strategies.
-
-Thus, metalevel MDPs can be viewed as special cases of POMDPs, and they draw on many of the same ideas as POMDPs. However, for both conceptual and technical reasons, metalevel MDPs may be a more useful framework for modeling the specific kind of sequential decision problem posed by cognition.
-
-\todo{This section could be moved to the conclusion. Especially the second half feels more reflective than introductory.}
 
 \section{Identifying good metalevel policies}\label{sec:computing}
 
@@ -527,9 +598,11 @@ The minimum VOI is simply the value of information produced by the first computa
   \VOImy(b,c) =  \VOI(T(b, c)) = \expectunder{R(b', \bot)}{b' \sim T(b, c)}.
 \end{equation*}
 
-The maximum VOI is the value of full, or ``perfect'' information \citep{howard1966information}. In this case, each of the possible future beliefs assigns all probability to a single world state; we denote such a belief as $b^*_w = \Uniform(\{w\})$.\footnote{%
-  For notational clarity, we assume countable world states. For continuous world states, $b^*_w$ takes the form of a Dirac delta.
-} The distribution over these beliefs, $B^*_b$ is defined $\Pr(B^*_b = b^*_w ) = b(w)$. Intuitively, the subjective probability of coming to the belief that assigns all probability to state $w$ is equal to the subjective probability that $w$ is in fact the true world state. We can then define the value of full information as
+The maximum VOI is the value of full, or ``perfect'' information \citep{howard1966information}. In this case, each of the possible future beliefs assigns all probability to a single world state; we denote such a belief as $b^*_w = \Uniform(\{w\})$.
+% \footnote{%
+%   For notational clarity, we assume countable world states. For continuous world states, $b^*_w$ takes the form of a Dirac delta.
+% } 
+The distribution over these beliefs, $B^*_b$ is defined $\Pr(B^*_b = b^*_w ) = b(w)$. Intuitively, the subjective probability of coming to the belief that assigns all probability to state $w$ is equal to the subjective probability that $w$ is in fact the true world state. We can then define the value of full information as
 \begin{equation}
   \VPI(b) = \VOI(B^*_b) = \expectunder{R(b^*_w, \bot)}{w \sim b}
 \end{equation}
