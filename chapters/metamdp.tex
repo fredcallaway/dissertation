@@ -136,9 +136,6 @@ A world state $w \in \W$ captures the state of the world that is relevant to the
 
 \todo{Is the memory strength really a ``world'' state?}
 
-\subsection{Actions}
-An action $a \in \A$ captures the external behavior the agent will engage in after computation. For example, \todo{...} 
-
 \subsection{Mental states}
 
 % \todo{maybe instead of m(w), use p_m(w)}
@@ -180,7 +177,9 @@ The benefits of computation are captured by the reward for the termination opera
 %
 where $U(w, a)$ specifies the utility of executing action $a$ in the world state $w$ and $\pi\act$ is an \emph{action selection policy} that chooses an action to take based on the current mental state. This policy should be very simple. That is, the mental state should contain sufficient information to choose an action without much additional computation.
 
-Note that this type of termination reward can be also applied to sequential problems (those that require executing multiple external actions) by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}). This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems and \todo{conclusion} for a discussion of the problem of interleaved computation and action.
+This definition may appear to constrain us to simple one-shot decision-making tasks. However, it is not as restrictive as it first appears. For example, in Chapter~\ref{sec:planning}, we model a planning task by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}).\footnote{
+  This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See \todo{conclusion} for a discussion of the problem of interleaved computation and action.
+} In Chapter~\ref{sec:memory}, we model a memory recall task by assuming that $\pi\act$ can only perform the ``recall'' action when the activation of a memory exceeds a threshold.
 
 \section{Metalevel policies}\label{sec:metamdp-policy}
 
@@ -198,7 +197,8 @@ How should we determine this policy? The classical cognitive modeling approach i
 That is, it maximizes the expected return. In a metalevel MDP the return can be broken down into two components capturing the costs and benefits of computation,
 \begin{equation}
   \pi^* = \argmax_\pi \expect{
-    \utility(m_{\tmax}, w) - \sum_{t=1}^{\tmax-1} \cost(m_t, c_t)
+    \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)} -
+      \sum_{t=1}^{\tmax-1} \cost(m_t, c_t)
   }{
     c_t \sim \pi(m_t)
   }.
@@ -330,23 +330,17 @@ For $c \neq \bot$, $R(m, c, w)$ does not depend on $w$; we thus have:
 \begin{equation}
   R(m, c) = -\text{cost}(m, c).
 \end{equation}
-The reward for terminating, however, may depend on the state of the world; we must marginalize it out:
+The reward for terminating, however, may depend on the state of the world; we must marginalize it out. This results in:
 %
 \begin{equation}\label{eq:marginal-term}
-  R(m, \bot) = \expectunder{\utility(m, w)}{w \sim b_m}.
-\end{equation}
-%
-In the decision-making context (Equation~\ref{eq:term-reward}), this marginalization is straightforward. The utility of a belief is simply the maximal expected utility of any action given that belief. 
-%
-\begin{equation}\label{eq:marginal-term-decision}
   R(m, \bot) = \max_a \expectunder{U(w, a)}{w \sim b_m}.
 \end{equation}
 %
-Intuitively, if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in the case where $\pi\act$ returns a single action with maximal expected utility:
+That is, the marginal termination reward is simply the maximal expected utility of any action. Although this may seem counter-intuitive, there is a simple intuition: if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in a simplified case where $\pi\act$ returns a single action with maximal expected utility:
 \begin{equation}
 \begin{aligned}
 R(m, \bot)
-&= \expectunder{\utility(m, w)}{w \sim b_m} \\
+&= \expectunder{R(m, \bot, w)}{w \sim b_m} \\
 &= \expectunder{U(w, \pi\act(m))}{w \sim b_m} \\
 &= \expectunder{U\left(w,\, \argmax_a \expectunder{U(w', a)}{w' \sim b_m}\right)}{w \sim b_m} \\
 &= \max_a \expectunder{U(w, a)}{w \sim b_m}
@@ -362,14 +356,6 @@ The final line follows from
 \end{math}
 %
 where $f(a)$ is $\expectunder{U(w, a)}{w \sim b_m}$. It is not difficult to see how this logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.
-
-% &= \expectunder{\expectunder{U\left(w, a\right)}{a \sim \pi\act(m)}}{w \sim b_m} \\
-% &= \expectunder{
-%   \frac{1}{N}\sum_{a \in \argmax_a \expectunder{U(w', a)}{w' \sim b_m}} U(w, a)
-% }{w \sim b_m} \\
-
-
-Outside of a decision-making context, we will only consider goal-based belief utility functions (Equation~\ref{eq:goal-term}), which do not depend on the world state. In the general case, one would have to derive a model-specific expression for Equation~\ref{eq:marginal-term}, just as one must do for the transition function.
 
 \subsection{Marginalizing mechanical metalevel MDPs}\label{sec:marginal-mechanical}
 
@@ -534,7 +520,7 @@ All of the strategies we have discussed so far are \emph{model-based}. That is, 
 
 Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging. Indeed, as we show in Appendix~\ref{TODO}, off-the-shelf deep learning methods can perform quite poorly.
 
-The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles} in a decision-making context. Specially, BMPS draws on work quantifying the \emph{value of information} (VOI) generated by computation. 
+The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles}. Specially, BMPS draws on work quantifying the \emph{value of information} (VOI) generated by computation. 
 
 \subsection{The value of information}
 
@@ -543,7 +529,7 @@ VOI is defined as the expected utility of a decision you could make based on tha
 \begin{equation}
   \VOI(b) = R(b, \bot) = \max_a \expectunder{U(w, a)}{w \sim b},
 \end{equation}
-using the decision-making termination reward defined in Equation~\ref{eq:marginal-term-decision}. Note that VOI can only be used when taking the Bayesian view of computation; therefore, we will not distinguish between mental states and beliefs, using $b$ for both.
+using the termination reward defined in Equation~\ref{eq:marginal-term-decision}. Note that VOI can only be used when taking the Bayesian view of computation; therefore, we will not distinguish between mental states and beliefs, using $b$ for both.
 
 VOI theory is interested in quantifying the value of information that \emph{we don't have yet}. More precisely, VOI quantifies the expected value of a belief state we will have after gathering more information. Given a distribution of possible future belief states, $B'$, the VOI is defined as
 %
