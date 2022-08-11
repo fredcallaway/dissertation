@@ -15,8 +15,6 @@ We must be prepared to accept the possibility that what we call ``the environmen
 
 % in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
-\todo{Define object-level?}
-
 In this chapter, I provide a formal description of the framework. The formalization presented here is an adaptation from the framework as proposed in \citet{hay2016principles}. We have modified the framework somewhat to better facilitate the specification of cognitive models.
 
 % We begin by introducing Markov decision processes (MDPs). Next, we define metalevel MDPs as extensions of standard MDPs. Finally, we define a specific metalevel MDP model for multi-attribute decision-making, which we will employ in our experimental case studies.
@@ -136,6 +134,8 @@ Formally, we define a metalevel MDP by a set of mental states $\M$, a set of com
 \subsection{World states}
 A world state $w \in \W$ captures the state of the world that is relevant to the agent's current task. For example, in a decision-making task, the world state might define the utility of the various actions available to the agent (as in Chapter~\ref{sec:attention}). In a memory task, the world state might correspond to the strength of the memory that the agent is trying to recall (Chapter~\ref{sec:memory}). Importantly, the agent does not have direct access to the world state, but must infer it from the outcome of computations they perform. Formally, the world state includes any information that is not known to the agent, but affects either the reward or transition functions.
 
+\todo{Is the memory strength really a ``world'' state?}
+
 \subsection{Actions}
 An action $a \in \A$ captures the external behavior the agent will engage in after computation. For example, \todo{...} 
 
@@ -147,9 +147,9 @@ A mental state $m \in \M$ captures the agent's internal state, as relevant to th
 Analogously to standard MDPs, we additionally specify an initial mental state, $m_1$. This is the mental state the agent has at the beginning of each task instance. All metalevel MDPs have a single terminal state, which is only entered when computation is terminated (as described below).
 
 \subsection{Computations}
-A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that updates the mental state in much the same way as an object-level action changes the world state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
+A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that updates the mental state in much the same way as an external action changes the world state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
-All metalevel MDPs include a special computation, the termination operation $\bot$, which indicates that computation should be terminated. In a decision-making context, this results in an external action being selected, specifically, the one that has maximal expected utility given the current mental state. In other contexts (e.g. memory recall in Chapter~\ref{sec:memory}), it may correspond to giving up on a cognitively demanding task. In either case, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$.
+All metalevel MDPs include a special computation, the termination operation $\bot$, which indicates that computation should be terminated. Upon termination, the agent performs an external action, specifically the action that has maximal expected utility given the current mental state. Thus, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$.
 
 \subsection{Transition function}
 The transition function $T: \M \times \C \times \W \rightarrow \Delta(\M)$ describes how computation updates mental states. Formally, $T(m, c, w)$ is a distribution of possible new mental states that would result from performing a computation $c$ in mental state $m$ when the true state of the world is $w$. At each time step, the next mental state is sampled from this distribution:
@@ -171,37 +171,16 @@ R(m, c, w) = -\cost(m, c) \text{ for } c \neq \bot.
 %
 We assume that the cost of a computation can depend on the current mental state (e.g., to model switching costs in Chapter~\ref{sec:attention}) but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world). The simplest choice is to assume a constant cost for each computation executed.
 
-Intuitively, the benefit of computation is that it yields more useful mental states, those that allow us to behave more effectively in the world. The benefit of computation is thus captured by the reward for the termination operation $\bot$,
+The benefits of computation are captured by the reward for the termination operation $R(m, \bot, w)$. Intuitively, the benefit of computation is that it allows one to take better actions in the world. Formally, the reward for termination is defined as the utility of the external action that the agent would execute given the current mental state,
 %
 \begin{equation}
-  R(m, \bot, w) = \utility(m, w),
+  R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
+  % R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
 \end{equation}
 %
-where $\utility(m, w)$ describes how ``good'' the belief is, given the true state of the world. What ``good'' means depends on the type of cognitive process one is modeling. 
+where $U(w, a)$ specifies the utility of executing action $a$ in the world state $w$ and $\pi\act$ is an \emph{action selection policy} that chooses an action to take based on the current mental state. This policy should be very simple. That is, the mental state should contain sufficient information to choose an action without much additional computation.
 
-In a decision-making context (Chapters~\ref{sec:attention} and~\ref{sec:planning}), terminating computation corresponds to selecting an object-level action $a \in \A$ to execute in the world. A good mental state is one that leads one to choose a good action. Formally, the reward for termination is defined as the true utility of the external action that the agent would execute given the current belief. Letting $U(w, a)$ denote the object-level utility of executing action $a$ in the world state $w$, we have
-%
-\begin{equation}\label{eq:term-reward}
-% \utility(m, w) = U\left(w, \pi\act(m)\right).
-\utility(m, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)}.
-\end{equation}
-%
-where $\pi\act: \M \rightarrow \Delta(\A)$ is an \emph{action selection policy} that chooses an action to take based on the current mental state. Conceptually, we assume that this policy is very simple. That is, the mental state should contain sufficient information to quickly choose an action (i.e., without much additional computation). \todo{maybe define action selection in mental state?}
-
-Note that this type of termination reward can be also applied to sequential object-level problems by defining $\A$ as a set of abstract actions (or \emph{options}; \citealp{sutton1999mdps}) that correspond to sequences of concrete actions. This does require that all computation is executed before any object-level action is performed, but this constraint does not reduce performance when the object-level transition function is deterministic. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems and \todo{conclusion} for a discussion of the problem of interleaved computation and action.
-
-\todo{remove $b_m$}
-Outside of decision-making contexts, the benefits of computation can take a broader form. For example, if one simply seeks to form accurate beliefs, the utility of a mental state could be the probability assigned to the true world state: $\utility(m, w) = b_m(w)$. Another general class defines a set of mental states as goal states $\M_{\mathrm{goal}} \subset \M$, with a positive reward associated with reaching a goal state,
-%
-\begin{equation}\label{eq:goal-term}
-  \utility(m, w) = \begin{cases}
-    1 &\text{if } m \in \mathcal{M}_{\mathrm{goal}} \\
-    0 &\text{otherwise}
-  \end{cases}
-\end{equation}
-%
-We assume that the policy always terminates in a goal state, as any reasonable policy would do. We will see an example of this type of termination reward in Chapter~\ref{sec:memory}, where a positive reward is associated with reaching a mental state where the activation of a memory exceeds a recall threshold.
-
+Note that this type of termination reward can be also applied to sequential problems (those that require executing multiple external actions) by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}). This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See Chapter~\ref{sec:planning} for an application to deterministic sequential problems and \todo{conclusion} for a discussion of the problem of interleaved computation and action.
 
 \section{Metalevel policies}\label{sec:metamdp-policy}
 
@@ -363,7 +342,7 @@ In the decision-making context (Equation~\ref{eq:term-reward}), this marginaliza
   R(m, \bot) = \max_a \expectunder{U(w, a)}{w \sim b_m}.
 \end{equation}
 %
-Intuitively, if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in the case where $\pi\act$ returns a single object-level action with maximal expected utility:
+Intuitively, if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in the case where $\pi\act$ returns a single action with maximal expected utility:
 \begin{equation}
 \begin{aligned}
 R(m, \bot)
@@ -542,9 +521,9 @@ When applying this strategy, one need not (and generally should not) actually co
 %   It is tempting to conclude that the directed cognition policy is strictly better than the myopic policy because it makes what appears to be a weaker assumption about the future. However, this is not the case. The reason for this is that the directed cognition policy will sometimes 
 % }
 
-\citet{hay2012selecting} proposed another solution to the early stopping problem, the \emph{blinkered approximation}. Like directed cognition, the blinkered approximation engages in a sort of lookahead that reduces the flexibility in choosing future computations. Unlike directed cognition, however, the blinkered approximation takes into account the fact that it can choose to adjust its plan based on the outcome of each computation. Glossing over details, the value of a computation is approximated by its value in a smaller metalevel MDP that includes only the computations that reason about the expected return of the corresponding object-level action. In this way, the solution to a large metalevel MDP is approximated by the composition of solutions to many smaller metalevel MDPs. 
+\citet{hay2012selecting} proposed another solution to the early stopping problem, the \emph{blinkered approximation}. Like directed cognition, the blinkered approximation engages in a sort of lookahead that reduces the flexibility in choosing future computations. Unlike directed cognition, however, the blinkered approximation takes into account the fact that it can choose to adjust its plan based on the outcome of each computation. Glossing over details, the value of a computation is approximated by its value in a smaller metalevel MDP that includes only the computations that reason about the expected return of the corresponding external action. In this way, the solution to a large metalevel MDP is approximated by the composition of solutions to many smaller metalevel MDPs. 
 
-Unlike directed cognition, the blinkered approximation is strictly better than the myopic policy. However it can only be applied in cases where a small number of computations are relevant to each action. And even then, it cannot account for the synergistic value of learning about multiple object-level actions. 
+Unlike directed cognition, the blinkered approximation is strictly better than the myopic policy. However it can only be applied in cases where a small number of computations are relevant to each action. And even then, it cannot account for the synergistic value of learning about multiple external actions. 
 
 \separator
 
