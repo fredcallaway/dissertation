@@ -24,20 +24,18 @@ In this chapter, I provide a formal description of the framework. The formalizat
 % We begin by describing, in intuitive terms, how the framework can be applied to model multi-attribute decision-making. Next, we will formally define metalevel MDPs. Finally, we will return to the multi-attribute decision-making case, showing how the formalism can be applied to a specific case.
 
 \begin{figure*}
-  % \centering
-  \includegraphics[width=0.5\textwidth,page=1,trim=0 100 150 50]{diagrams/metamdp.pdf}
-  \includegraphics[width=0.5\textwidth,page=2,trim=0 100 150 50]{diagrams/metamdp.pdf}
-  % \includegraphics[width=\textwidth]{figs/metamdp.pdf}
-  \caption{\captiontitle{Meta-level Markov decision processes.}
-  \subcap{A} A Markov decision process formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions that change the state of the world and generate rewards, which the agent seeks to maximize.
-  \subcap{B} A \emph{metalevel} Markov decision process formalizes the problem of thinking efficiently, navigating one's own internal environment. The agent executes computations that update their mental state and incur computational cost. When the agent executes the termination operation $\bot$, they take an action in the external environment and receive an external reward.}
-  \label{fig:metamdp-diagram}
+  \centering
+  \includegraphics[width=0.8\textwidth,page=1,trim=0 100 0 200]{diagrams/metamdp.pdf}
+  \caption{%
+  \captiontitle{Markov decision processes.} A Markov decision process (MDP) formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions (squares) that change the state of the world (circles) and generate rewards (diamonds), which the agent seeks to maximize. The arrows indicate direct causality; thus, the reward and state at each time step depend only on the state and action at the previous time step, and the agent selects an action based only on the current state. The dotted arrow indicates the elided sequence of states between the first and last two.
+  }
+  \label{fig:mdp-diagram}
 \end{figure*}
 
 
 \section{Markov decision processes}
 
-A metalevel Markov decision process is an extension of a standard Markov decision process (MDP), illustrated in \figref{fig:metamdp-diagram}{a}. Thus, we begin with a brief overview of standard MDPs. See \citet{puterman2014markov} and \citet{sutton2018reinforcement} more thorough overviews.
+A metalevel Markov decision process is an extension of a standard Markov decision process (MDP), illustrated in \figref{fig:mdp-diagram}{}. Thus, we begin with a brief overview of standard MDPs. See \citet{puterman2014markov} and \citet{sutton2018reinforcement} more thorough overviews.
 
 MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T: \S \times \A \rightarrow \Delta(\S)$\footnotemark{} encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R: \S \times \A \rightarrow \R $ specifies the reward or utility for executing a given action in a given state. We additionally assume an initial state $s_1$ that the environment is initialized in and a set of terminal state $\S_\bot$ such that the episode ends when the agent reaches one of those states. An \emph{episode} describes one interaction between the agent and the environment (beginning in the initial state and ending in a terminal state).
 
@@ -97,7 +95,7 @@ The value functions for the optimal policy are called the optimal value function
   \end{aligned}
 \end{equation}
 
-Putting aside for now the problem of identifying the these functions, the optimal policy, or more specifically the can be defined as simply
+Putting aside for now the problem of identifying these functions, the optimal policy can be defined as simply
 %
 \begin{equation}\label{eq:argmaxQ}
   \pi^*(s) = \Uniform\left(\argmax_a Q^*(s, a)\right).
@@ -118,42 +116,69 @@ This concludes our brief overview of MDPs. We are now ready to describe metaleve
 
 % An important property of MDPs is that there is at least one deterministic \emph{optimal policy}; that is, there is a mapping from states to actions that, when followed, will produce the maximum possible return. 
 
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.8\textwidth,page=2,trim=0 100 0 50]{diagrams/metamdp.pdf}
+  % \includegraphics[width=\textwidth]{figs/metamdp.pdf}
+  \caption{\emph{Metalevel Markov decision processes}. A metalevel MDP formalizes the problem of thinking efficiently within one's own internal mental environment. The agent executes computations that update their mental state and incur cognitive cost. When the agent executes the termination operation $\bot$, they take an action in the external environment and receive an external reward. The elements that capture the external environment are indicated in blue. These formally distinguish metalevel MDPs from standard MDPs.
+  }
+  \label{fig:metamdp-diagram}
+\end{figure*}
+
+
+
 \section{Metalevel Markov decision processes}\label{sec:metalevel-mdps}
 
 % The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
 
-Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, as illustrated in \figref{fig:metamdp-diagram}{b}, the states corresponded to mental states, and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update mental states, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
+Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, as illustrated in \figref{fig:metamdp-diagram}{}, the states corresponded to mental states, and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update mental states, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
 
 Formally, we define a metalevel MDP by a set of mental states $\M$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analogous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a metalevel MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-marginalized}, we can sometimes convert metalevel MDPs into equivalent MDPs by marginalizing over the world state.\footnote{%
-  This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:metamdp-pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.
+  This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.
 } We now describe the five components of a metalevel MDP in more detail.
 
 % We are now ready to formally specify the components of a metalevel MDP. A metalevel MDP is defined by a tuple $(\W, \M, \C, T, R)$ specifying the set of world states, the set of mental states, the set of computations, and the transition and reward functions. We describe each of these components in turn.
 
 
-\subsection{World states}
-A world state $w \in \W$ captures the state of the world that is relevant to the agent's current task. For example, in a decision-making task, the world state might define the utility of the various actions available to the agent (as in Chapter~\ref{sec:attention}). In a memory task, the world state might correspond to the strength of the memory that the agent is trying to recall (Chapter~\ref{sec:memory}). Importantly, the agent does not have direct access to the world state, but must infer it from the outcome of computations they perform. Formally, the world state includes any information that is not known to the agent, but affects either the reward or transition functions.
+To make things concrete, we will use a simple running example based on the tallying heuristic for deciding between two possible actions \citep{gigerenzer2011heuristic}. We will consider applying this heuristic to the decision of which car to purchase. To follow this heuristic, we consider a sequence of ``cues'' that might discriminate between the options, marking which car each cue favors (which has better gas mileage? which is more comfortable? etc...). As we go, we simply count up how many cues have favored each car. Then, after considering some number of cues, we pick the car that is favored by more cues. But how many cues should we consider? \citeauthor{gigerenzer2011heuristic} propose considering a fixed number of cues (and, in the case of a tie, considering more cues until one car has more in its favor). Is this the best version of tallying we could use? To answer this question, we can define tallying as a metalevel MDP.
 
+\subsection{World states}
+A world state $w \in \W$ captures the state of the world that is relevant to the agent's current task. Importantly, the agent does not have direct access to the world state, but must infer it from the outcome of computations they perform. Formally, the world state includes any information that is not known to the agent, but affects either the reward or transition functions. In the tallying example, the world state specifies the ratio of cues that favors one car vs. the other; thus, $\W\tally = [0, 1]$. 
+
+% One might be tempted to specify the world state as simply a binary variable indicating which car is better. However, with that definition, we could not specify the probability of drawing a cue in favor of each car in the transition function.
+
+% For example, in a decision-making task, the world state might define the utility of the various actions available to the agent (as in Chapter~\ref{sec:attention}). In a memory task, the world state might correspond to the strength of the memory that the agent is trying to recall (Chapter~\ref{sec:memory}). 
 \todo{Is the memory strength really a ``world'' state?}
 
 \subsection{Mental states}
 
 % \todo{maybe instead of m(w), use p_m(w)}
-A mental state $m \in \M$ captures the agent's internal state, as relevant to the task at hand. The interpretation of a mental state can vary from model to model. In some cases, they will correspond to \emph{beliefs}, that is, posterior distribution over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a posterior distribution over the utilities of the items in a choice set. More generally, mental states may correspond to \emph{representations} of the world or task. This interpretation is quite natural in Chapter~\ref{sec:planning}, where mental states correspond to partially constructed decision trees. Most generally, the mental state can capture arbitrary variables in a cognitive model. For example, in Chapter~\ref{sec:memory}, the mental state specifies the activation level of a memory. 
+A mental state $m \in \M$ captures the agent's internal state, as relevant to the task at hand. The interpretation of a mental state can vary from model to model. In some cases, it will correspond to a belief, or a representation of the world, but it can also capture arbitrary variables in a cognitive model. In the tallying example, the mental state specifies the number of cues one has considered that favor each option. Formally, we define each $m \in \M\tally$ as a tuple $(x, y)$, where $x$ is the number of cues favoring car X and $y$ is the number of cues specifying car Y.
 
-Analogously to standard MDPs, we additionally specify an initial mental state, $m_1$. This is the mental state the agent has at the beginning of each task instance. All metalevel MDPs have a single terminal state, which is only entered when computation is terminated (as described below).
+% The interpretation of a mental state can vary from model to model. In some cases, they will correspond to \emph{beliefs}, that is, posterior distribution over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a posterior distribution over the utilities of the items in a choice set. More generally, mental states may correspond to \emph{representations} of the world or task. This interpretation is quite natural in Chapter~\ref{sec:planning}, where mental states correspond to partially constructed decision trees. Most generally, the mental state can capture arbitrary variables in a cognitive model. For example, in Chapter~\ref{sec:memory}, the mental state specifies the activation level of a memory. 
+
+Analogously to standard MDPs, we additionally specify an initial mental state, $m_1$. This is the mental state the agent has at the beginning of each task instance. In the tallying example, the initial mental state is defined $m_1 = (0, 0)$. Additionally, all metalevel MDPs have a single terminal state $m_\bot$, which is only entered when computation is terminated (as described below).
 
 \subsection{Computations}
-A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that updates the mental state in much the same way as an external action changes the world state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. 
+A computational operation $c \in \C$ is a primitive operation afforded by the agent's cognitive architecture. Formally, it is a metalevel action that changes the mental state in much the same way as an external action might change the world state. In a metalevel MDP model, all cognition can be broken down into a sequence of these computations, but the model makes no attempt to explain how those basic operations are themselves implemented. The concept is thus very similar to \emph{elementary information processes} \citep{chase1978elementary,simon1979information,posner1982information,payne1988adaptive}. In the tallying example, there is a single computation, which corresponds to considering another cue.
 
-All metalevel MDPs include a special computation, the termination operation $\bot$, which indicates that computation should be terminated. Upon termination, the agent performs an external action, specifically the action that has maximal expected utility given the current mental state. Thus, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$.
+All metalevel MDPs include a special computation, the termination operation $\bot$, which indicates that computation should be terminated. Upon termination, the agent performs an external action, specifically the action that has maximal expected utility given the current mental state. Thus, the most fundamental metalevel problem---how long to compute---is captured by the decision about when to execute $\bot$. In the tallying example, executing $\bot$ corresponds to purchasing the car that is favored by more cues (choosing randomly in the case of a tie.)
 
 \subsection{Transition function}
 The transition function $T: \M \times \C \times \W \rightarrow \Delta(\M)$ describes how computation updates mental states. Formally, $T(m, c, w)$ is a distribution of possible new mental states that would result from performing a computation $c$ in mental state $m$ when the true state of the world is $w$. At each time step, the next mental state is sampled from this distribution:
 \begin{equation}\label{eq:transition}
-m_{t+1} \sim t(m_t, c_t, w).
+m_{t+1} \sim T(m_t, c_t, w).
 \end{equation}
-Terminating computation (executing $\bot$) always transitions to the terminal state, $m_\bot$. That is,
+In the tallying example, the transition function specifies the probability that each cue count will be incremented when one considers another cue:
+\begin{equation}\label{eq:tally-transition}
+  T\tally(m_t, c_t, w) = \begin{cases}
+    (x_t + 1, y_t) &\text{with probability } w  \\
+    (x_t, y_t + 1) &\text{with probability } 1-w,
+  \end{cases}
+\end{equation}
+where $m_t = (x_t, y_t)$.
+
+Terminating computation (executing $\bot$) always transitions to the terminal state, $m_\bot$:
 %
 \begin{equation}
   T(m, \bot, w) = \Uniform(\{m_\bot\})
@@ -166,20 +191,46 @@ The metalevel reward function $R: \M \times \C \times \W \rightarrow \R$ describ
 R(m, c, w) = -\cost(m, c) \text{ for } c \neq \bot.
 \end{equation}
 %
-We assume that the cost of a computation can depend on the current mental state (e.g., to model switching costs in Chapter~\ref{sec:attention}) but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world). The simplest choice is to assume a constant cost for each computation executed.
+We assume that the cost of a computation can depend on the current mental state but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world). The simplest choice is to assume a constant cost for each computation executed. This is a natural choice for the tallying example, with total cost proportional to the number of cues considered.
 
 The benefits of computation are captured by the reward for the termination operation $R(m, \bot, w)$. Intuitively, the benefit of computation is that it allows one to take better actions in the world. Formally, the reward for termination is defined as the utility of the external action that the agent would execute given the current mental state,
 %
-\begin{equation}
+\begin{equation}\label{eq:term-reward}
   R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
   % R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
 \end{equation}
 %
 where $U(w, a)$ specifies the utility of executing action $a$ in the world state $w$ and $\pi\act$ is an \emph{action selection policy} that chooses an action to take based on the current mental state. This policy should be very simple. That is, the mental state should contain sufficient information to choose an action without much additional computation.
 
-This definition may appear to constrain us to simple one-shot decision-making tasks. However, it is not as restrictive as it first appears. For example, in Chapter~\ref{sec:planning}, we model a planning task by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}).\footnote{
+In the tallying example, $\pi\act$ deterministically selects the car with more favorable cues, selecting randomly otherwise. Specifying $U$ is less straightforward. For simplicity, we assume that the utility derived from car X is proportional to the ratio of cues favoring X. This results in
+\begin{equation}
+  U\tally(w, a) = \begin{cases}
+    w &\text{if } a = \mathrm{X} \\
+    1-w &\text{if } a = \mathrm{Y}.
+  \end{cases}
+\end{equation}
+Substituting our definitions of $U$ and $\pi\act$ into Equation~\ref{eq:term-reward} yields:
+\begin{equation}
+  R\tally(m, \bot, w) = \begin{cases}
+    w &\text{if } x_t > y_t \\
+    1-w &\text{if } x_t < y_t \\
+    0.5 &\text{if } x_t = y_t
+  \end{cases}
+\end{equation}
+% $R(m, \bot, w)$ for the tallying example, we will assume that 
+where the $0.5$ comes from taking the average of $w$ and $1 - w$.
+
+Equation~\ref{eq:term-reward} may appear to constrain us to simple one-shot decision-making tasks, such as the ones tallying is intended for. However, it is not as restrictive as it first appears. For example, in Chapter~\ref{sec:memory}, we model a memory recall task by assuming that $\pi\act$ can only perform the ``recall'' action when the activation of a memory exceeds a threshold. In Chapter~\ref{sec:planning}, we model a planning task by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}).\footnote{
   This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See \todo{conclusion} for a discussion of the problem of interleaved computation and action.
-} In Chapter~\ref{sec:memory}, we model a memory recall task by assuming that $\pi\act$ can only perform the ``recall'' action when the activation of a memory exceeds a threshold.
+} 
+
+\begin{figure}[tb!]
+  \centering
+  \includegraphics[width=\textwidth]{figs/policies.pdf}
+  \caption{\captiontitle{Optimal policies for the tallying metalevel MDP.} The policy is illustrated as a graph, where each node represents a mental state. States in which the optimal policy continues computing are gray, and states in which the optimal policy terminates are in blue and red, corresponding to the two possible external actions. The two panels show the optimal policy under different levels of computational cost (0.01 and 0.002, in units defined by the maximal action utility of 1).
+  }
+  \label{fig:tally-policies}
+\end{figure}
 
 \section{Metalevel policies}\label{sec:metamdp-policy}
 
@@ -203,7 +254,9 @@ That is, it maximizes the expected return. In a metalevel MDP the return can be 
     c_t \sim \pi(m_t)
   }.
 \end{equation}
-This emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation. 
+This emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation.
+
+The optimal policy for the tallying example is illustrated in Figure~\ref{fig:tally-policies}. When the cost of computation is high relative to the stakes of the decision, we see that the optimal tallying policy consider cues until either one option has a lead of two cues in its favor, or thirteen cues have been considered in total. This is interestingly different from the suggestion of \citet{gigerenzer2011heuristic}, to first consider a fixed number of cues and then make a choice as soon as one leads by any amount. When deliberation is less costly (or the decision is more important), one option has to lead by four cues to be chosen; but over time, this requirement becomes less strict, with a decision being made after considering at most 79 cues. This resembles the ``collapsing boundaries'' that are often found in optimal evidence accumulation models \citep{drugowitsch2012cost}.
 
 Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In Section~\ref{sec:computing}, we discuss various strategies for tackling this problem. But first, we will discuss a special case of metalevel MDP that can be converted to standard MDPs, an important step in many solution strategies. \todo{check this}
 
@@ -217,17 +270,18 @@ An alterative view, the \emph{Bayesian view}, takes a stronger stance on the nat
 
 It is worth emphasizing that this view is quite different from the standard Bayesian approach in cognitive science (e.g., \citealp{tenenbaum2011how}). While the standard approach treats cognition as a problem of drawing inferences given data, this view treats cognition as a problem of generating the data that drives inference. A closer analogue in cognitive science is found in models active learning \citep{gureckis2012selfdirected,gottlieb2013informationseeking}, but in that case, the data is assumed to be found in the world, rather than generated in the mind.\footnote{We further discuss links between metalevel MDPs and active learning in the \todo{conclusion}}
 
-Importantly, the two views are not mutually exclusive. They are often compatible interpretations of a single system. The mechanical model emphasizes the process of computation, while the Bayesian model emphasizes its function. In this way, the mechanical and Bayesian models are analogous to Marr's algorithmic and computational levels. Unlike in Marr's levels, however, adopting the Bayesian model is more than just an interpretation; it has practical consequences for what one can do with the model. Specifically, it puts constraints on the types of computation one can consider. All Bayesian metalevel MDPs have a mechanical interpretation, but not vice versa. On the other hand, adopting the Bayesian view has conceptual and technical advantages. 
+Importantly, the two views are not mutually exclusive. They are often compatible interpretations of a single system. The mechanical model emphasizes the process of computation, while the Bayesian model emphasizes its function. In this way, the mechanical and Bayesian models are analogous to Marr's algorithmic and computational levels. Unlike in Marr's levels, however, adopting the Bayesian model is more than just an interpretation; it has practical consequences for what one can do with the model. Specifically, it puts constraints on the types of computation one can consider. All Bayesian metalevel MDPs have a mechanical interpretation, but not vice versa. On the other hand, adopting the Bayesian view has conceptual and technical advantages. Specifically, it provides a formal link between mental states and world states, and it allows us to convert metalevel MDPs into standard MDPs.
 
 In the following section, we define Bayesian metalevel MDPs, as a special case of the general metalevel MDP framework outlined above.
 
 \section{Bayesian metalevel MDPs}
 
-Taking the Bayesian view amounts to putting a restriction on the set of mental states and the transition function. Specifically, the mental states must correspond to posterior distributions over the state, and the transition function must encode describe a Bayesian updating procedure. We detail these two requirements in turn.
+Taking the Bayesian view amounts to putting a restriction on the set of mental states and the transition function. Specifically, the mental states must correspond to posterior distributions over the state, and the transition function must encode describe a Bayesian updating procedure. We detail these two requirements below.
+
 
 \subsection{Belief states}
 
-When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally, distributions over the world state. For example, in Chapter~\ref{sec:attention}, a mental state will correspond to a distribution over the utilities of the items in a choice set. We will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, we will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$.
+When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally, distributions over the world state. We will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, we will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$. 
 
 Mapping mental states to Bayesian beliefs is powerful because it provides a formal link between mental states and world states. For example, we can denote the probability of a world state under a belief state as $b_m(w) = \Pr(W = w \mid M = m)$.\footnote{%
   For notational convenience, we assume in this chapter that $\W$ is countable. The definitions can easily be extended to the continous case.
@@ -242,7 +296,7 @@ In the Bayesian view, the intial mental state $m_1$ has a special interpretation
 
 \subsection{Bayesian updating}
 
-In the Bayseian view, computations correspond to experiments that generate information about the world state; this information is then integrated into a belief by Bayesian inference. The transition function describes this process. Formally, each computation defines a state-dependent distribution of observations $p_c(o \mid w)$. Given the previous mental state $m_t$ and the observation $o_t$, the new mental state $m_{t+1}$ is defined such that
+In the Bayseian view, computations correspond to experiments that generate information about the world state; this information is then integrated into a belief by Bayesian inference. The transition function describes this process. Formally, each computation defines a state-dependent distribution of outcomes $p_c(o \mid w)$. Given the previous mental state $m_t$ and the outcome $o_t$, the new mental state $m_{t+1}$ is defined such that
 %
 \begin{equation}\label{eq:bayes-update}
   b_{t+1}(w) = p(w \mid m_t, o_t) = \frac{
@@ -255,12 +309,31 @@ In the Bayseian view, computations correspond to experiments that generate infor
 %
 where the second equality is the application of Bayes rule, updating the prior $b_t$ given the likelihood $p_c(o \mid w)$. The transition function describes the full process of sampling an observation and updating the belief accordingly. Denoting the update in Equation~\ref{eq:bayes-update} as ``bayes-update'', the full transition function is defined as
 %
-\begin{align}
+\begin{equation}
+\begin{aligned}
   o_t &\sim p_c(\cdot \mid w) \\
   m_{t+1} &= \text{bayes-update}(m_t, o_t, p_c)
-\end{align}
+\end{aligned}
+\end{equation}
 
-\subsection{Relation to partially observable Markov decision processes}\label{eq:metamdp-pomdp}
+\subsection{Tallying as a Bayesian metalevel MDP}
+
+As emphasized earlier, the Bayesian view not incompatible with the mechanical view. All Bayesian metalevel MDPs have a mechanical view (or at least, all those that can be implemented on a physical machine). And in some, especially fortuitous cases, one may even find that a model one initially specified in mechanical terms has a Bayesian interpretation as well. As luck would have it, our tallying example is just such a case! Indeed, it is a minor modification of one of the first explicitly formalized metalevel MDPs \citep{hay2012selecting}.\footnote{%
+  Specifically, it corresponds to the one-armed Bernoulli metalevel probability model. The modification is in the termination reward. We assume that the agent can choose between two options with value $w$ and $1-w$, whereas Hay et al. assume a choice between $w$ and a known constant value.
+}
+
+Viewing tallying from a Bayesian perspective, the mental state corresponds to a distribution over the ratio of cues in favor of each car, $w$. The standard choice for a distributions over ratios and probabilities is the Beta; thus, we define $b_t = \Beta(α_t, β_t)$. The initial values, $α_1$ and $β_1$ specify a prior over $w$. A natural choice is $α_1 = β_1 = 1$, which results in a Uniform distribution.
+
+Turning to the transition function, recall that each computation corresponds to considering an additional cue, which may be in favor of one car or the other. We can think of which car the cue favors as the outcome of the computation $o$. By definition, the probability that each cue favors car X is $w$, and so we have we have $o_t \sim \Bernoulli(w)$. This leaves bayes-update. Because Beta is the conjugate prior for the Bernoulli distribution, this update has a very simple form:
+\begin{equation}
+\text{bayes-update}(m_t, o_t, p_c) = \begin{cases}
+   \Beta(α_t + 1, β_t) &\text{if } o_t = 1\\
+   \Beta(α_t, β_t + 1) &\text{if } o_t = 0
+\end{cases}
+\end{equation}
+Not only is this form simple, it is remarkably similar to Equation~\ref{eq:tally-transition}. Indeed, given that $p(o_t = 1) = w$, they are equivalent. The only difference between $α_t$ and $x_t$ (and between $β_t$ and $y_t$) is that the $x$ and $y$ are assumed to be initialized to 0, while $α$ and $β$ are initialized to 1 (or some other values to capture a non-uniform prior). That is, $b_t = \Beta(α_1 + x_t, β_1 + y_t)$, providing a direct link between the Bayesian belief state and the mechanical mental state.
+
+\subsection{Relation to partially observable Markov decision processes}\label{sec:pomdp}
 
 For those who are familiar with the reinforcement learning and planning literatures, the equations above will likely look familiar. Specifically, they closely resemble the equations associated with belief updating in a partially observable Markov decision process (POMDP; \citealp{kaelbling1998planningb}). POMDPs are generalizations of MDPs where the agent does not know the state, but instead receives an observation conditional on the state and action at each time step: $o_t \sim O(s_{t+1}, a_t)$. Given these observations, the agent maintains a belief about the current state using a Bayesian update similar to Equation~\ref{eq:bayes-update}, but additionally accounting for the possibility that the state changes,
 %
@@ -268,15 +341,14 @@ For those who are familiar with the reinforcement learning and planning literatu
   b_{t+1}(s_{t+1}) = p(s_{t+1} \mid b_t, o_t) = \frac{
     O(o_t \mid s_{t+1}, a_t) \displaystyle\sum_{s_t \in \S} T(s_{t+1} \mid s_t, a_t) b_t(s_t)
   }{
-    p(o_t \mid b_t, a_t)
+    p(o_t \mid b_t, a_t).
   } 
 \end{equation}
 %
-
-Bayesian metalevel MDPs can thus be understood as the subset POMDPs in which the state never changes. In this case, the belief update reduces to
+Bayesian metalevel MDPs can thus be understood as a subset of POMDPs in which the state never changes. In this case, the belief update reduces to
 \begin{equation}
   b_{t+1}(s) =  
-  \frac{O(o_t \mid s, a_t) b_t(s)}{p(o_t \mid b_t, a_t)}
+  \frac{O(o_t \mid s, a_t) b_t(s)}{p(o_t \mid b_t, a_t)},
 \end{equation}
 which is exactly analogous to Equation~\ref{eq:bayes-update}.
  % but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$
@@ -294,7 +366,7 @@ Nevertheless, noting the formal similarities between Bayesian metalevel MDPs and
 
 \section{Marginalized metalevel MDPs}\label{sec:metamdp-marginalized}
 
-As observed by \citet{kaelbling1998planningb}, it is possible to convert a POMDP into an MDP by defining modified transition and reward functions that take beliefs (rather than states) as input and return expected transition probabilities and rewards, marginalizing over the state of the world. This is desirable because it allows one to identify the optimal policy for a POMDP using tools developed to solve MDPs. As outlined below, we can apply a similar strategy to metalevel MDPs. Specifically, we define versions of the reward and transition functions that do not depend on the world state. Together with the set of mental states $\M$ and computational ``actions'' $\C$, this yields a standard MDP. We define the marginalized transition and reward functions below.
+As observed by \citet{kaelbling1998planningb}, it is possible to convert a POMDP into an MDP by defining modified transition and reward functions that take beliefs (rather than states) as input and return expected transition probabilities and rewards, marginalizing over the state of the world. This is desirable because it allows one to identify the optimal policy for a POMDP using tools developed to solve MDPs. As outlined below, we can apply a similar strategy to metalevel MDPs. Specifically, we define \emph{marginal} versions of the reward and transition functions that do not depend on the world state. Together with the set of mental states $\M$ and computational ``actions'' $\C$, this yields a standard MDP. We define the marginalized transition and reward functions below.
 
 % Although metalevel MDPs have the same basic structure as an MDP, they are distinct in that the transition and reward functions depend on a world state, $w$, that is unknown to the agent. One unfortunate consequence of this difference is that many of the standard tools for finding optimal policies of MDPs cannot be directly applied. Fortunately, when certain requirements are met, one can convert a metalevel MDP into a standard MDP by marginalizing the world state out of the transition and reward functions.
 
@@ -315,7 +387,15 @@ One simply samples the world state from the belief before applying the transitio
 \begin{equation}\label{eq:marginal-transition}
 T(m_{t+1} \mid m_t, c_t) = \expectunder{T(m_{t+1} \mid m_t, c_t, w)}{w \sim b_t}.
 \end{equation}
-This expression cannot be simplified in the general case. In practice, we will work with Gaussian or discrete beliefs that make this integration tractable.
+This expression cannot be simplified in the general case. In practice, we will work with conjugate or discrete beliefs that make this integration tractable.
+\todo{tallying?}
+% In the tallying example,
+% \begin{equation}\label{eq:marginal-transition-tallying}
+% T(m_{t+1} \mid m_t, c_t) = \begin{cases}
+%   \frac{α_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t +1, y_t)\\
+%    \frac{β_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t, y_t+1)\\
+% \end{cases}
+% \end{equation}
 
 \subsection{Marginal reward function}
 
@@ -356,6 +436,7 @@ The final line follows from
 \end{math}
 %
 where $f(a)$ is $\expectunder{U(w, a)}{w \sim b_m}$. It is not difficult to see how this logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.
+\todo{tallying?}
 
 \subsection{Marginalizing mechanical metalevel MDPs}\label{sec:marginal-mechanical}
 
@@ -365,9 +446,7 @@ The accuracy requirement is relatively straightforward. It simply states that th
 \begin{equation}\label{eq:belief-accuracy}
   b_t(w) = p(w \mid m_t) = \Pr(W = w \mid M_t = m_t).
 \end{equation}
-It is easy to see why this property is necessary. If one computes the marginal transition and reward functions given incorrect assumptions about the world state, those functions will also be incorrect.
-
-In principle, accuracy requirement does not impose any retrictions on the metalevel MDP. It can always be satisfied by defining the belief state using Bayes' rule,
+It is easy to see why this property is necessary. If one computes the marginal transition and reward functions given incorrect assumptions about the world state, those functions will also be incorrect. In principle, the accuracy requirement does not impose any retrictions on the metalevel MDP. It can always be satisfied by defining the belief state using Bayes' rule,
 \begin{equation}
   b_t(w) = \frac{p(m_t \mid w) p(w)}{p(m_t)}.
 \end{equation}
@@ -494,7 +573,7 @@ Q\myopic(m, c) = \E_{m' \sim T(m, c)}\left[
 \end{equation}
 with $Q\myopic(m, \bot) = R(m', \bot)$. The myopic action value function $Q\myopic$ gives the expected termination reward after performing one more computation, less the cost of that computation. Thus, the myopic policy selects each computation as if it will be the last one executed.
 
-The myopic policy is often a decent approximation, and displays reasonable behavior in many cases. The problem with it is that it systematically underestimates the value of computation, which leads it to stop computing too early. To take a simple example, consider a metalevel MDP with a single computation that generates one piece of binary evidence in favor of one action or another. If the current belief has three pieces of evidence in favor of action $a_1$ and one in favor of action $a_2$ ($m = (3, 1)$), then there is no way that a single computation will change the decision the agent will make. The next belief will be either $(4, 1)$ or $(3, 2)$, and $a_1$ will be the action with maximal expected value in either case. Clearly there is no benefit to executing a single computation, so the myopic policy will terminate. However, given the opportunity to execute multiple computations, the tide could easily be swayed in favor of $a_2$. If computation were not very costly, it would likely be worth computing more. 
+The myopic policy is often a decent approximation, and displays reasonable behavior in many cases. The problem with it is that it systematically underestimates the value of computation, which leads it to stop computing too early. We can see this easily in the tallying example. If one has the mental state $(3, 1)$, then considering one additional cue cannot change the decision one would make. The next mental state will be either $(4, 1)$ or $(3, 2)$, and car $X$ will be in the lead in either case. Clearly there is no benefit to considering a single additional cue, so the myopic policy will terminate. However, given the opportunity to consider several more cues, the tide could easily be swayed in favor of the other car. If computation were not very costly, it would likely be worth computing more. 
 
 % The remaining menthods we discuss can be understood as strategies to reduce the underestimation the value of computing.
 
