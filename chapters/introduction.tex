@@ -40,11 +40,11 @@ The proposed approach builds on a long history of cognitive modeling. In particu
 
 \subsection{Optimal models}
 
-A cognitive process is optimal if it performs a cognitive function as well as it possibly could. To be precise, an optimal cognitive process is one that produces the maximum value of an \emph{objective function} among a set of possible processes:
+A cognitive process is optimal if it performs a cognitive function as well as it possibly could. To be precise, an optimal cognitive process is one that produces the maximum value of an \emph{objective function}, out of a set of possible processes:
 \begin{equation}\label{eq:intro-optimal}
-  π^* = \argmax_{π \in \Pi} U(π),
+  π^* = \argmax_{π \in \Pi} U(π).
 \end{equation}
-where $U$ (for utility) is the objective function and each $\pi \in \Pi$ is a possible cognitive process. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
+Here, $U$ (for utility) is the objective function and each $\pi \in \Pi$ is a possible cognitive process. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
 
 Optimality is the defining feature of classic rational models. The prototypical example is expected utility theory \citep{friedman1948utility}, which states that people should select actions that yield the best outcomes in expectation (i.e., on average). This model is the foundation for neoclassical economics, where it allows analysts to predict aggregate market behavior by assuming that each individual maximizes their own wellfare. But it is so abstract that it initially seems to tell us little about cognition itself. Nevertheless, applying the optimization principle in more constrained domains has yielded important insights about many areas of cognition, including perception \citep{marr1982vision,knill1996perception,najemnik2005optimal} categorization \citep{anderson1991adaptive,ashby1995categorization,tenenbaum2001generalization}, memory \citep{anderson1989human}, and language \citep{goldwater2009bayesian}.
 
@@ -58,9 +58,11 @@ where $\cost(π)$ captures the cognitive cost associated with executing the cogn
 
  % Conceptually $U$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $U$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
 
-\subsection{Dynamic models}
+\subsection{Sequential models}
 
-The fact that cognitive processes are dynamic---that is, they take place over time---is uncontroversial. This property is thus a core feature of mechanistic models. One widely used class of dynamic models are \emph{evidence accumulation} models, such as the drift diffusion model \citep{ratcliff1978theory}, leaky competing accumulators \citep{usher2001time}, and decision by sampling \citep{stewart2006decision}. According to these models, decision making involves accumulating noisy evidence in favor of each possible choice until the evidence for one choice is sufficiently greater than the evidence for the other(s). These models can thus explain not only the choices we make, but also how long it takes to make them.
+The fact that cognitive processes are sequential, in the sense that they occur over time rather than all at once, is self-evident. Thus, some notion of sequentiality is an essential feature of a model that captures cognitive mechanisms at any level of detail. Here, however, we will use a slightly more restrictive notion of sequentiality. Specifically, we take sequentiality to mean that cognitive processes can be broken down into a sequence of elementary cognitive operations.
+
+One widely used class of sequential models are \emph{evidence accumulation} models (also called ``sequential sampling models''), such as the drift diffusion model \citep{ratcliff1978theory}, leaky competing accumulators \citep{usher2001time}, and decision by sampling \citep{stewart2006decision}. According to these models, decision making involves accumulating noisy evidence in favor of each possible choice until the evidence for one choice is sufficiently greater than the evidence for the other(s). That is, the cognitive process can be understood as a sequence of operations, each of which accumulates a small amount of evidence. In their simplest form, there is only one type of operation; these models can explain not only the choices we make (including when we make mistakes), but also how long it takes to make those choices. More complex evidence accumulation models take into account the possibility of attending to different sources of information, such as different options \citep{krajbich2010visual} or attributes \citep{russo1983strategies}; these models can account for (if not predict) additional data such as what we look at when making a decisision, and they can account for systematic deviations from expected utility \citep{busemeyer2019cognitive}.
 
 % A critical property of these models is that they can predict not only what choice people will make, but also how long it will take them to make it. For example, these models predict that easier decisions will be made both more consitently and more quickly, and that mistakes will be faster than correct choices.
 
@@ -68,9 +70,9 @@ The fact that cognitive processes are dynamic---that is, they take place over ti
 
 Another important class of dynamic models, \emph{cognitive architectures}, aims to capture a more diverse range of mental activities, beyond simply accumulating more evidence. Cognitive architectures, most notably ACT-R \citep{anderson1996act} and SOAR \citep{laird1987soar}, explicitly model individual cognitive operations such as perceptually encoding a stimulus, recalling information from memory, and transforming symbolic reprenstations the world. These models can trace their intellectual roots to the infancy of artificial intelligence research \citep{newell1956logic}, where the discovery that digital computers could solve complex problems by breaking them down into a sequence of very simple operations led to the hypothesis that a similar principle might underlie human intelligence \citep{newell1958elements,newell1972human}. The core assumption of these models is that all cognitive processes can be broken down into so-called \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}.
 
-This allows us to formally define dynamic models, as a restriction on the space of possible cognitive processes, $\Pi$. In a dynamic model, cognition consists of sequences of elementary operations. We may be tempted to say that each such sequence is a cognitive process, but we don't expect that the exact same sequence to be executed every time. Thus, we can be slightly more precise and say that each element of $\Pi$ is a \emph{distribution} over sequences of cognitive operations. Prioritizing simplicitly over notational precision, we can write this as 
-\begin{equation}
-   \pi = \{P(c_1, c_2, \ldots c_N)\},
+Formally, we can define sequentiality as a restriction on the space of possible cognitive processes, $\Pi$. Initially, we might be tempted to say that a cognitive process is simply a sequence of cognitive operations. But this assumes that a given cognitive process will always execute the same sequence of operations. Thus, we can be slightly more precise and say that each element of $\Pi$ is a \emph{distribution} over sequences of cognitive operations. Prioritizing simplicitly over notational precision, we can write this as 
+\begin{equation}\label{eq:intro-sequential}
+   \Pi = \{P(c_1, c_2, \ldots c_N)\},
 \end{equation}
 where each $c_i$ is a cognitive operation, $P(x)$ denotes a probability distribution over $x$ and $\{x\}$ denotes a set of $x$'s. 
 
@@ -85,13 +87,29 @@ Formalizing dynamic models in this way emphasizes a substantial challenge in con
 % \end{equation}
 
 
-\subsection{Optimal sequential models}
+\subsection{Optimal sequential models of cognition}
+
+Having defined and briefly reviewed optimal and dynamic models, we now turn to the key question: how can we combine these two ideas? The answer is in some sense straightforward. We can simply combine Equations~\ref{eq:intro-resource} and~\ref{eq:intro-sequential}, giving us
+\begin{equation}
+    π^* = \argmax_{(c_1, c_2, \ldots c_N)}\,  U(c_1, c_2, \ldots c_N) - \cost(c_1, c_2, \ldots c_N).
+\end{equation}
+This substitution yields little insight on its own. Specifically, what is the utility of a sequence of cognitive operations? Intuitively, the utility of cognition comes from how it affects our actions. Thus, let $\mathrm{act}_N$ be the action we would take after executing the cognitive process $(c_1, c_2, \ldots c_N)$. Further, we can assume that the cost of each operation is independent. This yields
+\begin{equation}
+    π^* = \argmax_{(c_1, c_2, \ldots c_N)}\,  U(\mathrm{act}_N) - \sum_i^N \cost(c_i).
+\end{equation}
+That is, an optimal sequential cognitive process is one which maximizes the utility of the action that the cognitive process produces minus the total cost of all the operations it performs. We express this intuition more precisely in the following chapter (Equation~\ref{eq:optimal-meta-policy-expanded}).
+
+
 
 \section{Alternative approaches for rational mechanistic modeling}
 
-Having defined and briefly reviewed optimal and dynamic models, we now turn to the main question explored by this disseration. How can we construct rational mechanistic models? This is by no means a new question, nor is this dissertation the first to propose a general framework for constructing such models. In the following sections, we briefly review this past work, with an emphasis on ...
+Having defined and briefly reviewed optimal and dynamic models, we now turn to the main question explored by this disseration. How can we construct rational mechanistic models? The answer proposed here is the construction of optimal sequential models. But before
 
-\subsection{Dynamic but not optimal}
+This is by no means a new question, nor is this dissertation the first to propose a general framework for constructing such models. In the following sections, we briefly review this past work, with an emphasis on ...
+
+\subsection{Ecological rationality}
+
+
 
 
 
