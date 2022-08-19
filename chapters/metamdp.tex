@@ -13,6 +13,8 @@ We must be prepared to accept the possibility that what we call ``the environmen
 
 \newthought{The key insight} behind the proposed framework is that cognitive processes are solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{metalevel Markov decision processes} (metalevel MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's mental state. At each moment, the agent must choose whether to continue thinking, refining their mental state but accruing computational cost, or to instead stop thinking and take action. In the former case, they must additionally decide which computation to execute next (i.e., what to think about). In the latter case, they select the action that seems best given their current mental state and receive a reward associated with the external utility of that action.
 
+\todo{define object level, put back below ?}
+
 % in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
 In this chapter, I provide a formal description of the framework. The formalization presented here is an adaptation from the framework as proposed in \citet{hay2016principles}. We have modified the framework somewhat to better facilitate the specification of cognitive models.
@@ -37,7 +39,7 @@ In this chapter, I provide a formal description of the framework. The formalizat
 
 A metalevel Markov decision process is an extension of a standard Markov decision process (MDP), illustrated in \figref{fig:mdp-diagram}{}. Thus, we begin with a brief overview of standard MDPs. See \citet{puterman2014markov} and \citet{sutton2018reinforcement} more thorough overviews.
 
-MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T: \S \times \A \rightarrow \Delta(\S)$\footnotemark{} encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R: \S \times \A \rightarrow \R $ specifies the reward or utility for executing a given action in a given state. We additionally assume an initial state $s_1$ that the environment is initialized in and a set of terminal state $\S_\bot$ such that the episode ends when the agent reaches one of those states. An \emph{episode} describes one interaction between the agent and the environment (beginning in the initial state and ending in a terminal state).
+MDPs are the standard formalism for modeling the sequential interaction between an agent and a stochastic environment. An MDP is defined by a set of states $\S$, a set of actions $\A$, a transition function $T$, and a reward function $R$. A state $s \in \S$ specifies the relevant state of the world. An action $a \in \A$ is an action the agent can perform. The transition function $T: \S \times \A \rightarrow \Delta(\S)$\footnotemark{} encodes the dynamics of the world as a distribution of possible future states for each possible previous state and action. Finally, the reward function $R: \S \times \A \rightarrow \R $ specifies the reward or utility for executing a given action in a given state. We additionally assume an initial state $s_1$ that the environment is initialized in and a set of terminal states $\S_\bot$ such that the episode ends when the agent reaches one of those states. An \emph{episode} describes one interaction between the agent and the environment (beginning in the initial state and ending in a terminal state).
 
 \footnotetext{%
   $\Delta(\S)$ denotes the set of all distributions over the set $\S$. Note that this definition is equivalent to defining the transition function as a probability mass function (i.e., $T: \S \times \A \times \S \rightarrow [0, 1])$. We will use $T(s' \mid s, a)$ to denote the probability of transitioning to state $s'$ when executing action $a$ in state $s$.
@@ -73,7 +75,7 @@ It specifies the expected total reward one will receive if one begins in state $
   Q^\pi(s, a) = \expect{
     \sum_{t=1}^{\tmax} R(S_t, A_t)
   }{
-   s_1 = s,\ a_1 = a,\ a_{t \neq 0} \sim \pi(s_t)
+   s_1 = s,\ a_1 = a,\ a_{t \neq 1} \sim \pi(s_t)
   }.
 \end{equation}
 %
@@ -134,7 +136,7 @@ This concludes our brief overview of MDPs. We are now ready to describe metaleve
 Meta-level Markov decision processes (metalevel MDPs) extend the standard MDP formalism to model the sequential decision problem posed by resource-bounded computation \citep{hay2012selecting}. Like a standard MDP, a metalevel MDP is defined by sets of states and actions, and transition and reward functions. However, as illustrated in \figref{fig:metamdp-diagram}{}, the states corresponded to mental states, and the actions correspond to computations (cognitive operations). The metalevel transition function describes how computations update mental states, and the metalevel reward function captures the costs (e.g., time) and benefits (e.g., better decisions) of computation.
 
 Formally, we define a metalevel MDP by a set of mental states $\M$, a set of computations $\C$, a transition function $T$, and a reward function $R$. These four components are analogous to the states, actions, transition function, and reward function in a standard MDP. We additionally define a set of world states $\W$, upon which the transition and reward functions depend. This is the only formal distinction between a metalevel MDP and a standard MDP. However, as we discuss in Section~\ref{sec:metamdp-marginalized}, we can sometimes convert metalevel MDPs into equivalent MDPs by marginalizing over the world state.\footnote{%
-  This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP). see Section~\ref{sec:pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.
+  This is similar to the \emph{belief MDP} transformation of a partially observable MDP (POMDP; \citealp{kaelbling1998planningb}). see Section~\ref{sec:pomdp} for additional discussion on the relation between metalevel MDPs and POMDPs.
 } We now describe the five components of a metalevel MDP in more detail.
 
 % We are now ready to formally specify the components of a metalevel MDP. A metalevel MDP is defined by a tuple $(\W, \M, \C, T, R)$ specifying the set of world states, the set of mental states, the set of computations, and the transition and reward functions. We describe each of these components in turn.
@@ -246,7 +248,7 @@ How should we determine this policy? The classical cognitive modeling approach i
   }.
 \end{equation}
 That is, it maximizes the expected return. In a metalevel MDP the return can be broken down into two components capturing the costs and benefits of computation,
-\begin{equation}
+\begin{equation}\label{eq:optimal-meta-policy-expanded}
   \pi^* = \argmax_\pi \expect{
     \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)} -
       \sum_{t=1}^{\tmax-1} \cost(m_t, c_t)
@@ -281,7 +283,7 @@ Taking the Bayesian view amounts to putting a restriction on the set of mental s
 
 \subsection{Belief states}
 
-When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally, distributions over the world state. We will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, we will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$. 
+When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally expressead as distributions over the world state. We will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, we will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$. 
 
 Mapping mental states to Bayesian beliefs is powerful because it provides a formal link between mental states and world states. For example, we can denote the probability of a world state under a belief state as $b_m(w) = \Pr(W = w \mid M = m)$.\footnote{%
   For notational convenience, we assume in this chapter that $\W$ is countable. The definitions can easily be extended to the continous case.
@@ -490,7 +492,7 @@ Here we discuss a few general methods for identifying optimal (or at least reaso
 
 Following Equation~\ref{eq:argmaxQ}, the optimal metalevel policy can be expressed as
 %
-\begin{equation}
+\begin{equation}\label{eq:metamdp-optimal-policy}
   \pi^*(m) = \Uniform\left(\argmax_b Q^*(m, c)\right).
 \end{equation}
 Each of the methods below provides a different way to compute or approximate $Q^*$.
@@ -501,7 +503,7 @@ Historically (e.g. \citealp{russell1991principles}), rational metareasoning has 
 \begin{equation}
   \VOC(m, c) = Q^*(m, c) - R(m, \bot).
 \end{equation}
-One advantage of this formulation is that we can define the optimal termination rule as executing $\bot$ whenever no computation has positive VOC. However, the $Q$ function will be more familiar to most researchers, and is easier to work with in practice. For this reason, we will use the $Q$ function throughout. Importantly, however, the two functions contain essentially the same information, and both quantify the long-term value of performing a computation.
+One advantage of this formulation is that we can define the optimal termination rule as executing $\bot$ whenever no computation has positive VOC. However, the $Q$ function will be more familiar to most researchers, and is easier to work with in practice. For this reason, we will use the $Q$ function throughout. Note, however, that the only difference between the two functions is constant with respect to $c$ (i.e., $-R(m, \bot))$). Thus, maximizing either will yield the optimal policy (we can replace $Q^*$ with $\VOC$ in Equation~\ref{eq:metamdp-optimal-policy}).
 
 \subsection{Backward induction}\label{sec:backinduct}
 
@@ -599,18 +601,18 @@ All of the strategies we have discussed so far are \emph{model-based}. That is, 
 
 Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging. Indeed, as we show in Appendix~\ref{TODO}, off-the-shelf deep learning methods can perform quite poorly.
 
-The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles}. Specially, BMPS draws on work quantifying the \emph{value of information} (VOI) generated by computation. 
+The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles}. Specially, BMPS draws on work quantifying the \emph{value of information} generated by computation. 
 
 \subsection{The value of information}
 
-VOI is defined as the expected utility of a decision you could make based on that information (versus making the decision without that information). For information we already have, this is simply the termination reward. Thus, we can write
+The value of information (VOI) is defined as the expected utility of a decision you could make based on that information (versus making the decision without that information). For information we already have, this is simply the termination reward. Thus, we can write
 %
 \begin{equation}
   \VOI(b) = R(b, \bot) = \max_a \expectunder{U(w, a)}{w \sim b},
 \end{equation}
 using the termination reward defined in Equation~\ref{eq:marginal-term-decision}. Note that VOI can only be used when taking the Bayesian view of computation; therefore, we will not distinguish between mental states and beliefs, using $b$ for both.
 
-VOI theory is interested in quantifying the value of information that \emph{we don't have yet}. More precisely, VOI quantifies the expected value of a belief state we will have after gathering more information. Given a distribution of possible future belief states, $B'$, the VOI is defined as
+VOI is most useful for quantifying the value of information that \emph{we don't have yet}. More precisely, VOI quantifies the expected value of a belief state we will have after gathering more information. Given a distribution of possible future belief states, $B'$, the VOI is defined as
 %
 \begin{equation}
   \VOI(B') = \expectunder{R(b', \bot)}{b' \sim B'}
@@ -620,7 +622,7 @@ Using this notation, we can express the $Q^*$ function as
 %
 \begin{equation}\label{eq:Q-VOI}
   Q^*(b_t, c_t) = 
-    \VOI(B_N) - \E\left[\sum_{i=t}^{\tmax} \cost(m_i, c_i) \right],
+    \VOI(B_N) - \E\left[\sum_{i=t}^{\tmax} \cost(b_i, c_i) \right],
 \end{equation}
 where $B_N$ is the distribution of terminal beliefs (when following the optimal policy). The challenge of course is that we do not know what this distribution is. However, we can put bounds on it.
 
@@ -637,7 +639,7 @@ where $B_N$ is the distribution of terminal beliefs (when following the optimal 
 
 As ilustrated in Figure \ref{fig:bmps-voi}, the value of information acquired by an optimal metalevel policy increases monotonically with the number of computations it performs. Moreover, it is bounded by two values, each giving the VOI associated with a distribution of possible beliefs.
 
-The minimum VOI is simply the value of information produced by the first computation. In this case, the distribution of beliefs is simply $B' = T(b, c)$. Thus, the myopic value of information is defined as
+The minimum VOI is the value of information produced by the first computation. In this case, the distribution of beliefs is simply $B' = T(b, c)$. Thus, the myopic value of information is defined as
 \begin{equation*}
   \VOImy(b,c) =  \VOI(T(b, c)) = \expectunder{R(b', \bot)}{b' \sim T(b, c)}.
 \end{equation*}
@@ -678,7 +680,7 @@ The key advantage to BMPS over a more generic RL algorithm is that the policy ha
 
 
 % INFORMATION ANGLE
-% In problems with many parameters, this upper bound can be very loose because the optimal meta-level policy might reason only about a small subset of relevant parameters. 
+% In problems with many parameters, this upper bound can be very loose because the optimal metalevel policy might reason only about a small subset of relevant parameters. 
 % To capture this, we introduce an additional feature $\VPIsub(c, b)$ that measures how beneficial it would be to have full information about the parameters that inform the value of the (high-level) action(s) that $c$ is informative about.
 % We model informativeness by a relevance function $f(c,i)$ that returns $1$ if $c$ is informative about $\theta_i$ and $0$ otherwise. Using this relevance function, we define the value value of learning about the subset of parameters that $c$ is informative about as
 % %
