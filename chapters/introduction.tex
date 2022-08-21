@@ -31,75 +31,148 @@ An important property of sequential decision problems is that there is often a d
 
 The power of identifying this parallel between external and internal environments is that it allows us to leverage existing knowledge about sequential decision problems (a substantial chunk of AI research) to build rational mechanistic models of cognition. That is, we can apply the same formalisms and algorithms that might help a robot deliver groceries to instead characterize the problem of resource-bounded cognition, and identify cognitive processes that optimally solve that problem.
 
-\section{Optimal and dynamic models of cognition}
+\section{Optimal and sequential models of cognition}
 
-The proposed approach builds on a long history of cognitive modeling. In particular, it synthesizes two key features, each of which is prevalent on its own, but which are less commonly seen together: \emph{optimality} and \emph{sequentiality}. These features correspond to assumptions about the nature of cognitive processes. Optimality assumes that the cognitive process maximizes an objective function, and sequentiality assumes that the process can be broken down into a sequence of elementary operations. Neither of these assumptions is likely to be exactly true. But, as previous work has shown, they can both be very useful. In this dissertation, we argue that the intersection of these two features is an especially productive terrain for constructing rational and mechanistic models. But before we further describe that intersection, it is useful to explain each component separately.
+\todo{change section title}
+
+The proposed approach builds on a long history of cognitive modeling. In particular, it synthesizes three key features, each of which is prevalent on its own, but which are less commonly seen together: \emph{optimality} and \emph{sequentiality}. These features correspond to assumptions about the nature of cognitive processes. Optimality assumes that the cognitive process maximizes an objective function, and sequentiality assumes that the process can be broken down into a sequence of elementary operations. Neither of these assumptions is likely to be exactly true. But, as previous work has shown, they can both be very useful. In this dissertation, we argue that the intersection of these two features is an especially productive terrain for constructing rational and mechanistic models. But before we further describe that intersection, it is useful to explain each component separately.
 
 % cognition is \emph{dynamic} (sequential, occuring over time), \emph{bounded} (subject to costs or constraints), and \emph{optimized} (maximizing utility). As illustrated in Table~\ref{tab:comparison}, various combinations of these assumptions are made frequently in models of the mind. However, by capturing all three ideas at once, the current approach has advantages that cannot be achieved with any subset.
 
-
-\subsection{Optimal models}
+\subsection{Optimality}
 
 A cognitive process is optimal if it performs a cognitive function as well as it possibly could. To be precise, an optimal cognitive process is one that produces the maximum value of an \emph{objective function}, out of a set of possible processes:
 \begin{equation}\label{eq:intro-optimal}
   π^* = \argmax_{π \in \Pi} U(π).
 \end{equation}
-Here, $U$ (for utility) is the objective function, and each $\pi \in \Pi$ is a possible cognitive process. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
+Here, $U$ (for utility) is the objective function, and each $π \in \Pi$ is a possible cognitive process. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
 
-Optimality is the defining feature of classic rational models. The prototypical example is statistical decision theory \citep{friedman1948utility}, which states that people should select actions that yield the best outcomes in expectation (i.e., on average). This model is the foundation for neoclassical economics, where it allows analysts to predict aggregate market behavior by assuming that each individual maximizes their own welfare. But it is so abstract that it initially seems to tell us little about cognition itself. Nevertheless, applying the optimization principle in more constrained domains (perhaps implicitly) has yielded important insights about many areas of cognition, including perception \citep{marr1982vision,knill1996perception,najemnik2005optimal} categorization \citep{anderson1991adaptive,ashby1995categorization,tenenbaum2001generalization}, memory \citep{anderson1989human}, and language \citep{goldwater2009bayesian}.
+Optimality is the defining feature of classic rational models. Perhaps the most fundamental optimal model is expected utility theory, which states that one should select actions that yield the best outcomes in expectation (i.e., on average). The maximal-expected-utility action is defined
+\begin{equation}\label{eq:utility}
+  a^* = \argmax_{a \in \A} \E_{o \mid a} U(o).
+\end{equation}
+where $\E_{o \mid a, w} U(o)$ indicates the expected utility of the outcome that will result if action $a$ is taken.
+
+Expected utility theory is the foundation of modern (neoclassical) economics, allowing analysts to predict aggregate market behavior by assuming that each individual maximizes their own welfare. But it is so abstract that it initially seems to tell us little about cognition itself. Nevertheless, applying the optimization principle in more constrained domains has yielded important insights about many areas of cognition, including perception \citep{marr1982vision,knill1996perception,najemnik2005optimal} categorization \citep{anderson1991adaptive,ashby1995categorization,tenenbaum2001generalization}, memory \citep{anderson1989human}, and language \citep{goldwater2009bayesian}.
+
+Before we continue, it is important to note that many of the examples given above were not actually derived in terms of Equation~\ref{eq:intro-optimal}, using the language or mathematical tools of optimization. Indeed, it is not immediately clear how Equation~\ref{eq:utility}, which defines optimal actions, corresponds to Equation~\ref{eq:intro-optimal}, which defines optimal cognitive processes. To make this link, we can define $\Pi$ to be the set of all action-selection policies (distributions over actions) and $U$ to be the expected utility of the outcomes of those actions. The optimal cognitive process is then defined
+\begin{equation}\label{eq:utility2}
+  π^* = \argmax_{π \in \Pi} \E_{a \mid π} \left[
+    \E_{o \mid a} U(o)
+  \right].
+\end{equation}
+The definitions are formally equivalent, in the sense that $\pi^*$ always selects $a^*$. However, viewing optimality as a property of cognitive processes rather than a property of actions or beliefs, is a critical conceptual step.
 
 The power of optimization as a tool for cognitive modeling is that it makes decisions for us. That is, it reduces the amount of flexibility we have when specifying a model. This may sound like an impediment---and indeed, it sometimes feels that way---but it can have enormous benefits. Conceptually, optimality is a source of intuition. Cognitive processes can be very complex, and simply observing what people do and trying to reason backwards to how they do it can be challenging---especially if we want to understand \emph{why} they do it that way. Exploring optimal solutions, even when they don't explain human behavior especially well, helps us understand the function of cognitive processes, which in turn helps us generate hypotheses about how those processes actually work.
 
 From a statistical perspective, optimality acts as an inductive bias. Any given behavioral phenomenon is consistent with countless cognitive models \citep{anderson1978arguments}, but only a small subset of those are optimal. If people are well-adapted to their environment, then all else being equal, the optimal models are more likely to resemble the truth than an arbitrary alternative model. Of course, people are not perfectly adapted to their environment; thus, one can always achieve a more accurate model of a particular phenomenon by abandoning the assumption of optimality, which is ultimately false. But when data is limited, or we are exploring a domain we know very little about, or we want to generalize our predictions in non-trivial ways, having a constraint that is \emph{mostly} true can improve our chances of making predictions that are \emph{mostly} accurate.
 
-Problems arise, however, when optimality isn't even mostly accurate. And there are many cases where that seems to be the case. Empirically, Kahneman and Tversky have documented cases where people grossly violate basic laws of logic, probability, and expected utility theory \tocite. But, a simple intuitive example may be even more powerful. Consider playing the game of chess. The optimal move to play in any situation can in principle be defined using basic game theory. One must simply consider all moves one could make, all moves the opponent could make in response, all moves one might make in response to each of those responses.... and so on, until one finds a full sequence of moves that guarantees victory (or at least a draw). But clearly such a strategy is impossible to actually follow.
+Problems arise, however, when optimality isn't even mostly accurate. And there are many cases where that seems to be the case. To take just one example, recall that according to expected utility theory, one should take actions that yield the highest utility outcomes in expectation. This seems straightforward enough, right? Not for humans. People systematically violate expected utility theory, making choices that cannot be reconciled with any utility function \citep{allais1953comportement,ellsberg1961risk,kahneman1979prospect}. Since then, and to this day, a major focus in research on human decisions has been to characterize exactly how and why people violate expected utility theory, for example because they misperceive the probabilities involved \citep{kahneman1979prospect} or don't consider the different actions independently \citep{roe2001multialternative}.
 
-As famously argued by \citet{simon1955behavioral}, many of the problems people face in the world are like chess, in that computing exactly optimal behavior is practically impossible. Thus, we shouldn't expect people behave optimally---at least not in the classical sense. Does this mean we should abandon the notion of optimality? Perhaps not. According to Simon's notion of \emph{bounded rationality}, we can account for our inability to play perfect chess moves while maintaining the notion of optimality (or at least the slightly less precise notion of rationality) by recognizing that a useful notion of rationality must account for the constraints imposed by our limited computational capacity.
+\subsection{Bounded rationality}
 
-\subsubsection{Accounting for cognitive contraints}
+Herb Simon \citeyearpar{simon1955behavioral} famously offered a different type of explanation for people's failure to maximize utility: People don't solve Equation~\ref{eq:utlity} because that's not the problem they're actually faced with. In most real-world problems, there are many actions, and each action could result in many different outcomes. Not to mention, we likely don't know what the exact state of the world is, either because the information literally isn't available or because we simply didn't take note of it. Computing expected utilities in this setting would be a considerable undertaking, if it was even possible. And to attempt to do so would likely be a complete waste of time. This notion, that our choices reflect not only the expected utility of their outcomes, but also our limited ability to compute those utilities is called \emph{bounded rationality} \citep{simon1990bounded}.
 
-Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. Specifically, we can define the utility of a cognitive process to account not only for external factors, like the utility of the outcomes of our choices, but also internal factors, like the amount of time and effort we spent making those choices. Formally,
-\begin{equation}\label{eq:intro-resource}
-  U(\pi) = \E_{a \mid \pi}[U(a)] - \cost(π),
-\end{equation}
-where $\E_{a \mid \pi}[U(a)]$ is the expected utility of the behavior (or ``action'') the cognitive process produces and $\cost(π)$ captures the cognitive cost associated with executing the cognitive process. This definition of the utility of a cognitive process as an additive combination of behavior-derived utility and cognitive cost is the key defining feature of \emph{resource-rational analysis} \citep{lieder2020resourcerational}.
+In modern psychological research, Simon's ideas are reflected in many different ways. One of the most prevalent is the notion of \emph{ecological rationality} \citep{gigerenzer1999simple,goldstein2002models,todd2012ecological}. Ecological rationality is based on the idea that people make decisions using simple, but adaptive heuristics. These heuristics are computationally ``frugal'', meaning that people can actually apply them in the real world. But critically, they result in good decision most of the time. How is this possible? The answer lies in the \emph{ecological} of ecological rationality. The heuristics people use would not produce good results in any hypothetical world---they produce good results in \emph{our} world. 
 
-% One unfortunate consequence of introducing cognitive cost into the objective function is that it creates decisions, precisely the thing we wish to avoid by adopting the optimality assumption. The large space of possible cost functions has been identified as an important challenge for the resource-rational approach \citep{bates2020importance,ma2020multiple}.
-
-For example, in \emph{expected value of control} (EVC) theory, the cognitive process corresponds to a strategy for selecting control signals. In the simplest case, the signal is one-dimensional, with higher values indicating more control. Higher values thus make it more likely 
-
-The cost of the cognitive process, is then the cost of 
-\begin{equation}\label{eq:intro-resource}
-  U(\pi) = \E_w \left[
-    \E_{c \sim π(w)} \left[
-      \E_{a \mid c, w} \left[
-        U(w, a)
-      \right] - \exp(c)
+To formalize this idea, we can extend Equation~\ref{eq:utility2} to account for the fact that the outcomes of our actions also depend on the state of the world. To simply the notation, let $U(w, a) = \E_{o \mid w, a} U(o)$ be the expected utility of executing action $a$ in state $w$. We can then define
+\begin{equation}\label{eq:intro-ecology}
+  U(π) = \E_{w} \left[
+    \E_{a \mid \pi, w} \left[
+      U(w, a)
     \right]
-  \right],
+  \right].
 \end{equation}
+That is, the utility of a cognitive process is equal to the expected utility of the actions it selects, across all possible world states. For this objective to be maximized, $\pi$ must select the action with maximal expected utility in every world state. Thus, the \emph{optimal} cognitive process hasn't become any simpler. But what if we are content with just a \emph{good} process? In this case, we no longer care about all world states equally. As long as the cognitive process selects high utility actions in the states that occur frequently, it's okay if it makes mistakes in the states that don't. That is, for a heuristic to be adaptive, it must only be effective in our ecology.
 
-Another commonly used cost function is based on information theory. In these models, the cognitive process forms a \emph{representation} of the state of the world, which then informs the action that is taken. The heart of the cognitive process here is the mapping from world states $w$ to mental representations $m$. The utility of this mapping is defined as
+
+% While the importance of bounded rationality and ecological adaptation is widely accepted, the implications of Simon's ideas for optimal modeling are more controversial. Proponents of ecological rationality take a hard stance, calling optimization ``demonic'' (\citealp{gigerenzer1999simple}, Chapter 1). Indeed, clearly people's cognitive processes are not optimal in the sense of maximizing utility (Equation~\ref{eq:utility2}), and nor are they likey to be exactly optimal in the cons
+
+\subsection{Resource-rationality}
+
+Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. Specifically, we can define the utility of a cognitive process to account not only for external factors, like the utility of the outcomes of our choices, but also internal factors, like the amount of time and effort we spent making those choices. That is,
+\begin{equation}\label{eq:intro-resource}
+  U(π) = \E_{a \mid π}[U(a)] - \cost(π),
+\end{equation}
+where $\E_{a \mid π}[U(a)]$ is the expected utility of the behavior (actions) the cognitive process produces and $\cost(π)$ captures the cognitive cost associated with executing the cognitive process. This definition of the utility of a cognitive process as an additive combination of behavior-derived utility and cognitive cost is the defining feature of \emph{resource-rational analysis} \citep{lieder2020resourcerational}.
+
+One unfortunate consequence of introducing cognitive cost into the objective function is that it creates decisions, precisely the thing we wish to avoid by adopting the optimality assumption. The large space of possible utility and cost functions has been identified as an important challenge for the resource-rational approach \citep{bates2020importance,ma2020multiple}.
+
+\subsubsection{Information-theoretic costs}
+
+One of the most common choices for the cost function is based on information theory. In these models, the cognitive process forms a \emph{representation} of the state of the world, which then informs the action that is taken. The heart of the cognitive process here is the (probabilistic) mapping from world states $w$ to mental representations $m$. The utility of this mapping is defined as
 \begin{equation}\label{eq:intro-info}
-    U(\pi) = \E_w \left[
-      \E_{m \sim \pi(w)}[U(w, a_m)]
-    \right] - I_\pi(w, m)
+    U(π) = \E_w \left[
+      \E_{m \sim π(w)}[U(w, a_m)]
+    \right] - I_π(w, m)
 \end{equation}
-where $a_m$ denotes the action taken given representation $m$, and $I_\pi(w,m)$ denotes the \emph{mututal information} between the state of the world and the representation under the mapping $\pi$. Intuitively, $I$ captures the fidelity of the representation. There are two key ideas to take away from this equation. First, cognitive processes can produce intermediate mental states, which are used to select actions. Second, both the action utility and cost depend on the mental state, and these two forces are in a fundamental conflict. A precise representation of the world allows one to select good actions, but such representations are costly to form.
+where $a_m$ denotes the action taken given representation $m$, $U(w, a_m)$ is the utility of taking that action in the world state $w$, and $I_π(w,m)$ denotes the \emph{mututal information} between the state of the world and the representation under the mapping $π$. Intuitively, $I$ captures the fidelity of the representation. There are two key ideas to take away from this equation. First, cognitive processes can produce intermediate mental states, which are used to select actions. Second, both the action utility and cost depend on the mental state, and these two forces are in a fundamental conflict. A precise representation of the world allows one to select good actions, but such representations are costly to form.
 
-Information-theoretic models of this sort are commonly used in the study of perception \citep{sims2016rate} and memory \citep{gershman2021rational}, most frequently their intersection. In this literature, the models are typically cast in the language of \emph{rate-distortion theory}. In this context, the utility function captures the discrepancy between the stimulus $w$ and a reconstruction of that stimulus $a_m$ based on the remembered perceptual representation $m$. In a classic application of this approach, \citet{sims2012ideal} show that a model that flexibly allocates informational resource across an arbitrary number of items explains human reconstructions better than a classic model with a fixed number of working memory slots. More recent work showed that people can strategically prioritize more important dimensions of the stimulus (that is, they are sensitive to $U$; \citealp{yoo2018strategic}) and can also allocate more or less resource in total \citep{berg2018resourcerational}. This latter result is interesting because it supports an additive cost like in Equation~\ref{eq:intro-info} over a fixed but costless capacity constraint.\footnote{
+Information-theoretic models of this sort are commonly used in the study of perception \citep{sims2016rate} and memory \citep{gershman2021rational}, most frequently their intersection. In this literature, the models are typically cast in the language of \emph{rate-distortion theory}. Here, the utility function captures the discrepancy between the stimulus $w$ and a reconstruction of that stimulus $a_m$ based on the remembered perceptual representation $m$. In a classic application of this approach, \citet{sims2012ideal} showed that a model that flexibly allocates informational resource across an arbitrary number of items explains human reconstructions better than a classic model with a fixed number of working memory slots. More recent work showed that people can strategically prioritize more important dimensions of the stimulus (that is, they are sensitive to $U$; \citealp{yoo2018strategic}) and can also allocate more or less resource in total \citep{berg2018resourcerational}. This latter result is interesting because it supports an additive cost like in Equation~\ref{eq:intro-info} over a fixed but costless capacity constraint.\footnote{
   Typically, rate-distortion models are expressed in terms of such a fixed constraint, i.e., maximizing utility subject to a constraint on mutual information. However, because mutual information is an expectation over values of $x$ and $w$, one can find a multiplier on the cost that results in any given average level of expectation (the Lagrange multiplier; see \citealp{ortega2013thermodynamics}).
 } Beyond memory, rate-distortion models have also been used to explain the exponential shape of people's generalization curves (\citealp{sims2018efficient}; c.f. \citealp{shepard1987universal} and scalar variability in approximate number representation (\citealp{piantadosi2016rational}, c.f. \citealp{fechner1860elemente}).
 
-In economics, information-theoretic models go under the name \emph{rational inattention}, reflecting the idea that one's mental representation is the result of ignoring features of the world that aren't important to one's decision \citep{sims2003implications,caplin2013behavioral}. This idea was initially developed by \citet{sims1998stickiness} to understand why prices don't respond to changing market conditions as quickly as expected-utility-based models predict. List a few findings... One interesting result from this literature is that, for the commonly used mutual-information cost function, the optimal cognitive process has exactly one representation for each possible action; that is, there is a one-to-one correspondence between $a$ and $m$. This allows one to eliminate $m$ entirely, yielding a reduced form model in which the cost is simply the mutual information between state and action \citep{matejka2015rational}, as proposed in free-energy based models \citep{friston2010freeenergy,ortega2013thermodynamics}. However, while this reduction is mathematically fascinating, it is somewhat unfortunate from a cognitive science perspective. By eliminating the mental representation from the model, we end up with a more sophisticated form of behaviorism, where we attempt to understand a cognitive process simply as a mapping from stimulus to response.
+In economics, information-theoretic models go under the name \emph{rational inattention}, reflecting the idea that one's mental representation is the result of ignoring features of the world that aren't important to one's decision \citep{sims2003implications,caplin2013behavioral}. 
+% This idea was initially developed by \citet{sims1998stickiness} to understand why prices don't respond to changing market conditions as quickly as expected-utility-based models predict. List a few findings... 
+One interesting result from this literature is that, for the commonly used mutual-information cost function, the optimal cognitive process has exactly one representation for each possible action; that is, there is a one-to-one correspondence between $a$ and $m$. This allows one to eliminate $m$ entirely, yielding a reduced form model in which the cost is simply the mutual information between state and action \citep{matejka2015rational}, as proposed in free-energy based models \citep{friston2010freeenergy,ortega2013thermodynamics}. Ultimately, the result is a slight variation of the commonly used ``softmax'' model of choice,
+\begin{equation}
+  \pi(a \mid w) \propto \expp{\frac{1}{λ} \cdot (U(w, a) + \alpha_a)}
+\end{equation}
+where $\lambda$ is a scaling constant on the mutual-information cost and $\alpha_a$ captures a default tendency to take action $a$ (the values of $\alpha$ can be determined optimally, being larger for actions that have higher average utility).
+
+This reduction is mathematically fascinating, and it provides a useful extension of the standard softmax model by accounting for the habitual tendency to take actions that are usually good. However, if our goal is to define rational \emph{mechanistic} models of cognition, we seem to be going backwards. By eliminating the mental representation from the model, we end up with a more sophisticated form of behaviorism, where we attempt to understand a cognitive process simply as a mapping from stimulus to response.
+
+Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness. Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
+
+\subsubsection{Effort and control costs}
+
+Todo: cite \citep{kool2017costbenefit} and citations therein. Also see \citep{kool2018mental}.
+
+
+Another type of cost is captured in the \emph{expected value of control} (EVC) theory \citep{shenhav2013expected}. These models build on the idea many cognitive processes can only be performed when one is paying close attention to them \citep{cohen1990control}. These \emph{controlled} processes are contrasted with automatic processes that can be performed ``in the background'', often in parallel. But because one can only pay close attention to one (or perhaps a few) things at the same time, this raises the question of which processes should receive that attention---and how much of it? The EVC theory suggest an answer: control should be allocated to maximize the utility of the resulting behavior minus the cost of control, that is, the expected value of control:\footnote{%
+  Note that we depart from the original definition of EVC \citep{shenhav2013expected} for consistency with the other equations in this section. In the original definition, the utility is defined in terms of the outcome of the process, rather than the behavior iteself. Non-trivially, the outcome was proposed to include the following world state, making EVC a sequential framework. However, most applications of EVC do not actually use this feature, assuming that the utility of the outcome depends only on the behavior in the current trial, as in Equation~\ref{eq:evc1}. One notable exception is the visual attention model in \citet{lieder2018rational}, which employs an early version of the framework proposed here.
+} 
+\begin{equation}\label{eq:evc1}
+  \text{EVC}(w, c) = 
+    \E_{a \mid w, c} \left[
+      U(w, a)
+    \right] - \cost(c)
+\end{equation}
+In the simplest case, the control signal $c$ is a scalar indicating how much attention or control is invested. In this case, the cost function is often taken to be exponential, reflecting the idea that greater amounts of control are increasingly costly (e.g. \citealp{musslick2018estimating}). In more complex cases, the control signal can have multiple dimensions \citep{ritz2021cognitive} and the cost function can include reconfiguration costs associated with changing the control signal from trial to trial \citep{musslick2015computational,grahek2020computational}.
+
+What is the optimal cognitive process according to EVC? Interestingly, there are two ways to answer this question. On one hand, we can think of the control signal itself as the cognitive process. Indeed, in applications of EVC, the control signal often parameterizes an evidence-accumulation process (the DDM, described in the next section; \citealp{musslick2015computational,grahek2020computational}). Thus, selecting a control signal amounts to selecting a cognitive process to execute. Formally, this corresponds to defining $π = c$ and $U(w, π) = \text{EVC}(w, π)$.This results in our general definition of optimal cognitive processes in Equation~\ref{eq:intro-resource}, with the addition that the utility of the process (i.e., the value of the control signal) depends on the state of the world (e.g., whether the current trial is easy or hard).
+
+Alternatively, we can think of the optimal cognitive process as the strategy for selecting control signals, that is, by maximizing EVC. In this case, we would define the utility of the selection strategy as
+\begin{equation}\label{eq:evc2}
+  U(π) = \E_w \left[
+    \E_{c \sim π(w)} \left[
+      \E_{a \mid c, w} \left[
+        U(w, a)
+      \right] - \cost(c)
+    \right]
+  \right],
+\end{equation}
+where $π$ is now the mapping from world states to control signals. Clearly the mapping which maximizes Equation~\ref{eq:evc1} in all states will also optimize Equation~\ref{eq:evc2}. Thus, as long as we do not put any constraints on the space of selection strategies, the definitions are equivalent. Conceptually, however, the notion of a cognitive process whose function is to select cognitive processes (a \emph{metalevel} process, perhaps) is critical.
+
+This idea of selecting amongst different possible cognitive processes to tackle a problem is the central focus of the literature on \emph{strategy selection} for decision-making. The earliest work in this area recognized that the ideal strategy selection rule would involve a cost-benefit analysis \citep{beach1978contingency}, and early empirical work suggested that people do indeed select strategies according to such an analysis \citep{payne1988adaptive}. More recently, \citet{lieder2017strategy} explictly formalized this idea, proposing that people select strategies by maximizing the \emph{value of computation} (VOC; \citealp{russell1991principles}). The VOC quantifies the expected utility of the choice selected by a given strategy $s$ applied to a problem $p$, minus the cost of applying the strategy:
+\begin{equation}\label{eq:voc}
+  \text{VOC}(p, s) = 
+    \E_{a \mid p, s} \left[
+      U(p, a)
+    \right] - \cost(p, s).
+\end{equation}
+If this equation looks familiar, that's because it is. It is nearly exactly parallel to the definition of EVC (Equation~\ref{eq:evc1}), with the exception that the cost can depend on the problem as well as the strategy. Although the two models have typically been applied to either discrete strategies or continuous control signals, they are largely formally equivalent \citep{shenhav2017rational}.
+
+For our purposes, however, there is one important difference between EVC and VOC, or more generally, between cognitive control and strategy selection. In the latter case, the cost of executing a strategy is typically assumed to be directly related to the \emph{amount} of computation that is performed. More precisely, the cost of applying a strategy depends on the number of discrete computational operations it performs, and the time that each operation takes \citep{payne1988adaptive}. It is possible to decompose the cost of a strategy in this way because strategies are \emph{sequential}.
+
 
 % Importantly, however, this reduction can only be applied under the assumption that all conceivable representational mappings are actually possible. By making stronger, psychologically motivated, assumptions about the form of the cognitive process (the mapping), we can still glean interesting cognitive insights. For example, \citet{bhui2018decision} use 
 
 % \begin{equation}\label{eq:intro-resource}
-%   π^* = \argmax_{π \in \Pi} U(\pi) - \cost(π),
+%   π^* = \argmax_{π \in \Pi} U(π) - \cost(π),
 % \end{equation}
 
- % Conceptually $U$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $U$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
+% Conceptually $U$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $U$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
 
 \subsection{Sequential models}
 
@@ -111,15 +184,23 @@ One widely used class of sequential models are \emph{evidence accumulation} mode
 Another important class of dynamic models, \emph{cognitive architectures}, aims to capture a more diverse range of mental activities, beyond simply accumulating more evidence. Cognitive architectures, most notably ACT-R \citep{anderson1996act} and SOAR \citep{laird1987soar}, explicitly model individual cognitive operations such as perceptually encoding a stimulus, recalling information from memory, and transforming symbolic reprenstations the world. These models can trace their intellectual roots to the infancy of artificial intelligence research \citep{newell1956logic}, where the discovery that digital computers could solve complex problems by breaking them down into a sequence of very simple operations led to the hypothesis that a similar principle might underlie human intelligence \citep{newell1958elements,newell1972human}. 
 % The core assumption of these models is that all cognitive processes can be broken down into so-called \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}.
 
-Formally, we can define sequentiality as a restriction on the space of possible cognitive processes, $\Pi$. Initially, we might be tempted to say that a cognitive process is simply a sequence of cognitive operations. But this assumes that a given cognitive process will always execute the same sequence of operations, regardless of the state of the world. To account for this dependence, we define each $\pi$ as conditional distribution over cognitive operations given the world state (much as how rate-distortion models define a conditional distribution over representations). Thus, each $\pi \in \Pi$ is defined as
+Formally, we can define sequentiality as a restriction on the space of possible cognitive processes, $\Pi$. Initially, we might be tempted to say that a cognitive process is simply a sequence of cognitive operations. But this assumes that a given cognitive process will always execute the same sequence of operations, regardless of the state of the world. To account for this dependence, we define each $π$ as conditional distribution over cognitive operations given the world state (much as how rate-distortion models define a conditional distribution over representations). Thus, each $π \in \Pi$ is defined as
 \begin{equation}\label{eq:intro-sequential}
-   \pi = P(\cseq \mid w),
+   π = P(\cseq \mid w),
 \end{equation}
 where $\cseq = (c_1, c_2, \ldots, c_n)$ is a sequence of cognitive operations and $P(x)$ denotes a probability distribution over possible values of $x$.
 
-Formalizing dynamic models in this way emphasizes a substantial challenge in constructing them. In principle, any cognitive operation can be executed at any time. Thus, one must not only specify the set of operations and their effects, but also a strategy for how the operations are chosen \citep{payne1988adaptive}. If there are $C$ possible cognitive operations and sequences can go up to length $N$, there are over $C^N$ possible sequences. The space of distributions over those sequences is truly immense. As noted by \citet{howes2009rational}, this space is rarely explored in any kind of systematic manner, which can lead to erroneous conclusions about which cognitive architectures are consistent with a given pattern of behavioral data.
+Formalizing a cognitive process in this way provides a natural way to define the cost of executing a strategy, as the sum of the cost of each operation it executes:
+\begin{equation}\label{eq:intro-cost}
+  \cost(π) = \E_w \left[
+    \E_{\cseq \sim \pi(w)} \left[
+      \sum_i \cost(c_i)
+    \right]
+  \right].
+\end{equation}
+This may look like kicking the can down the road, but defining the cost of a strategy as the sum cost of all the operations it executes represents real progress. This is because operations are much simpler objects than strategies, and so their cost can be more easily estimated \citep{donders1969speed}. Even without empirical measurement, very simple assumptions (e.g. that all operations have the same cost) can yield useful predictions. For example, using this assumption, \citet{payne1988adaptive} analyzed the cost and expected action utility of a set of ten possible decision strategies, finding that people used strategies that struck good cost-benefit tradeoffs, adapting their choice of strategy to time constraints and the structure of the decision problems.
 
-Ecological rationality goes here.
+On the other hand, formalizing cognitive processes as (distributions over) sequences of operations poses considerable challenges. If there are $C$ possible cognitive operations and sequences can go up to length $N$, there are over $C^N$ possible sequences. The space of distributions over those sequences is truly immense. Payne et al. circumvented this problem by manually specifying a small set of candidate strategies. But how can we be sure that this set includes the strategies people use, or that achieve the best cost-benefit trade-offs? Indeed, as shown by \citet{howes2009rational}, failing to consider all the possible strategies can yield incorrect conclusions about which cognitive architectures are consistent with a given pattern of behavioral data. But as the set of strategies grows, more and more architectures become consistent with the data. As Howes et al. convincingly argued, adopting additional constraints---specifically, the assumption of optimality---may be necessary to distinguish between candidate architectures.
 
 % Constructing dynamic models poses a substantial challenge, however, particularly when there are many different elementary operations. Because any number of cognitive operations can be executed at any time, one must not only specify the set of operations and their effects, but also a strategy for how the operations are chosen \citep{payne1988adaptive}. In practice this is often done in an ad hoc manner (c.f., \citealp{howes2009rational}).
 
@@ -130,15 +211,75 @@ Ecological rationality goes here.
 
 \subsection{Optimal sequential models}
 
-Having defined and briefly reviewed optimal and dynamic models, we now turn to the key question: how can we combine these ideas? Like the optimal models, we assume that the cognitive process people use maximizes a utility function, specifically one that takes into account both the utility of our actions and the cost of the process. And like sequential models, we assume that cognitive processes correspond to distributions over sequences of cognitive operations. This results in 
+
+\newcommand{\highlight}[2]{%
+  \colorbox{#1}{\strut $\displaystyle#2$}}
+
+\definecolor{optimal}{HTML}{fbb4ae}
+\definecolor{ecology}{HTML}{fed9a6}
+\definecolor{resource}{HTML}{ffffcc}
+\definecolor{info}{HTML}{ccebc5}
+\definecolor{sequential}{HTML}{b3cde3}
+\definecolor{cost}{HTML}{decbe4}
+
+\newcommand{\specialitem}[3][black]{%
+  \item[%
+    \colorbox{#2}{\textcolor{#1}{\makebox[1em]{\textbf{#3}}}}%
+  ]
+}
+
+Having defined and briefly reviewed optimal and dynamic models, we now turn to the key question: How can we define a model that is optimal, resource-constrained, and sequential? To do so, we combine six key insights from the literature reviewed above.
+%
+\begin{enumerate}
+  \specialitem{optimal}{1} An optimal cognitive process is one that maximizes an objective function 
+  (Equation~\ref{eq:intro-optimal}).
+
+  \specialitem{ecology}{2} Cognitive procesess only need to work well on the types of problems people encounter frequently 
+  (Equation~\ref{eq:intro-ecology}).
+
+  \specialitem{resource}{3} The utility of a cognitive process depends both on the utility of the action it produces as well as the cost of executing the process 
+  (Equation~\ref{eq:intro-resource}).
+
+  \specialitem{info}{4} The action selected by a cognitive process is mediated by the mental state it produces 
+  (Equation~\ref{eq:intro-info}).
+
+  \specialitem{sequential}{5} A cognitive process can be broken down into a sequence of mental operations, or more precisely, a distribution over such sequences 
+  (Equation~\ref{eq:intro-sequential}).
+
+  \specialitem{cost}{6} The cost of a cognitive process is the sum of the cost of each operation it performs 
+  (Equation~\ref{eq:intro-cost}).
+\end{enumerate}
+%
+Combining these ideas, yields the following (admittedly, somewhat monstrous) definition of an optimal sequential cognitive process:
 \begin{equation}
-  π^* = \argmax_{π} \E_w \left[
-   \E_{\cseq \sim \pi(w)} \left[
-      U(w, a_n) - \sum_i \cost(c_i)
-    \right]
-  \right]
+  π^* = \highlight{optimal}{\argmax_{π}} 
+    \highlight{ecology}{\E_w} \left[
+      \highlight{sequential}{\E_{\cseq \sim π(w)}} \left[
+        \highlight{info}{\E_{m \mid \cseq}} \left[
+          \highlight{resource}{U}(\highlight{ecology}{w}, \highlight{info}{a_m})
+        \right]
+        \highlight{resource}{-} \highlight{cost}{\sum_i}
+          \highlight{resource}{\cost}(\highlight{sequential}{c_i})
+      \right]
+    \right].
 \end{equation}
-where $a_n$ (I think I want $m$ in here...)
+However, as the tacky highlighter effect hopefully reveals, none of these ideas are new.
+
+
+% That is, the optimal cognitive process is the distribution over sequences of operations (6), which maximizes (1) the expected utility of actions minus cognitive cost (3), where the action is selected based on the mental state resulting from those operations, the cost is the sum of the cost of each 
+
+
+
+% \begin{equation}
+%   π^* = \argmax_{π} \E_w \left[
+%     \E_{\cseq \sim π(w)} \left[
+%       \E_{m \mid \cseq} \left[
+%         U(w, a_m)
+%       \right]
+%       - \sum_i \cost(c_i)
+%     \right]
+%   \right].
+% \end{equation}
 
 
 % \begin{equation}
@@ -147,12 +288,12 @@ where $a_n$ (I think I want $m$ in here...)
 
 
 % \begin{equation}
-%   π^* = \argmax_{π} \E_{\cseq \mid \pi} \left[
+%   π^* = \argmax_{π} \E_{\cseq \mid π} \left[
 %     U(a_n) - \sum_i \cost(c_i)
 %   \right]
 % \end{equation}
 % \begin{equation}
-%   π^* = \argmax_{π} \E_{\cseq \mid \pi} \left[
+%   π^* = \argmax_{π} \E_{\cseq \mid π} \left[
 %     \E_{a \mid \cseq} [ U(a) ] - \sum_i \cost(c_i)
 %   \right]
 % \end{equation}
