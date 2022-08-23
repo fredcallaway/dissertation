@@ -178,7 +178,7 @@ For our purposes, however, there is one important difference between EVC and VOC
 
 The fact that cognitive processes are sequential, in the sense that they occur over time rather than all at once, is self-evident. Thus, some notion of sequentiality is an essential feature of a model that captures cognitive mechanisms at any level of detail. Here, however, we will use a slightly more restrictive notion of sequentiality. Specifically, we take sequentiality to mean that cognitive processes can be broken down into a sequences of \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}, or simply, cognitive operations.
 
-One widely used class of sequential models are \emph{evidence accumulation} models (also called ``sequential sampling models''), such as the drift diffusion model \citep{ratcliff1978theory}, leaky competing accumulators \citep{usher2001time}, and decision by sampling \citep{stewart2006decision}. According to these models, decision making involves accumulating noisy evidence in favor of each possible choice until the evidence for one choice is sufficiently greater than the evidence for the other(s). That is, the cognitive process can be understood as a sequence of operations, each of which accumulates a small amount of evidence. In their simplest form, there is only one type of operation; these models can explain not only the choices we make (including when we make mistakes), but also how long it takes to make those choices. More complex evidence accumulation models take into account the possibility of attending to different sources of information, such as different options \citep{krajbich2010visual} or attributes \citep{russo1983strategies}; these models can account for (if not predict) additional data such as what we look at when making a decisision, and they can account for systematic deviations from expected utility \citep{busemeyer2019cognitive}.
+One widely used class of sequential models are \emph{evidence accumulation} models (also called ``sequential sampling models''), such as the drift diffusion model (DDM; \citealp{ratcliff1978theory}), leaky competing accumulators \citep{usher2001time}, and decision by sampling \citep{stewart2006decision}. According to these models, decision making involves accumulating noisy evidence in favor of each possible choice until the evidence for one choice is sufficiently greater than the evidence for the other(s). That is, the cognitive process can be understood as a sequence of operations, each of which accumulates a small amount of evidence. In their simplest form, there is only one type of operation; these models can explain not only the choices we make (including when we make mistakes), but also how long it takes to make those choices. More complex evidence accumulation models take into account the possibility of attending to different sources of information, such as different options \citep{krajbich2010visual} or attributes \citep{russo1983strategies}; these models can account for (if not predict) additional data such as what we look at when making a decisision, and they can account for systematic deviations from expected utility \citep{busemeyer2019cognitive}.
 % For example, these models predict that easier decisions will be made both more consitently and more quickly, and that mistakes will be faster than correct choices.
 
 Another important class of dynamic models, \emph{cognitive architectures}, aims to capture a more diverse range of mental activities, beyond simply accumulating more evidence. Cognitive architectures, most notably ACT-R \citep{anderson1996act} and SOAR \citep{laird1987soar}, explicitly model individual cognitive operations such as perceptually encoding a stimulus, recalling information from memory, and transforming symbolic reprenstations the world. These models can trace their intellectual roots to the infancy of artificial intelligence research \citep{newell1956logic}, where the discovery that digital computers could solve complex problems by breaking them down into a sequence of very simple operations led to the hypothesis that a similar principle might underlie human intelligence \citep{newell1958elements,newell1972human}. 
@@ -211,9 +211,8 @@ On the other hand, formalizing cognitive processes as (distributions over) seque
 
 \subsection{Optimal sequential models}
 
-
 \newcommand{\highlight}[2]{%
-  \colorbox{#1}{\strut $\displaystyle#2$}}
+  \colorbox{#1}{\vphantom{$\sum_i$} $\displaystyle#2$}}
 
 \definecolor{optimal}{HTML}{fbb4ae}
 \definecolor{ecology}{HTML}{fed9a6}
@@ -250,8 +249,8 @@ Having defined and briefly reviewed optimal and dynamic models, we now turn to t
   (Equation~\ref{eq:intro-cost}).
 \end{enumerate}
 %
-Combining these ideas, yields the following (admittedly, somewhat monstrous) definition of an optimal sequential cognitive process:
-\begin{equation}
+Combining these ideas, yields the following definition of an optimal sequential cognitive process:
+\begin{equation}\label{eq:intro-master}
   π^* = \highlight{optimal}{\argmax_{π}} 
     \highlight{ecology}{\E_w} \left[
       \highlight{sequential}{\E_{\cseq \sim π(w)}} \left[
@@ -263,10 +262,22 @@ Combining these ideas, yields the following (admittedly, somewhat monstrous) def
       \right]
     \right].
 \end{equation}
-However, as the tacky highlighter effect hopefully reveals, none of these ideas are new.
+That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky highlighter effect hopefully reveals, none of these ideas are new.
+
+The idea to combine these ideas is not especially new either. In particular, there is a long history of modeling optimal speed-accuracy tradeoffs using evidence accumulation models like the ones described in the previous section. Much of this work can be traced back to the \emph{sequential probability ratio test} (SPRT), which specifies the optimal amount of evidence to collect when evaluating simple binary hypotheses \citet{wald1945sequential}. The rule is simple: continue collecting evidence until there a threshold level of evidence is reached either for or against the hypothesis. When samples are very costly, the optimal threshold is often quite low, capturing the response randomness that is hard to explain in unbounded Bayesian models \citep{vul2014one}. On the other side of the spectrum, as both the cost and informativity of each sample fall, the SPRT converges towards the DDM \citep{gold2002banburismus}; the DDM thus inherits the SPRT's optimality properties. In particular \citet{bogacz2006physics} show that, for any given level of evidence coherence (problem difficulty), there is some fixed threshold that maximizes the rate of reward. Under certain assumptions, this is equivalent to maximizing a linear combination of choice utility and cost.\footnote{
+  Maximizing reward rate and an additive difference of utility and cost are equivalent in the sense that, for a given decision problem, there is some time cost such that maximizing the reward rate will also maximize the reward minus cost \citep{wald1948optimum,drugowitsch2012cost}. However, this mapping will vary for problems of different difficulty or stakes. For example, multiplying the payoff for correct decisions by two does not change the optimal reward-rate strategy, but it does change the optimal utility-minus-cost strategy.
+} Thus, we can view the DDM as an optimal cognitive process, in exactly the sense defined in Equation~\ref{eq:intro-master}.
+
+The optimality of the SPRT (and by extension, the DDM) depends on the assumption that difficulty and importance of the decision are both known in advance. But this is often not true. By explicitly modeling evidence accumulation as a sequential decision problem, \citet{drugowitsch2012cost} showed that the optimal strategy can still be represented as an evidence threshold when difficulty varies from problem to problem, but this threshold changes over time (rapidly expanding and then slowly collapsing). Building on this work, \citet{tajima2016optimal} characterized the optimal decision thresholds for value-based choices, where both importance and difficulty depend on the difference in value between the choice options \citep{tajima2016optimal}, and three-alternative choices, where the mental states and thresholds reside in an three-dimensional space (including time). Despite this richness, all the models reviewed so far have assumed a very simple cognitive architecture, in which there are only two possible cognitive operations: gather more evidence, or stop. We consider a more complex case, in which an agent must select among different possible sources of evidence, in Chapter~\ref{sec:attention} (c.f., \citealp{hebert2019rational,jang2021optimal}).
+
+Beyond evidence-accumulation models of decision making, optimal sequential models ...
+Howes
+POMDP visual search
 
 
-% That is, the optimal cognitive process is the distribution over sequences of operations (6), which maximizes (1) the expected utility of actions minus cognitive cost (3), where the action is selected based on the mental state resulting from those operations, the cost is the sum of the cost of each 
+% \citet{hamrick2015think} 
+% \citet{lieder2018anchoring} 
+
 
 
 
