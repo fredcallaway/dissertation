@@ -184,23 +184,31 @@ One widely used class of sequential models are \emph{evidence accumulation} mode
 Another important class of dynamic models, \emph{cognitive architectures}, aims to capture a more diverse range of mental activities, beyond simply accumulating more evidence. Cognitive architectures, most notably ACT-R \citep{anderson1996act} and SOAR \citep{laird1987soar}, explicitly model individual cognitive operations such as perceptually encoding a stimulus, recalling information from memory, and transforming symbolic reprenstations the world. These models can trace their intellectual roots to the infancy of artificial intelligence research \citep{newell1956logic}, where the discovery that digital computers could solve complex problems by breaking them down into a sequence of very simple operations led to the hypothesis that a similar principle might underlie human intelligence \citep{newell1958elements,newell1972human}. 
 % The core assumption of these models is that all cognitive processes can be broken down into so-called \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}.
 
-Formally, we can define sequentiality as a restriction on the space of possible cognitive processes, $\Pi$. Initially, we might be tempted to say that a cognitive process is simply a sequence of cognitive operations. But this assumes that a given cognitive process will always execute the same sequence of operations, regardless of the state of the world. To account for this dependence, we define each $π$ as conditional distribution over cognitive operations given the world state (much as how rate-distortion models define a conditional distribution over representations). Thus, each $π \in \Pi$ is defined as
+Formally, we can define sequentiality as a restriction on the space of possible cognitive processes, $\Pi$. Intuitively, the cognitive process corresponds to a strategy for selecting cognive operations. But how should this be strategy be specified? Initially, we might be tempted to say that a cognitive process is simply a sequence of cognitive operations. But this assumes that a given cognitive process will always execute the same sequence of operations, regardless of the state of the world. Perhaps the cognitive process should be a mapping from world states to (distributions over) sequences of operations?. This is a valid approach, but it retricts the cognitive process to be ``open loop'' in the sense that it cannot reactively adjust which operations it performs based on the effects of previous operations, which are typically stochastic. To capture a more adaptive form of ``closed loop'' strategy, we can instead define a cognitive process in terms of a mapping from \emph{mental} states to single cognitive operations (for simplicity, we assume a deterministic mapping). Thus, each $π \in \Pi$ is defined as a function, $\pi: \M \rightarrow \C$, such that
 \begin{equation}\label{eq:intro-sequential}
-   π = P(\cseq \mid w),
+   c_t = \pi(m_t)
 \end{equation}
-where $\cseq = (c_1, c_2, \ldots, c_n)$ is a sequence of cognitive operations and $P(x)$ denotes a probability distribution over possible values of $x$.
+That is, at each time step, $\pi$ chooses the next cognitive operation to execute given the current mental state. For example, consider the DDM, which assumes that evidence is accumulated until the total evidence hits an upper or lower threshold, $b$ or $-b$. We could formalize this strategy as the function
+\begin{equation}
+  \pi(m) = \begin{cases}
+    \text{choose A} &\text{if } m > b  \\
+    \text{choose B} &\text{if } m < -b  \\
+    \text{draw sample} &\text{if } -b ≤ m ≤ b
+  \end{cases}
+\end{equation}
 
 Formalizing a cognitive process in this way provides a natural way to define the cost of executing a strategy, as the sum of the cost of each operation it executes:
 \begin{equation}\label{eq:intro-cost}
   \cost(π) = \E_w \left[
-    \E_{\cseq \sim \pi(w)} \left[
-      \sum_i \cost(c_i)
+    \E_{\cseq \mid \pi} \left[
+      \sum_t^N \cost(c_t)
     \right]
   \right].
 \end{equation}
+where $\cseq = (c_1, c_2, \ldots, c_N)$ is a sequence of cognition operations.
 This may look like kicking the can down the road, but defining the cost of a strategy as the sum cost of all the operations it executes represents real progress. This is because operations are much simpler objects than strategies, and so their cost can be more easily estimated \citep{donders1969speed}. Even without empirical measurement, very simple assumptions (e.g. that all operations have the same cost) can yield useful predictions. For example, using this assumption, \citet{payne1988adaptive} analyzed the cost and expected action utility of a set of ten possible decision strategies, finding that people used strategies that struck good cost-benefit tradeoffs, adapting their choice of strategy to time constraints and the structure of the decision problems.
 
-On the other hand, formalizing cognitive processes as (distributions over) sequences of operations poses considerable challenges. If there are $C$ possible cognitive operations and sequences can go up to length $N$, there are over $C^N$ possible sequences. The space of distributions over those sequences is truly immense. Payne et al. circumvented this problem by manually specifying a small set of candidate strategies. But how can we be sure that this set includes the strategies people use, or that achieve the best cost-benefit trade-offs? Indeed, as shown by \citet{howes2009rational}, failing to consider all the possible strategies can yield incorrect conclusions about which cognitive architectures are consistent with a given pattern of behavioral data. But as the set of strategies grows, more and more architectures become consistent with the data. As Howes et al. convincingly argued, adopting additional constraints---specifically, the assumption of optimality---may be necessary to distinguish between candidate architectures.
+On the other hand, formalizing cognitive processes as mappings from mental states to cognitive operations poses considerable challenges. Many models have a very large space of possible mental states, and we need to specify which cognitive operation is executed in each one. If there are $M$ possible mental states and $C$ possible operations, there are $C^M$ possible mappings. If $M$ is large (and it often is), this results in a huge space of possible cognitive processes. Searching this entire space is effectively impossible. Payne et al. circumvented this problem by manually specifying a small set of candidate strategies (mappings). But how can we be sure that this set includes the strategies people use, or that achieve the best cost-benefit trade-offs? Indeed, as shown by \citet{howes2009rational}, failing to consider all the possible strategies can yield incorrect conclusions about which cognitive architectures are consistent with a given pattern of behavioral data. But as the set of strategies grows, more and more architectures become consistent with the data. As Howes et al. convincingly argued, adopting additional constraints---specifically, the assumption of optimality---may be necessary to distinguish between candidate architectures.
 
 % Constructing dynamic models poses a substantial challenge, however, particularly when there are many different elementary operations. Because any number of cognitive operations can be executed at any time, one must not only specify the set of operations and their effects, but also a strategy for how the operations are chosen \citep{payne1988adaptive}. In practice this is often done in an ad hoc manner (c.f., \citealp{howes2009rational}).
 
@@ -211,8 +219,11 @@ On the other hand, formalizing cognitive processes as (distributions over) seque
 
 \subsection{Optimal sequential models}
 
+\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width -3pt}   
+
 \newcommand{\highlight}[2]{%
-  \colorbox{#1}{\vphantom{$\sum_i$} $\displaystyle#2$}}
+  \colorbox{#1}{ \mystrut(18,15) $\displaystyle#2$}
+}
 
 \definecolor{optimal}{HTML}{fbb4ae}
 \definecolor{ecology}{HTML}{fed9a6}
@@ -248,19 +259,18 @@ Having defined and briefly reviewed optimal and dynamic models, we now turn to t
   \specialitem{cost}{6} The cost of a cognitive process is the sum of the cost of each operation it performs 
   (Equation~\ref{eq:intro-cost}).
 \end{enumerate}
-%
 Combining these ideas, yields the following definition of an optimal sequential cognitive process:
 \begin{equation}\label{eq:intro-master}
-  π^* = \highlight{optimal}{\argmax_{π}} 
+  π^* = \highlight{optimal}{\argmax_{π}}\ 
     \highlight{ecology}{\E_w} \left[
       \highlight{sequential}{\E_{\cseq \sim π(w)}} \left[
         \highlight{info}{\E_{m \mid \cseq}} \left[
           \highlight{resource}{U}(\highlight{ecology}{w}, \highlight{info}{a_m})
         \right]
-        \highlight{resource}{-} \highlight{cost}{\sum_i}
+        \highlight{resource}{-}\ \highlight{cost}{\sum_i}\ 
           \highlight{resource}{\cost}(\highlight{sequential}{c_i})
       \right]
-    \right].
+    \right]
 \end{equation}
 That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky highlighter effect hopefully reveals, none of these ideas are new.
 
@@ -270,7 +280,14 @@ The idea to combine these ideas is not especially new either. In particular, the
 
 The optimality of the SPRT (and by extension, the DDM) depends on the assumption that difficulty and importance of the decision are both known in advance. But this is often not true. By explicitly modeling evidence accumulation as a sequential decision problem, \citet{drugowitsch2012cost} showed that the optimal strategy can still be represented as an evidence threshold when difficulty varies from problem to problem, but this threshold changes over time (rapidly expanding and then slowly collapsing). Building on this work, \citet{tajima2016optimal} characterized the optimal decision thresholds for value-based choices, where both importance and difficulty depend on the difference in value between the choice options \citep{tajima2016optimal}, and three-alternative choices, where the mental states and thresholds reside in an three-dimensional space (including time). Despite this richness, all the models reviewed so far have assumed a very simple cognitive architecture, in which there are only two possible cognitive operations: gather more evidence, or stop. We consider a more complex case, in which an agent must select among different possible sources of evidence, in Chapter~\ref{sec:attention} (c.f., \citealp{hebert2019rational,jang2021optimal}).
 
-Beyond evidence-accumulation models of decision making, optimal sequential models ...
+Outside of evidence-accumulation models of decision making, optimal sequential models of cognitive procesess are not as commonly seen. 
+
+hoppe2019multistep
+acharya2017human
+butko2008pomdp
+sprague2003eye
+
+models ...
 Howes
 POMDP visual search
 
