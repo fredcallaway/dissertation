@@ -75,15 +75,15 @@ Herb Simon \citeyearpar{simon1955behavioral} famously offered a different type o
 
 In modern psychological research, Simon's ideas are reflected in many different ways. One of the most prevalent is the notion of \emph{ecological rationality} \citep{gigerenzer1999simple,goldstein2002models,todd2012ecological}. Ecological rationality is based on the idea that people make decisions using simple, but adaptive heuristics. These heuristics are computationally ``frugal'', meaning that people can actually apply them in the real world. But critically, they result in good decision most of the time. How is this possible? The answer lies in the \emph{ecological} of ecological rationality. The heuristics people use would not produce good results in any hypothetical world---they produce good results in \emph{our} world. 
 
-To formalize this idea, we can extend Equation~\ref{eq:utility2} to account for the fact that the outcomes of our actions also depend on the state of the world. To simply the notation, let $U(w, a) = \E_{o \mid w, a} U(o)$ be the expected utility of executing action $a$ in state $w$. We can then define
+To formalize this idea, we can extend Equation~\ref{eq:utility2} to account for the fact that the outcomes of our actions also depend on the state of the world. To simply the notation, let $U(w, a) = \E_{o \mid w, a} U(o)$ be the expected utility of executing action $a$ in state $w$. Furthermore let the environment $E$ be a distribution over possible states of the world. We can then define
 \begin{equation}\label{eq:intro-ecology}
-  U(π) = \E_{w} \left[
+  U(π) = \E_{w \sim E} \left[
     \E_{a \mid \pi, w} \left[
       U(w, a)
     \right]
   \right].
 \end{equation}
-That is, the utility of a cognitive process is equal to the expected utility of the actions it selects, across all possible world states. For this objective to be maximized, $\pi$ must select the action with maximal expected utility in every world state. Thus, the \emph{optimal} cognitive process hasn't become any simpler. But what if we are content with just a \emph{good} process? In this case, we no longer care about all world states equally. As long as the cognitive process selects high utility actions in the states that occur frequently, it's okay if it makes mistakes in the states that don't. That is, for a heuristic to be adaptive, it must only be effective in our ecology.
+That is, the utility of a cognitive process is equal to the expected utility of the actions it selects, across all world states (weighted by their probability). For this objective to be maximized, $\pi$ must select the action with maximal expected utility in every world state. Thus, the \emph{optimal} cognitive process hasn't become any simpler. But what if we are content with just a \emph{good} process? In this case, we no longer care about all world states equally. As long as the cognitive process selects high utility actions in the states that occur frequently, it's okay if it makes mistakes in the states that don't. That is, for a heuristic to be adaptive, it must only be effective in our ecology.
 
 
 % While the importance of bounded rationality and ecological adaptation is widely accepted, the implications of Simon's ideas for optimal modeling are more controversial. Proponents of ecological rationality take a hard stance, calling optimization ``demonic'' (\citealp{gigerenzer1999simple}, Chapter 1). Indeed, clearly people's cognitive processes are not optimal in the sense of maximizing utility (Equation~\ref{eq:utility2}), and nor are they likey to be exactly optimal in the cons
@@ -216,25 +216,24 @@ On the other hand, formalizing cognitive processes as mappings from mental state
 %   \cost(π) = \expect{\sum_t \cost(c_t)}{c_t \sim π}
 % \end{equation}
 
+\pagebreak
 
 \subsection{Optimal sequential models}
 
-\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width -3pt}   
+\definecolor{optimal}{HTML}{e41a1c}
+\colorlet{ecology}{SchoolColor}
+\definecolor{resource}{HTML}{4daf4a}
+\definecolor{info}{HTML}{377eb8}
+\definecolor{sequential}{HTML}{7B2FB0}
+\definecolor{cost}{HTML}{D4609A}
 
 \newcommand{\highlight}[2]{%
-  \colorbox{#1}{ \mystrut(18,15) $\displaystyle#2$}
+  {\color{#1} #2}
 }
 
-\definecolor{optimal}{HTML}{fbb4ae}
-\definecolor{ecology}{HTML}{fed9a6}
-\definecolor{resource}{HTML}{ffffcc}
-\definecolor{info}{HTML}{ccebc5}
-\definecolor{sequential}{HTML}{b3cde3}
-\definecolor{cost}{HTML}{decbe4}
-
-\newcommand{\specialitem}[3][black]{%
+\newcommand{\specialitem}[2]{%
   \item[%
-    \colorbox{#2}{\textcolor{#1}{\makebox[1em]{\textbf{#3}}}}%
+    {\color{#1} \textbf{#2}}%
   ]
 }
 
@@ -243,36 +242,34 @@ Having defined and briefly reviewed optimal and dynamic models, we now turn to t
 \begin{enumerate}
   \specialitem{optimal}{1} An optimal cognitive process is one that maximizes an objective function 
   (Equation~\ref{eq:intro-optimal}).
-
+  %
   \specialitem{ecology}{2} Cognitive procesess only need to work well on the types of problems people encounter frequently 
   (Equation~\ref{eq:intro-ecology}).
-
+  %
   \specialitem{resource}{3} The utility of a cognitive process depends both on the utility of the action it produces as well as the cost of executing the process 
   (Equation~\ref{eq:intro-resource}).
-
+  %
   \specialitem{info}{4} The action selected by a cognitive process is mediated by the mental state it produces 
   (Equation~\ref{eq:intro-info}).
-
+  %
   \specialitem{sequential}{5} A cognitive process can be broken down into a sequence of mental operations, or more precisely, a distribution over such sequences 
   (Equation~\ref{eq:intro-sequential}).
-
+  %
   \specialitem{cost}{6} The cost of a cognitive process is the sum of the cost of each operation it performs 
   (Equation~\ref{eq:intro-cost}).
-\end{enumerate}
+\end{enumerate}%
 Combining these ideas, yields the following definition of an optimal sequential cognitive process:
+%
 \begin{equation}\label{eq:intro-master}
   π^* = \highlight{optimal}{\argmax_{π}}\ 
-    \highlight{ecology}{\E_w} \left[
-      \highlight{sequential}{\E_{\cseq \sim π(w)}} \left[
-        \highlight{info}{\E_{m \mid \cseq}} \left[
-          \highlight{resource}{U}(\highlight{ecology}{w}, \highlight{info}{a_m})
-        \right]
-        \highlight{resource}{-}\ \highlight{cost}{\sum_i}\ 
-          \highlight{resource}{\cost}(\highlight{sequential}{c_i})
-      \right]
+    \E \left[
+      \highlight{resource}{U}(\highlight{ecology}{w}, \highlight{info}{\text{act}(m_t)})
+      \ - \highlight{cost}{\sum_t} \highlight{resource}{\cost(c_t)}
+      \ \middle\vert\ \highlight{sequential}{c_t \sim \pi(m_t)},
+      \ \highlight{ecology}{w \sim E}
     \right]
 \end{equation}
-That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky highlighter effect hopefully reveals, none of these ideas are new.
+That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new.
 
 The idea to combine these ideas is not especially new either. In particular, there is a long history of modeling optimal speed-accuracy tradeoffs using evidence accumulation models like the ones described in the previous section. Much of this work can be traced back to the \emph{sequential probability ratio test} (SPRT), which specifies the optimal amount of evidence to collect when evaluating simple binary hypotheses \citet{wald1945sequential}. The rule is simple: continue collecting evidence until there a threshold level of evidence is reached either for or against the hypothesis. When samples are very costly, the optimal threshold is often quite low, capturing the response randomness that is hard to explain in unbounded Bayesian models \citep{vul2014one}. On the other side of the spectrum, as both the cost and informativity of each sample fall, the SPRT converges towards the DDM \citep{gold2002banburismus}; the DDM thus inherits the SPRT's optimality properties. In particular \citet{bogacz2006physics} show that, for any given level of evidence coherence (problem difficulty), there is some fixed threshold that maximizes the rate of reward. Under certain assumptions, this is equivalent to maximizing a linear combination of choice utility and cost.\footnote{
   Maximizing reward rate and an additive difference of utility and cost are equivalent in the sense that, for a given decision problem, there is some time cost such that maximizing the reward rate will also maximize the reward minus cost \citep{wald1948optimum,drugowitsch2012cost}. However, this mapping will vary for problems of different difficulty or stakes. For example, multiplying the payoff for correct decisions by two does not change the optimal reward-rate strategy, but it does change the optimal utility-minus-cost strategy.
