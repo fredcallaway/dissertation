@@ -95,8 +95,30 @@
 \newcommand{\VOCapprox}{\widehat{\text{VOC}}(b, c; \vec{w})}
 \newcommand{\like}{\mathcal{L}(D \mid \theta)}
 
-% PLANNING
 
+% MEMORY
+
+\newcommand{\mNormal}[1]{\mathcal{N}\left( #1 \right)}
+% \newcommand{\Normal}[1]{\mathrm{Normal}\left( #1 \right)}
+\newcommand{\Binomial}[1]{\mathrm{Binomial}\left( #1 \right)}
+
+\newcommand{\stay}{\textsc{stay}}
+\newcommand{\switch}{\textsc{switch}}
+\newcommand{\search}{\textsc{search}}
+\newcommand{\term}{\textsc{stop}}
+\newcommand{\recall}{({\text{recall}})}
+% \newcommand{\recall}{_{\text{recall}}}
+
+\newcommand{\searchcost}{\gamma_{\textsc{search}}}
+\newcommand{\misscost}{\gamma_{\text{miss}}}
+
+% \renewcommand{\i}{^{(i)}}
+% \renewcommand{\c}{^{(c)}}
+\newcommand{\cL}{^{L}}
+\newcommand{\cR}{^{R}}
+
+
+% PLANNING
 
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
@@ -104,7 +126,6 @@
 
 \newcommand{\rmeta}{r\meta}
 \newcommand{\tmeta}{T\meta}
-\newcommand{\term}{\bot}
 \newcommand{\pselect}{p_{\mathrm{select}}(s, a)}
 \newcommand{\myopic}{^{\mathrm{myopic}}}
 \newcommand{\bmps}{^{\mathrm{bmps}}}

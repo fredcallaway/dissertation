@@ -12,6 +12,7 @@
 % \usepackage{algorithm}
 % \usepackage{algpseudocode}
 \usepackage{minted}
+\usepackage{sidecap}
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
@@ -120,7 +121,7 @@
 \newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Minion Pro}
 
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
-\setmonofont[Scale=MatchLowercase]{Source Code Pro}
+\setmonofont[Scale=0.8]{Source Code Pro}
 \RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
                 textfont={sf,footnotesize,singlespacing},
                 justification={justified},
