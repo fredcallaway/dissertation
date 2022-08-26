@@ -88,107 +88,81 @@ Proponents of ecological rationality take a strong stance against the notion of 
 %sub \section{Resource-rationality}\label{sec:intro-XX}
 
 
-Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. One very natural way to do this, proposed by \citet{lewis2014computational} and \citet{griffiths2015rational}, is to formalize bounded rationality as \emph{bounded optimality}. \citet{horvitz1987reasoning} defines bounded optimality as ``the optimization of computational utility given a set of assumptions about expected problems and constraints on resources'' (compare to Simon's ``structure of task environments'' and  ``computational capabilities''). More formally, bounded optimality is a property of a program, namely that it yields the maximum expected utility when executed on the agent's computational architecture, or ``brain'' $B$ \citep{russell1995provably}. We can thus define a bounded optimal cognitive process as
+Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. One very natural way to do this, proposed by \citet{lewis2014computational} and \citet{griffiths2015rational}, is to formalize bounded rationality as \emph{bounded optimality}. \citet{horvitz1987reasoning} defines bounded optimality as ``the optimization of computational utility given a set of assumptions about expected problems and constraints on resources'' (compare to Simon's ``structure of task environments'' and  ``computational capabilities''). More formally, \citet{russell1995provably} define bounded optimality as a property of a program, namely that it yields the maximum expected utility when executed on the agent's computational architecture, or ``brain'' $B$. We can thus define a bounded optimal cognitive process as
 \begin{equation}\label{eq:bo}
   π^*_B = \argmax_{π \in \Pi_B} \E_{o \mid \pi, B} [U(o)],
 \end{equation}
 where $\Pi_B$ is the set of all cognitive processes that can be executed by brain $B$ and $\E_{o \mid \pi, B} [U(o)]$ is the expected utility of the outcome that results from executing process $\pi$ on brain $B$.
 
-As a definition of rationality for cognitive processes, bounded optimality is intellectually ideal, but problematic in practice. It is ideal because it exactly defines the problem that a resource-contrained agent faces: maximizing utility given resource constraints. In pratice, however, it is very difficult to identify bounded optimal cognitive processes. There are two reasons for this. First, it requires optimizing over the set of all cognitive processes a brain could execute. It is not clear how one would even specify this set, let alone find the optimum. Second, bounded optimality is not really a property of cognitive processes---it is a property of \emph{minds}.\footnote{%
+As a definition of rationality for cognitive processes, bounded optimality is perfect in principle, but prohibitive in practice. In principle, it exactly defines the problem that a resource-contrained agent faces: maximizing utility given computational constraints. In pratice, however, it is very difficult to identify bounded optimal cognitive processes. There are two reasons for this. First, it requires optimizing over the set of all cognitive processes a brain could execute. It is not clear how one would even specify this set, let alone find the optimum. Second, bounded optimality is not really a property of cognitive processes---it is a property of \emph{minds}.\footnote{%
   Similarly, in bounded optimality, the objective function is evaluated over the agent's entire lifetime, not a single outcome. This can can be addressed by the notion of long-term value (briefly described in Section~\ref{sec:intro-intuition} and formalized in Chapter~\ref{sec:formalism}). That is, we can define the utility of an outcome in terms of both the immediate and future rewards it yields.
-} A mind serves many cognitive functions, and they all draw on the shared resources of one brain. This means we cannot directly apply the principle of bounded optimality to identify the optimal cognitive process for any particular function. Taken at face value, bounded optimality prevents us decomposing the monolithic task of characterizing ``rational cognition'' into a set of more manageable tasks of characterizing specific rational cognitive processes.
+} A mind serves many cognitive functions, and they all draw on the shared resources of one brain. Thus, we cannot directly apply the principle of bounded optimality to identify the optimal cognitive process for any particular function, because doing so would not account for how the resources used by this process might impact other processes. Taken at face value, bounded optimality prevents us from decomposing the monolithic task of characterizing ``rational cognition'' into a set of more manageable tasks of characterizing specific rational cognitive processes.
 
-Fortunately, these two challenges are not insurmountable. We address the problem of specifying possible processes in Section~\ref{sec:intro-sequential}, and optimization in Chapter~\ref{sec:formalism}. The challenge of decomposability is addressed in the next section.
+Fortunately, these two challenges are not insurmountable, if we are willing to make approximations. We address the problem of specifying possible processes in Section~\ref{sec:intro-sequential}, and optimization in Chapter~\ref{sec:formalism}. The challenge of decomposability is addressed in the next section.
 
-\subsection{The cost and value of mental actions}\label{sec:intro-utility}
+\subsection{The cost and value of mental action}\label{sec:intro-utility}
+
+Traditionally, researchers in psychology have taken a different approach to accounting for cognitive constraints. Intuitively, thinking is \emph{effortful}, and so we avoid it for the same reason we avoid carrying heavy groceries \citep{shenhav2017rational}. On the other hand, more thinking generally results in better outcomes. Thus, there is a fundamental trade-off between the utility of the outcomes we experience and the cost of the mental effort we spend to earn those outcomes \citep{kool2018mental}. Critically, however, the optimal point on this trade-off is not always the same. For important decisions with clear factors to consider, thinking a lot is often worthwhile. For unimportant decisions, or ones that are too complex to effectively reason about, the benefit of thinking a lot is unlikely to outweigh the cost.
+
 
 % One of the key challenges of applying bounded optimality is that the optimization occurs over the agent's entire brain. We use our brains for many different things, and have to decide how much mental resource to allocate to each. When viewed as a single constrained optimization problem, this is intractable, as it requires jointly solving for the optimal cognitive process for all the different problems our brain has to solve.
 
-As defined in Equation~\ref{eq:bo}, bounded optimality poses a constrained optimization problem whose solution is a single cognitive process that solves all the problems the agent might face using a single shared resource, the brain. This is intimidating, to say the least. Perhaps, however, this is not the only way to view the problem. Consider another case where an animal must allocate a finite shared resource amongst several different activities: foraging. Rather than allocating mental resources across different cognitive functions, the animal must allocate their time across different patches where food might be found. Initially, this problem seems very challenging because the correct amount of time to allocate to each patch depends on the time allocated to every other patch. But as shown by \citet{charnov1976optimal}, the optimal solution is actually quite simple: stay in a patch as long as the rate of food intake is more than what you could expect to find elsewhere (the average rate of intake in the past). More generally, one should allocate resources to an activity as long as the utility gained from that activity exceeds the \emph{opportunity cost} of not allocating those resources to some other activity. As brilliantly observed by \citet{kurzban2013opportunity}, this principle applies equally to the allocation of cognitive resources.
-
-Leveraging the insight that thinking carries an opportunity cost, \citet{lieder2018bounded} showed that we can characterize the value of a specific cognitive processes (accounting for resource constraints) as an additive combination of outcome utility and cognitive cost,
-\begin{equation}\label{eq:resource}
-  V_B(\pi) = \E_{o \mid \pi,B} [U(o)] - \cost_B(\pi),
+The idea that a rational cognitive process should allocate different amount of effort in different situations has been formalized in many different ways \citep{shenhav2013expected,anderson1990adaptive,lieder2017strategy}. However, all these different approaches draw on a key insight. The choice of how much effort to allocate is analogous to the choice of which action to take in the world. Accordingly, just as we can define the value of an \emph{action} as the expected utility of the outcome it produces, we can define the value of \emph{cognition} as the expected utility of the outcome it produces, minus cognitive cost. This yields:
+\begin{equation}\label{eq:evc1}
+  V(w, c) = 
+    \E_{o \mid w, c} \left[
+      U(o)
+    \right] - \cost(c),
 \end{equation}
-where $\cost_B(π)$ captures the opportunity cost of the resources consumed by $\pi$. Note that the value, expected utility, and cost all depend on the brain; this will remain true going forward, but we will supress $B$ to simplify notation. \citet{lieder2018bounded} presents a derivation of the opportunity cost in terms of the amount of time that different resources are allocated, but more nuanced factors related to the neural implementation of cognitive processes are likely at play as well \citep{musslick2021rationalizing}.
-
-Of course, the notion that cognition is costly or effortful goes back much further than this link to bounded optimality. Indeed, simple introspection suggests that thinking is effortful, and therefore costly in the same way as carrying heavy groceries.\footnote{%
-  Of course, it is not hard to see how the perceived cost of carrying groceries is itself ultimately a form of opportunity cost, i.e., the other bodily procesess those calories could have been burned to support.
-} Thus, a long history of work has studied how people balance outcome utility and cognitive cost (see \citealp{shenhav2017rational} for a review). One critical insight from this work is that the optimal point on this trade-off is not always the same. For important decisions with clear factors to consider, thinking a lot is often worthwhile. For unimportant decisions, or ones that are too complex to effectively reason about, the benefit of thinking a lot is unlikely to outweigh the cost.
-
-The idea that one should allocate different amounts of mental effort in different situations has been formalized in many different ways \citep{shenhav2013expected,anderson1990adaptive,lieder2017strategy}. However, all these different approaches draw on a key insight. The choice of how much effort to allocate (or more generally, which cognitive process to use) is analogous to the choice of which action to take in the world. Accordingly, just as expected utility theory defines the optimal action to take in any world state (Equation~\ref{eq:eut}), we can define the optimal cognitive process to use in any given world state as
-\begin{equation}\label{eq:process-world}
-  π^*_w = \argmax_\pi \E_{o \mid w, π} U(o) - \cost(w, π).
+where $c$ corresponds to a ``cognitive action''. Simlarly, just as expeceted utility theory defines the optimal physical action to take in each state, we can define the optimal cognitive action to take in each state as (c.f., Equation~\ref{eq:eut}):
+\begin{equation}\label{eq:evc2}
+  c^*_w = \argmax_c V(w, c) = \argmax_c \E_{o \mid w, c} U(o) - \cost(c).
 \end{equation}
-A classic example of this kind of model considers the decision of whether to use a ``model-free'' or ``model-based'' strategy. Intuitively, a model-free strategy relies on habits or learned associations, while a model-based strategy involves explicit reasoning about the consequences of one's actions. Which system will yield better outcomes depends on various factors such as how much experience the agent has in the environment, and people seem to choose between the strategies accordingly \citep{daw2005uncertaintybased}. Later work showed that people are also sensitive to the different costs of the two systems \citep{keramati2011speed,kool2017costbenefit} and that they can select from a larger set of strategies that combine model-based and model-free elements \citep{keramati2016adaptive}.
+In rational metareasoning, Equation~\ref{eq:evc1} is called the \emph{value of computation} (VOC; \citealp{russell1991principles}).
 
-Another influential application of this idea is the theory of \emph{expected value of control} (EVC; \citealp{shenhav2013expected}). EVC operationalizes the problem of selecting which cognitive process to use in a given state as the selection of a \emph{control signal} that determines the behavior of a parameterized cognitive process (formally, the set of possible control signals defines a corresponding set of cognitive processes). In the simplest case, the control signal indicates simply how much effort the process exerts. In more complex cases, the control signal can have multiple dimensions, controlling not only the quantity but also the nature of cognitive effort exerted \citep{musslick2015computational,grahek2020computational,ritz2021cognitive}.
-
-Treating the choice of cognitive processes as analogous to the choice of actions has yielded important insights into the flexibility with which people allocate mental effort. But a specter lurks. In Equation~\ref{eq:intro-optimal}, we defined an optimal cognitive process as one that optimizes an objective function. What objective function does Equation~\ref{eq:process-world} optimize? Because this equation defines an optimal cognitive process conditional on a world state, the objective must be conditional on a world state as well. But clearly, this does not capture the full problem. Having the optimal cognitive process for each world state is only useful if one also knows which cognitive process to execute in each state. Thus, just as expected utility theory can be seen as an optimal cognitive process for selecting actions, a theory like EVC (Equation~\ref{eq:process-world}) is an optimal cognitive processes \emph{for selecting cognitive processes}. That is, EVC is an optimal cognitive model where $\Pi$ is the set of mappings from states to ``first-order'' processes and the objective function is
-\begin{equation}
-  V(π\meta) = \E_{w} \left[
-    \E_{\pi \sim π\meta(w)} \left[
-      \E_{o \mid w, \pi} U(o) - \cost(w, \pi)
-    \right]
-  \right].
-\end{equation}
-
-
-
-
-More recently, \citet{lieder2017strategy} presented a model of strategy selection that explicitly optimizes an expression analogous to Equation~\ref{eq:evc1}, showing that it can explain when people use different strategies for deciding between options that vary along many dimensions.
-
-This last example highlights an important feature of all the models discussed in this section: Although the \emph{selection} of a control signal or strategy is a single event, the ultimate outcome is determined by ... a sequence.
-
-
-
-% as we can define the utility of an \emph{action} as the expected utility of the outcome it produces, we can define the utility of a \emph{cognitive process} as the expected utility of the outcome \emph{it} produces cognitive cost. This yields:
-% \begin{equation}\label{eq:evc1}
-%   U(w, c) = 
-%     \E_{o \mid w, c} \left[
-%       U(o)
-%     \right] - \cost(c)
-% \end{equation}
-% where $c$ corresponds to a ``cognitive action''. 
-
-% Defining the utility of cognitive actions in this way allows us to define a bounded optimal cognitive process as a mapping from states to cognitive actions that always maximizes $U(w,c)$, just as a perfectly optimal process maximizes $U(w,a)$.
-% \begin{equation}
-%   \pi^*(w) = \argmax_c U(w, c)
-% \end{equation}
-
-
-% We will refer to decision, those concerning the allocation of mental resources, as \emph{metalevel decisions}. This is contrasted with 
-
-
-% For our purposes, however, there is one important difference between EVC and VOC, or more generally, between cognitive control and strategy selection. In the latter case, the cost of executing a strategy is typically assumed to be directly related to the \emph{amount} of computation that is performed. More precisely, the cost of applying a strategy depends on the number of discrete computational operations it performs, and the time that each operation takes \citep{payne1988adaptive}. It is possible to decompose the cost of a strategy in this way because strategies are \emph{sequential}.
-
+The content and interpretation of $c$ varies substantially across different instantiations of this general principle. One influential example is the \emph{expected value of control} (EVC; \citealp{shenhav2013expected}). In EVC, $c$ corresponds to a \emph{control signal}, which modulates the behavior of an underlying cognitive process. In the simplest case, the control signal indicates simply how much effort the process exerts. In more complex cases, the control signal can have multiple dimensions, controlling not just the amount but also the nature of cognitive effort exerted \citep{musslick2015computational,grahek2020computational,ritz2021cognitive}.
 
 % \footnote{%
 %   Note that we depart from the original definition of EVC \citep{shenhav2013expected} for consistency with the other equations in this section. In the original definition, the utility is defined in terms of the outcome of the process, rather than the behavior iteself. Non-trivially, the outcome was proposed to include the following world state, making EVC a sequential framework. However, most applications of EVC do not actually use this feature, assuming that the utility of the outcome depends only on the behavior in the current trial, as in Equation~\ref{eq:evc1}. One notable exception is the visual attention model in \citet{lieder2018rational}, which employs an early version of the framework proposed here.
 % } 
 
-% What is the optimal cognitive process according to EVC? Interestingly, there are two ways to answer this question. On one hand, we can think of the control signal itself as the cognitive process. Indeed, in applications of EVC, the control signal often parameterizes an evidence-accumulation process (the DDM, described in the next section; \citealp{musslick2015computational,grahek2020computational}). Thus, selecting a control signal amounts to selecting a cognitive process to execute. Formally, this corresponds to defining $π = c$ and $U(w, π) = \text{EVC}(w, π)$.This results in our general definition of optimal cognitive processes in Equation~\ref{eq:intro-resource}, with the addition that the utility of the process (i.e., the value of the control signal) depends on the state of the world (e.g., whether the current trial is easy or hard).
+In another instantiation of this principle, $c$ corresponds to a \emph{strategy} for solving a problem. A classic example of this kind of model considers the decision of whether to use a ``model-free'' or ``model-based'' strategy \citep{daw2005uncertaintybased}. Intuitively, a model-free strategy relies on habits or learned associations, while a model-based strategy involves explicit reasoning about the consequences of one's actions. Generally, the model-based system yields better outcomes, but is more costly to execute; people seem to arbitrate between the strategies accordingly \citep{keramati2011speed,kool2017costbenefit}, sometimes using strategies that combine model-free and model-based elements \citep{keramati2016adaptive}. Although this work only makes an intuitive appeal to a cost-benefit tradeoff, \citet{lieder2017strategy} have proposed a model of strategy selection that explicitly optimizes VOC (Equation~\ref{eq:evc1}), showing that it can account for the strategies people use to sort lists and make choices between alternatives that vary on many dimensions.
 
-% Alternatively, we can think of the optimal cognitive process as the strategy for selecting control signals, that is, by maximizing EVC. In this case, we would define the utility of the selection strategy as
-% \begin{equation}\label{eq:evc2}
-%   V(π) = \E_w \left[
-%     \E_{c \sim π(w)} \left[
-%       \E_{a \mid c, w} \left[
-%         U(w, a)
-%       \right] - \cost(c)
-%     \right]
-%   \right],
-% \end{equation}
-% where $π$ is now the mapping from world states to control signals. Clearly the mapping which maximizes Equation~\ref{eq:evc1} in all states will also optimize Equation~\ref{eq:evc2}. Thus, as long as we do not put any constraints on the space of selection strategies, the definitions are equivalent. Conceptually, however, the notion of a cognitive process whose function is to select cognitive processes (a \emph{metalevel} process, perhaps) is critical.
+\subsubsection{Interlude: Bounded optimality and metalevel rationality}
 
+Treating the choice of cognitive actions as analogous to the choice of physical actions has yielded important insights into the flexibility with which people allocate mental effort. But as researchers, we now face a difficult choice. On the one hand, bounded optimality (Equation~\ref{eq:bo}) defines the true problem of resource-contrained cognition. But a cost-benefit tradeoff (Equation~\ref{eq:evc2}) is something we can actually work with. Must we choose between principle and practice?
 
-% Importantly, however, this reduction can only be applied under the assumption that all conceivable representational mappings are actually possible. By making stronger, psychologically motivated, assumptions about the form of the cognitive process (the mapping), we can still glean interesting cognitive insights. For example, \citet{bhui2018decision} use 
+Perhaps not. As defined in Equation~\ref{eq:bo}, bounded optimality poses a constrained optimization problem whose solution is a single cognitive process that solves all the problems the agent might face using a single shared resource, the brain. This is intimidating, to say the least. But this is not the only way to view the problem. Consider another case where an animal must allocate a finite shared resource amongst several different activities: foraging. Rather than allocating mental resources across different cognitive functions, the animal must allocate their time across different patches where food might be found. Initially, this problem seems very challenging because the correct amount of time to allocate to each patch depends on the time allocated to every other patch. But as shown by \citet{charnov1976optimal}, the optimal solution is actually quite simple: stay in a patch as long as the rate of food intake is more than what you could expect to find elsewhere (the average rate of intake in the past). More generally, one should allocate resources to an activity as long as the utility gained from that activity exceeds the \emph{opportunity cost} of not allocating those resources to some other activity. As brilliantly observed by \citet{kurzban2013opportunity}, this principle applies equally to the allocation of cognitive resources. Thinking about any particular thing has an opportunity cost because it means you aren't thinking about something else.
 
-% \begin{equation}\label{eq:intro-resource}
-%   π^* = \argmax_{π \in \Pi} V(π) - \cost(π),
-% \end{equation}
+Leveraging the insight that cognition carries an opportunity cost, \citet{lieder2018bounded} showed that we can sepicify the value of a specific cognitive processes (in a bounded optimal sense) as an additive combination of outcome utility and cognitive cost,
+\begin{equation}\label{eq:resource}
+  V_B(\pi) = \E_{o \mid \pi,B} [U(o)] - \cost_B(\pi),
+\end{equation}
+where $\cost_B(π)$ captures the opportunity cost of the resources consumed by $\pi$.\footnote{%
+  \citet{lieder2018bounded} presents a derivation of the opportunity cost in terms of the amount of time that different resources are allocated (each of which is assumed to have some fixed cost). However, more nuanced factors are likely at play, such as the need to be able to quickly re-allocate resources when necessary \citep{musslick2021rationalizing}, and the changing value of other cognitive activities \citep{agrawal2022temporal}.
+} This suggests that the cost-benefit tradeoff, such as we see in EVC, could actually be a direct expression of bounded optimality. Perhaps we do not need to make a choice after all!
 
-% Conceptually $V$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $V$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
+If this seems too good to be true, that's because it is. To see why, we must ask ourselves: what is the optimal cognitive process in EVC, and what objective function is it optimizing? Initially, we might think of $c^*_w$ as the optimal cognitive process. This makes intuitive sense given that $c$ is often implemented as a parameter that modulates the behavior of an underlying process (like a drift diffusion model, described below; \citealp{musslick2015computational}). But the problem with defining $c^*_w$ as the optimal cognitive process is that we would then have a different objective function for each state. Thich amounts to having a different cognitive model for each condition in an experiment---an undesirable state of affairs. Instead, just as we viewed expected utility theory as an optimal mapping from states to actions, we must view the cognitive process in EVC (and other instantiations of Equation~\ref{eq:evc2}) as a mapping from states to control signals, with the objective function defined analogously to Equation~\ref{eq:perfect}:
+\begin{equation}\label{eq:intro-metavalue}
+  V(π) = \E_{w} \left[
+    \E_{c \sim π(w)} \left[
+      \E_{o \mid w, c} U(o) - \cost(c)
+    \right]
+  \right].
+\end{equation}
+With some rearrangement, we can make this look more like Equation~\ref{eq:bo},
+\begin{equation}
+  V(π) = \E_{o \mid π} \left[
+    U(o)
+  \right] - \E_{c \mid π} [\cost(c)],
+\end{equation}
+but there is one critical difference: $\cost(\pi)$ is not equal to $\E_{c \mid π} [\cost(c)]$. The former capture the entire cost incurred by the cognitive process. The latter accounts for the cost of the cognitive actions that are selected, but not \emph{the cost of selecting those actions}.
+
+This is the difference between \emph{metalevel rationality} (Equation~\ref{eq:intro-metavalue}) and bounded optimality (Equation~\ref{eq:bo}). Metalevel rationality is defined as selecting computations (cognitive actions) that optimally trade-off utility with computational cost \citep{russell1997rationality}. But, unlike bounded optimality, metalevel rationality is not something that a physically implemented agent can actually achieve. This is because it assumes that computations are selected by a metalevel process, which is separate from the ``object-level'' process that actually performs the computations, and which is not itself subject to any cost or constraints. This distinction is the reason that many strategy-selection researchers have abandoned the metacognitive cost-benefit analysis of VOC in favor of models that select strategies through simpler, model-free mechanisms.
+% Erev & Barron, 2005; Rieskamp & Otto, 2006; Shrager & Siegler, 1998; Siegler, 1988; Siegler & Shrager, 1984).
+
+Is all hope lost? Perhaps not. As suggested by the strategy-selection models just mentioned, one does not have to actually perform a cost-benefit analysis in order to select strategies that effectively balance costs and benefits. Building on this idea, \citet{lieder2017strategy} present a model that explicitly approximates the VOC using learned predictive models of the computational cost and outcome utility that will result from applying a strategy to a particular problem. They call this strategy \emph{metacognitive reinforcement learning}. Although a human being with finite experience may not be able to learn VOC exactly (making exact metalevel rationality unattainable), they may be able to learn a relatively good approximation to VOC, especially for the kinds of metacognitive decisions they encounter frequently. In this case, their behavior may come close to true metalevel rationality. By the same token, in these cases, bounded optimality and metalevel rationality will actually not be so different. Thus, going forward, we will use metalevel rationality as an approximation to bounded optimality. We further discuss the validity of this assumptions (and possible improvements on it) in the \todo{conclusion}.
+ 
 
 \subsection{Information and representation}\label{sec:intro-info}
 
@@ -215,6 +189,15 @@ One interesting result from this literature is that, for the commonly used mutua
 % where $\lambda$ is a scaling constant on the mutual-information cost and $\alpha_a$ captures a default tendency to take action $a$ (the values of $\alpha$ can be determined optimally, being larger for actions that have higher average utility).
 % This reduction is mathematically fascinating, and it provides a useful extension of the standard softmax model by accounting for the habitual tendency to take actions that are usually good. 
 % However, if our goal is to define rational \emph{mechanistic} models of cognition, we seem to be going backwards. By eliminating the mental representation from the model, we end up with a more sophisticated form of behaviorism, where we attempt to understand a cognitive process simply as a mapping from stimulus to response.
+
+
+% Importantly, however, this reduction can only be applied under the assumption that all conceivable representational mappings are actually possible. By making stronger, psychologically motivated, assumptions about the form of the cognitive process (the mapping), we can still glean interesting cognitive insights. For example, \citet{bhui2018decision} use 
+
+% \begin{equation}\label{eq:intro-resource}
+%   π^* = \argmax_{π \in \Pi} V(π) - \cost(π),
+% \end{equation}
+
+% Conceptually $V$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $V$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
 
 Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness. Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
 
