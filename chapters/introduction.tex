@@ -163,18 +163,50 @@ This is the difference between \emph{metalevel rationality} (Equation~\ref{eq:in
 
 Is all hope lost? Perhaps not. As suggested by the strategy-selection models just mentioned, one does not have to actually perform a cost-benefit analysis in order to select strategies that effectively balance costs and benefits. Building on this idea, \citet{lieder2017strategy} present a model that explicitly approximates the VOC using learned predictive models of the computational cost and outcome utility that will result from applying a strategy to a particular problem. They call this strategy \emph{metacognitive reinforcement learning}. Although a human being with finite experience may not be able to learn VOC exactly (making exact metalevel rationality unattainable), they may be able to learn a relatively good approximation to VOC, especially for the kinds of metacognitive decisions they encounter frequently. In this case, their behavior may come close to true metalevel rationality. By the same token, in these cases, bounded optimality and metalevel rationality will actually not be so different. Thus, going forward, we will use metalevel rationality as an approximation to bounded optimality. We further discuss the validity of this assumptions (and possible improvements on it) in the \todo{conclusion}.
  
+\subsection{Action and the value of information}\label{sec:intro-info}
 
-\subsection{Information and representation}\label{sec:intro-info}
+Our discussion so far has remained agnostic about an important question: How exactly does cognition influence outcomes? To answer this question, we will draw on another class of models that are used to characterize rational cognition under computational constraints, those based on \emph{information theory}. These models vary widely in their structure and go under different names, including efficient coding \citep{barlow1961possible,stocker2006noise}, rate-distortion theory \citep{sims2016rate}, the free-energy principle \citep{friston2010freeenergy}, and rational inattention \citep{sims2003implications}. Here, we will describe one version of this type of model, which is particularly applicable in decision-making contexts (c.f. \citealp{bhui2021resourcerational}).
 
-One of the most common choices for the cost function is based on information theory. In these models, the cognitive process forms a \emph{representation} of the state of the world, which then informs the action that is taken. The heart of the cognitive process here is the (probabilistic) mapping from world states $w$ to mental representations $m$. The utility of this mapping is defined as
-\begin{equation}\label{eq:intro-info}
-    V(π) = \E_w \left[
-      \E_{m \sim π(w)}[U(w, a_m)]
-    \right] - I_π(w, m)
+
+The key idea in information-theoretic approaches to bounded rationality is to view cognitive processes as information channels. Specifically, the process consists of two components: an encoder $\pi\enc$ that transforms the world state $w$ into mental representation $m$, and a decoder $\pi\act$ that chooses an action $a$ based on that representation:
+\begin{equation}
+  w \xrightarrow[{\displaystyle \pi\enc}]{\text{\tiny encoder}} m 
+    \xrightarrow[{\displaystyle \pi\act}]{\text{\tiny decoder}} a
 \end{equation}
-where $a_m$ denotes the action taken given representation $m$, $U(w, a_m)$ is the utility of taking that action in the world state $w$, and $I_π(w,m)$ denotes the \emph{mututal information} between the state of the world and the representation under the mapping $π$. Intuitively, $I$ captures the fidelity of the representation. There are two key ideas to take away from this equation. First, cognitive processes can produce intermediate mental states, which are used to select actions. Second, both the action utility and cost depend on the mental state, and these two forces are in a fundamental conflict. A precise representation of the world allows one to select good actions, but such representations are costly to form.
+The agent then receives utility $U \big(w, \pi\act(m) \big)$. We can interpret this a shorthand for the expected outcome utility, $\E_{o \mid w, \pi\act(m)} U(o)$.
 
-Information-theoretic models of this sort are commonly used in the study of perception \citep{sims2016rate} and memory \citep{gershman2021rational}, most frequently their intersection. In this literature, the models are typically cast in the language of \emph{rate-distortion theory}. Here, the utility function captures the discrepancy between the stimulus $w$ and a reconstruction of that stimulus $a_m$ based on the remembered perceptual representation $m$. In a classic application of this approach, \citet{sims2012ideal} showed that a model that flexibly allocates informational resource across an arbitrary number of items explains human reconstructions better than a classic model with a fixed number of working memory slots. More recent work showed that people can strategically prioritize more important dimensions of the stimulus (that is, they are sensitive to $V$; \citealp{yoo2018strategic}) and can also allocate more or less resource in total \citep{berg2018resourcerational}. This latter result is interesting because it supports an additive cost like in Equation~\ref{eq:intro-info} over a fixed but costless capacity constraint.\footnote{
+Cognitive constraints are operationalized as an \emph{information bottleneck}, limiting the amount of information that $m$ can have about $w$. This constraint can be satisified either by making $\pi\enc$ stochastic or by making the number of possible representations less than the number of world states (often, in fact, both). Different forms of this constraint are possible; a common one is mutual information, which can be intuitively understood as the reduction in uncertainty (entropy, $H$) about the state of the world after observing the mental representation:
+\begin{equation}
+  I_\pi(m, w) = H(w) - H(w \mid m)
+\end{equation}
+Intuitively, $I_\pi$ captures the fidelity of the representation, how little information is lost when using $m$ in place of $w$.
+
+To cast this type of model as an optimal cognitive model (in terms of Section~\ref{sec:intro-optimal}), we can take one of two approaches. Rate-distortion models \citep{sims2016rate} typically assume a \emph{capacity limit}. This corresponds to defining $\Pi$ as the set of all encoder-decoder pairs with the constraint that $I_\pi(m, w) < C$, where $C$ is the capacity constraint. In contrast, rational inattention models \citep{caplin2013behavioral} typically assume a continuous \emph{information cost}. This corresponds to letting $\Pi$ include all possible encoder-decoder pairs, but subtracting the information cost from the experienced utilities. Adopting the latter approach, the objective function is defined
+\begin{equation}\label{eq:intro-info}
+  V(π) = \E_w \left[
+    \E_{m \sim π\enc(w)} \left[
+      U \big(w, \pi\act(m) \big)
+    \right]
+  \right] - I_\pi(m, w).
+\end{equation}
+% where $U(w, \pi\act(m))$ is a shorthand for the expected outcome utility, $\E_{o \mid w, \pi\act(m)} U(o)$. 
+There are two key ideas to take away from this equation. First, cognitive processes can produce intermediate mental states, which are used to select actions. Second, both the action utility and cost depend on the mental state, and these two forces are in a fundamental conflict. A precise representation of the world allows one to select good actions, but such representations are costly to form.
+
+Rational metareasoning provides another way to think about the mental state. Specifically, we can think about $m$ as a \emph{belief} about the state of the world, $p(w \mid m)$. Assuming that $\pi\act$ is optimal (that is, that it always selects the action with highest expected utility given the representation), we can define the \emph{value of information} \citep{matheson1968economic} in the representation as
+\begin{equation}
+  % \VOI(m) = \max_a \expectunder{U(w, a)}{w \sim P(w \mid m)}
+  \VOI(m) = \E_w \left[U\big(w, \pi\act(m)\big)\right] =
+    \max_a \E_{w \mid m} U(w, a)
+\end{equation}
+A derivation for the second equality is given in Equation~\ref{eq:Rbot-derivation} (see Section~\ref{sec:voi} for more discussion of VOI). Using VOI, we can rewrite the information-theoretic objective function (Equation~\ref{eq:intro-info}) as
+\begin{equation}\label{eq:intro-info}
+  V(π) = \E_{m \mid \pi} [\VOI(m)] - I_\pi(m, w).
+\end{equation}
+Thus, from an information-theoretic standpoint, the value of a cognitive process is the difference between the value of the information it produces and the cost of that information.
+
+\todo{add more general perception}
+
+Information-theoretic models are commonly used in the study of perception \citep{sims2016rate} and memory \citep{gershman2021rational}, \todo{cut: most frequently their intersection}. In this literature, the models are typically cast in the language of \emph{rate-distortion theory}. Here, the utility function captures the discrepancy between the stimulus $w$ and a reconstruction of that stimulus $a_m$ based on the remembered perceptual representation $m$. In a classic application of this approach, \citet{sims2012ideal} showed that a model that flexibly allocates informational resource across an arbitrary number of items explains human reconstructions better than a classic model with a fixed number of working memory slots. More recent work showed that people can strategically prioritize more important dimensions of the stimulus (that is, they are sensitive to $V$; \citealp{yoo2018strategic}) and can also allocate more or less resource in total \citep{berg2018resourcerational}. This latter result is interesting because it supports an additive cost like in Equation~\ref{eq:intro-info} over a fixed but costless capacity constraint.\footnote{
   Typically, rate-distortion models are expressed in terms of such a fixed constraint, i.e., maximizing utility subject to a constraint on mutual information. However, because mutual information is an expectation over values of $x$ and $w$, one can find a multiplier on the cost that results in any given average level of expectation (the Lagrange multiplier; see \citealp{ortega2013thermodynamics}).
 } Beyond memory, rate-distortion models have also been used to explain the exponential shape of people's generalization curves (\citealp{sims2018efficient}; c.f. \citealp{shepard1987universal} and scalar variability in approximate number representation (\citealp{piantadosi2016rational}, c.f. \citealp{fechner1860elemente}).
 
@@ -199,9 +231,12 @@ One interesting result from this literature is that, for the commonly used mutua
 
 % Conceptually $V$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $V$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
 
-Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness. Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
+Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness.
+% Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
 
 \subsection{The sequential nature of thought}\label{sec:intro-sequential}
+
+On the subject of mechanism...
 
 The fact that cognitive processes are sequential, in the sense that they occur over time rather than all at once, is self-evident. Thus, some notion of sequentiality is an essential feature of a model that captures cognitive mechanisms at any level of detail. Here, however, we will use a slightly more restrictive notion of sequentiality. Specifically, we take sequentiality to mean that cognitive processes can be broken down into a sequences of \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}, or simply, cognitive operations.
 
@@ -283,7 +318,7 @@ Combining these ideas, yields the following definition of an optimal sequential 
 \begin{equation}\label{eq:intro-master}
   π^* = \hl{optimal}{\argmax_{π}}\ 
     \E \left[
-      \hl{utility}{U}(\hl{simon}{w}, \hl{info}{\text{act}(m_t)})
+      \hl{utility}{U}(\hl{simon}{w}, \hl{info}{\pi\act(m_t)})
       \ - \sum_t \hl{utility}{\cost(c_t)}
       % \ - \hl{sequential}{\sum_t} \hl{utility}{\cost(c_t)}
       \ \middle\vert\ \hl{sequential}{c_t \sim \pi(m_t)},
