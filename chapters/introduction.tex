@@ -12,7 +12,7 @@ Although the rational and mechanistic approaches have traditionally been viewed 
 But what defines a ``good'' tradeoff between action utility and cognitive cost? And how can we identify mental strategies that achieve such a tradeoff? In this dissertation, I suggest answers to these questions based on a key insight: \emph{a rational mental strategy is one that optimally solves the sequential decision problem posed by one's internal computational environment}. Under this view, cognition is a problem of stringing together a series of basic cognitive operations, or ``computations'', in the service of choosing what to do in the world. An optimal cogntive process strings those basic operations together in such a way that maximizes the difference between the utility of the ultimate behavior and the total cost of all the cognitive operations that support the behavior.
 
 
-\section{Sequential decisions in the world and the mind}
+\section{Sequential decisions in the world and the mind}\label{sec:intro-intuition}
 
 To make things concrete, consider the problem facing a delivery robot, illustrated in \figref{fig:sequential-intuition}{a}. Completing the delivery will require visiting a sequence of locations before arriving at the final destination. And at each location, the robot will need to decide where to go next. Thus, the robot faces a \emph{sequential decision problem}. \figref{fig:sequential-intuition}{b} illustrates how this type of problem is often modeled in artificial intelligence research. At each time step, an agent (here, the robot) takes an \emph{action} (e.g., driving forward). This action causes the environment to enter a new \emph{state} (e.g., one where the robot is in a new location). Additionally, the agent receives a \emph{reward}, a number that captures how good or bad the immediate consequences of the action are. The robot's goal is to maximize the total reward received. For example, the delivery robot might receive a large positive reward for reaching the destination and a small negative reward every time it moves (capturing the desire to conserve battery life). After receving the reward and new state, the agent selects another action and the cycle continues.
 
@@ -33,88 +33,111 @@ The power of identifying this parallel between external and internal environment
 
 \section{The shoulders of giants}
 
-\todo{rewrite this par}
-The proposed approach builds on a long history of cognitive modeling. In particular, it synthesizes three key features, each of which is prevalent on its own, but which are less commonly seen together: \emph{optimality} and \emph{sequentiality}. These features correspond to assumptions about the nature of cognitive processes. Optimality assumes that the cognitive process maximizes an objective function, and sequentiality assumes that the process can be broken down into a sequence of elementary operations. Neither of these assumptions is likely to be exactly true. But, as previous work has shown, they can both be very useful. In this dissertation, we argue that the intersection of these two features is an especially productive terrain for constructing rational and mechanistic models. But before we further describe that intersection, it is useful to explain each component separately.
+Our approach builds on a long history of work in artificial intelligence and cognitive science. Formally, our approach draws heavily on concepts and tools developed in \emph{rational metareasoning}, a subfield of artificial intelligence that aims to construct artificial agents that make effective use of their limited computational resources \citep{russell1991principles,hay2016principles}. Indeed, in many ways, our approach is simply the application of these ideas to understand human cognition. At the same time, many of these ideas have parallels in cognitive models, and still more can be traced to the period before the boundary between cognitive modeling and artificial intelligence was well-defined. Below, we review these ideas from a psychological perspective, noting the parallel concepts in AI when relevant. Ultimately, we will synthesize these key insights into a formal definition of rational mechanistic models of cognition.
 
 % cognition is \emph{dynamic} (sequential, occuring over time), \emph{bounded} (subject to costs or constraints), and \emph{optimized} (maximizing utility). As illustrated in Table~\ref{tab:comparison}, various combinations of these assumptions are made frequently in models of the mind. However, by capturing all three ideas at once, the current approach has advantages that cannot be achieved with any subset.
 
-\subsection{Optimality}
+\subsection{Optimal models of cognition}\label{sec:intro-optimal}
 
-A cognitive process is optimal if it performs a cognitive function as well as it possibly could. To be precise, an optimal cognitive process is one that produces the maximum value of an \emph{objective function}, out of a set of possible processes:
+What does it mean, formally, for a cognitive model to be rational? Following \citet{anderson1990adaptive}, we formalize rationality in terms of \emph{optimality}. A model of a cognitive process (henceforth just ``a cognitive process'') is optimal if it performs a cognitive function as well as it possibly could. More precisely, an optimal cognitive process is one that produces the maximum value of an \emph{objective function}, out of a set of possible models:
 \begin{equation}\label{eq:intro-optimal}
   π^* = \argmax_{π \in \Pi} U(π).
 \end{equation}
-Here, $U$ (for utility) is the objective function, and each $π \in \Pi$ is a possible cognitive process. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
+Here, $U$ (for utility) is the objective function, and each $π \in \Pi$ is a possible cognitive model. Defining an optimal cognitive model thus amounts to specifying the function or goal of the cognitive process (through $U$), and the set of possible processes (through $\Pi$).
 
-Optimality is the defining feature of classic rational models. Perhaps the most fundamental optimal model is expected utility theory, which states that one should select actions that yield the best outcomes in expectation (i.e., on average). The maximal-expected-utility action is defined
-\begin{equation}\label{eq:utility}
-  a^* = \argmax_{a \in \A} \E_{o \mid a} U(o).
+Perhaps the most fundamental optimal model is expected utility theory, which states that one should select actions that yield the best outcomes in expectation (i.e., on average). Given that the world is in state $w$, the action with maximal expected utility is defined as
+\begin{equation}\label{eq:eut}
+  a^*_w = \E_{o \mid w, a} U(o),
 \end{equation}
-where $\E_{o \mid a, w} U(o)$ indicates the expected utility of the outcome that will result if action $a$ is taken.
-
-Expected utility theory is the foundation of modern (neoclassical) economics, allowing analysts to predict aggregate market behavior by assuming that each individual maximizes their own welfare. But it is so abstract that it initially seems to tell us little about cognition itself. Nevertheless, applying the optimization principle in more constrained domains has yielded important insights about many areas of cognition, including perception \citep{marr1982vision,knill1996perception,najemnik2005optimal} categorization \citep{anderson1991adaptive,ashby1995categorization,tenenbaum2001generalization}, memory \citep{anderson1989human}, and language \citep{goldwater2009bayesian}.
-
-Before we continue, it is important to note that many of the examples given above were not actually derived in terms of Equation~\ref{eq:intro-optimal}, using the language or mathematical tools of optimization. Indeed, it is not immediately clear how Equation~\ref{eq:utility} (definining optimal actions) corresponds to Equation~\ref{eq:intro-optimal} (defining optimal cognitive processes). To make this link, we can define $\Pi$ to be the set of all action-selection policies (distributions over actions) and $U$ to be the expected utility of the outcomes of those actions. The optimal cognitive process is then defined
-\begin{equation}\label{eq:utility2}
-  π^* = \argmax_{π \in \Pi} \E_{a \mid π} \left[
-    \E_{o \mid a} U(o)
-  \right]
+Although it was not originally conceptualized in this way, we can think of expected utility theory as an optimal model where the set of possible cognitive processes $\Pi$ contains all possible mappings from world states to actions and the utility function is defined as
+\begin{equation}\label{eq:perfect}
+  U(π) = \E_{o \mid \pi} [U(o)] = 
+  \E_{w} \left[
+    \E_{a \sim \pi(w)} \left[
+      \E_{o \mid w, a} U(o)
+    \right]
+  \right].
 \end{equation}
-The definitions are formally equivalent, in the sense that $\pi^*$ always selects $a^*$. However, viewing optimality as a property of cognitive processes rather than a property of actions or beliefs is a critical conceptual step.
+That is, choosing actions according to expected utility theory yields the highest utility outcomes, on average. In rational metareasoning, maximizing $U$, as defined in Equation~\ref{eq:perfect}, is known as \emph{perfect rationality} \citep{russell1997rationality}.\footnote{%
+  More precisely, perfect rationality is usually defined in terms of the total utility attained over the agent's lifetime, and it accounts for limits on the information available to the agent (i.e., not knowing $w$). 
+  % Equation~\ref{eq:perfect} describes the special case where the agent makes a single choice and has perfect information.
+}
+
+Expected utility theory is the foundation of modern (neoclassical) economics, allowing analysts to predict aggregate market behavior by assuming that each individual maximizes their own welfare. But it is so abstract that it initially seems to tell us little about cognition itself. Nevertheless, applying the optimization principle in more constrained domains (perhaps implicitly) has yielded important insights about many areas of cognition, including perception \citep{marr1982vision,knill1996perception,najemnik2005optimal} categorization \citep{anderson1991adaptive,ashby1995categorization,tenenbaum2001generalization}, memory \citep{anderson1989human}, and language \citep{goldwater2009bayesian}.
 
 The power of optimization as a tool for cognitive modeling is that it makes decisions for us. That is, it reduces the amount of flexibility we have when specifying a model. This may sound like an impediment---and indeed, it sometimes feels that way---but it can have enormous benefits. Conceptually, optimality is a source of intuition. Cognitive processes can be very complex, and simply observing what people do and trying to reason backwards to how they do it can be challenging---especially if we want to understand \emph{why} they do it that way. Exploring optimal solutions, even when they don't explain human behavior especially well, helps us understand the function of cognitive processes, which in turn helps us generate hypotheses about how those processes actually work.
 
 From a statistical perspective, optimality acts as an inductive bias. Any given behavioral phenomenon is consistent with countless cognitive models \citep{anderson1978arguments}, but only a small subset of those are optimal. If people are well-adapted to their environment, then all else being equal, the optimal models are more likely to resemble the truth than an arbitrary alternative model. Of course, people are not perfectly adapted to their environment; thus, one can always achieve a more accurate model of a particular phenomenon by abandoning the assumption of optimality. But when data are limited, or we are exploring a domain we know very little about, or we want to generalize our predictions in non-trivial ways, having a constraint that is \emph{mostly} true can improve our chances of making predictions that are \emph{mostly} accurate.
 
-Problems arise, however, when optimality isn't even mostly true. And there are many cases where that seems to be the case. To take just one example, recall that according to expected utility theory, one should take actions that yield the highest utility outcomes in expectation. This seems straightforward enough, right? Not for humans. People systematically violate expected utility theory, making choices that cannot be reconciled with any utility function \citep{allais1953comportement,ellsberg1961risk,kahneman1979prospect}. Since then, and to this day, a major focus in research on human decision-making has been to characterize exactly how and why people violate expected utility theory, for example because they misperceive the probabilities involved \citep{kahneman1979prospect} or don't consider the different actions independently \citep{roe2001multialternative}.
+Problems arise, however, when optimality isn't even mostly true. And there are many settings where that seems to be the case. To take just one example, recall that according to expected utility theory, one should take actions that yield the highest utility outcomes in expectation. This seems straightforward enough, right? Not for humans. People systematically violate expected utility theory, making choices that cannot be reconciled with any utility function \citep{allais1953comportement,ellsberg1961risk,kahneman1979prospect}. Since then, and to this day, a major focus in research on human decision-making has been to characterize exactly how and why people violate expected utility theory, for example because they misperceive the probabilities involved \citep{kahneman1979prospect} or don't consider the different actions independently \citep{roe2001multialternative}.
 
-\subsection{Bounded rationality}
+\subsection{Accounting for constraints}\label{sec:intro-constraints}
 
-Herb Simon \citeyearpar{simon1955behavioral} famously offered a different type of explanation for people's failure to maximize utility: People don't solve Equation~\ref{eq:utility} because that's not the problem they're actually faced with. In most real-world problems, there are many actions, and each action could result in many different outcomes. Not to mention, we likely don't know what the exact state of the world is, either because the information literally isn't available or because we simply didn't take note of it. Computing expected utilities in this setting would be a considerable undertaking, if it was even possible. And to attempt to do so would likely be a complete waste of time. This notion, that our choices reflect not only the expected utility of their outcomes, but also our limited ability to compute those utilities is called \emph{bounded rationality} \citep{simon1990bounded}.
+Herb Simon \citeyearpar{simon1955behavioral} famously offered a different type of explanation for people's failure to maximize utility: People don't maximize Equation~\ref{eq:perfect} because that's not the problem they're actually faced with. In most real-world problems, there are many actions, and each action could result in many different outcomes. Considering every possible outcome of every possible action each time we are faced with a decision would be paralyzing. Not to mention, the utility of an outcome is itself a complicated thing to evaluate (potentially requiring one to consider the action one would take next given that outcome) and we might not know the exact state of the world (either because the information isn't available or because we simply didn't take note of it). For decisions of the complexity that people face every day, even the largest supercomputers would be completely unable to evaluate expected utilities as in Equation~\ref{eq:eut}. For a person to attempt to do so, using a biological computer that uses less power than an incandescent lightbulb, wouldn't just be hopeless---it would be irrational. 
 
-In modern psychological research, Simon's ideas are reflected in many different ways. One of the most prevalent is the notion of \emph{ecological rationality} \citep{gigerenzer1999simple,goldstein2002models,todd2012ecological}. Ecological rationality is based on the idea that people make decisions using simple, but adaptive heuristics. These heuristics are computationally ``frugal'', meaning that people can actually apply them in the real world. But critically, they result in good decisions most of the time. How is this possible? The answer lies in the \emph{ecological} of ecological rationality. The heuristics people use would not produce good results in any hypothetical world---they produce good results in \emph{our} world. 
+This notion, that our choices reflect not only the expected utility of their outcomes, but also our limited ability to compute those utilities is called \emph{bounded rationality} \citep{simon1990bounded}. More generally, Simon suggests that human cognition---and the very definition of rational behavior---is shaped by  both ``the structure of task environments and the computational capabilities of the actor'' \citep{simon1990invariants}. By accounting for those constraints as part of the definition of the problem that people have to solve (as opposed to a flaw in the solution), we can continue to apply the rationality principle in cases where computational constraints render perfect rationality (Equation~\ref{eq:perfect}) unattainable.
 
-To formalize this idea, we can extend Equation~\ref{eq:utility2} to account for the fact that the outcomes of our actions also depend on the state of the world. To simply the notation, let $U(w, a) = \E_{o \mid w, a} U(o)$ be the expected utility of executing action $a$ in state $w$. Furthermore let the environment $E$ be a distribution over possible states of the world. We can then define
-\begin{equation}\label{eq:intro-ecology}
-  U(π) = \E_{w \sim E} \left[
-    \E_{a \mid \pi, w} \left[
-      U(w, a)
-    \right]
-  \right].
+In modern psychological research, Simon's ideas are reflected in many different ways. One of the most prevalent is the notion of \emph{ecological rationality} \citep{gigerenzer1999simple,goldstein2002models,todd2012ecological}. Ecological rationality is based on the idea that people make decisions using simple, but adaptive heuristics. These heuristics are computationally ``frugal'', meaning that people can actually apply them in the real world. But critically, they result in good decisions most of the time. How is this possible? The answer lies in the \emph{ecological} of ecological rationality. The heuristics people use would not produce good results in any hypothetical world---they produce good results in \emph{our} world. To understand this formally, ecological rationality emphasizes the distribution over the world state $w$ in Equation~\ref{eq:perfect}. The overall utility of a cognitive process is mostly determined by the behavior it produces in high-probability states.
+
+
+Proponents of ecological rationality take a strong stance against the notion of optimality, suggesting that optimization taking into account cognitive contraints is ``demonic'' (\citealp{gigerenzer1999simple}; Chapter~1).
+
+% While the importance of bounded rationality and ecological adaptation is widely accepted, the implications of Simon's ideas for optimal modeling are more controversial. Proponents of ecological rationality take a hard stance, calling optimization ``demonic'' (\citealp{gigerenzer1999simple}, Chapter 1). Indeed, clearly people's cognitive processes are not optimal in the sense of maximizing utility (Equation~\ref{eq:eut2}), and nor are they likey to be exactly optimal in the cons
+
+%sub \section{Resource-rationality}\label{sec:intro-XX}
+
+
+Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. One very natural way to do this, proposed by \citet{lewis2014computational} and \citet{griffiths2015rational}, is to formalize bounded rationality as \emph{bounded optimality}. Horvitz \citeyearpar{horvitz1987reasoning} defines bounded optimality as ``the optimization of computational utility given a set of assumptions about expected problems and constraints on resources'' (compare to Simon's ``structure of task environments'' and  ``computational capabilities''). \citet{russell1995provably} provide a more formal definition of bounded optimality as a property of a program, namely that it yields the maximum expected utility when executed on the agent's computational architecture, or ``brain'' $B$. We can thus define a bounded optimal cognitive process as
+\begin{equation}\label{eq:bo}
+  π^\text{BO} = \argmax_{π \in \Pi_B} \E_{o \mid \pi, B} [U(o)],
 \end{equation}
-That is, the utility of a cognitive process is equal to the expected utility of the actions it selects, across all world states (weighted by their probability). For this objective to be maximized, $\pi$ must select the action with maximal expected utility in every world state. Thus, the \emph{optimal} cognitive process hasn't become any simpler. But what if we are content with just a \emph{good} process? In this case, we no longer care about all world states equally. As long as the cognitive process selects high utility actions in the states that occur frequently, it's okay if it makes mistakes in the states that don't. 
-% For a heuristic to be adaptive, it must only be effective in our ecology.
+where $\Pi_B$ is the set of all cognitive processes that can be executed by brain $B$ and $\E_{o \mid \pi, B} [U(o)]$ is the expected utility of the outcome that results from executing process $\pi$ on brain $B$.
 
+As a definition of rationality for cognitive processes, bounded optimality is intellectually ideal, but problematic in practice. It is ideal because it exactly defines the problem that a resource-contrained agent faces.
+% the objective that an optimal cognitive process should optimize. 
+In pratice, however, it is very difficult to identify bounded optimal cognitive processes. There are two reasons for this. First, it requires optimizing over the set of all cognitive processes a brain could execute. It is not clear how one would specify this set, let alone find the optimum. Second, bounded optimality is not really a property of cognitive processes and outcomes; it is a property of entire minds and lifetimes.\footnote{%
+  Below, we focus on the process/mind problem. The outcome/lifetime problem---that is, that the utility of an outcome depends on the future outcomes that it permits or precludes---can can be addressed by the notion of long-term value (briefly described in Section~\ref{sec:intro-intuition} and formalized in Chapter~\ref{sec:formalism}). That is, we can define the utility of an outcome in terms of both the immediate and future rewards it yields.
+} Different cognitive processes all draw on the shared resources of one brain. Thus, we cannot identify the optimal process for one particular cognitive function without considering the effect it has on all the other functions the brain must support. That is, bounded optimality seems to prevent us from decomposing the monolithic problem of characterizing ``rational cognition'' into a set of more manageable problems of characterizing specific rational cognitive processes.
 
-% While the importance of bounded rationality and ecological adaptation is widely accepted, the implications of Simon's ideas for optimal modeling are more controversial. Proponents of ecological rationality take a hard stance, calling optimization ``demonic'' (\citealp{gigerenzer1999simple}, Chapter 1). Indeed, clearly people's cognitive processes are not optimal in the sense of maximizing utility (Equation~\ref{eq:utility2}), and nor are they likey to be exactly optimal in the cons
+Fortunately, these two challenges are not entirely insurmountable. We address the problem of specifying possible processes in Section~\ref{sec:intro-sequential}, and optimization in Chapter~\ref{sec:formalism}. The challenge of decomposability is addressed in the next section.
 
-\subsection{Resource-rationality}
+\subsection{The cost and value of mental actions}\label{sec:intro-utility}
 
-Clearly bounded rationality is a more appropriate benchmark in many cases, but it lacks some of the precision of optimality. To regain that precision while capturing Simon's key insight, we can explicitly formalize the role of cognitive constraints within the optimality paradigm. Specifically, we can define the utility of a cognitive process to account not only for external factors, like the utility of the outcomes of our choices, but also internal factors, like the amount of time and effort we spent making those choices. That is,
-\begin{equation}\label{eq:intro-resource}
-    U(π) = \E_{w} \left[
-    \E_{a \mid \pi, w} \left[
-      U(w, a)
-    \right]
-  \right] - \cost(π),
+One of the key challenges of applying bounded optimality is that the optimization occurs over the agent's entire brain. We use our brains for many different things, and have to decide how much mental resource to allocate to each. When viewed as a single constrained optimization problem, this is intractable, as it requires jointly solving for the optimal cognitive process for all the different problems our brain has to solve.
+
+As defined in Equation~\ref{eq:bo}, bounded optimality poses a single constrained optimization problem, where we must identify a single cognitive process that solves all the problems the agent might face, using a single shared resource, the brain. This is an intimidating problem, to say the least. Perhaps, however, this is not the only way to view the problem. Consider another case where an animal must allocate a finite shared resource amongst several different activities: foraging. Rather than allocating mental resources across different cognitive functions, the animal must allocate their time across different patches where food might be found. Initially, this problem seems very challenging because the correct amount of time to allocate to each patch depends on the time allocated to every other patch. But as shown by \citet{charnov1976optimal}, the optimal solution is actually quite simple: stay in a patch as long as the rate of food intake is more than what you could expect to find elsewhere (the average rate of intake, learned over experience). More generally, one should allocate resources to an activity as long as the utility gained from that activity exceeds the \emph{opportunity cost} of not allocating those resources to some other activity. As brilliantly observed by \citet{kurzban2013opportunity}, this principle applies equally to the allocation of cognitive resources.
+
+Leveraging the insight that thinking carries an opportunity cost, \citet{lieder2018bounded} showed that we can characterize the utility of specific cognitive processes as an additive combination of outcome utility and cognitive cost,
+\begin{equation}\label{eq:resource}
+  U(\pi) = \E_{o \mid \pi} [U(o)] - \cost(\pi),
 \end{equation}
-where $\E_{a \mid π}[U(a)]$ is the expected utility of the behavior (actions) the cognitive process produces and $\cost(π)$ captures the cognitive cost associated with executing the cognitive process. This definition of the utility of a cognitive process as an additive combination of behavior-derived utility and cognitive cost is the defining feature of \emph{resource-rational analysis} \citep{lieder2020resourcerational}.
+where cost captures the opportunity cost of the resources consumed by $\pi$. 
+\citet{lieder2018bounded} present a derivation of this cost in terms of the time that different resources are allocated, but more nuanced factors related to the neural implmentation of cognitive processes in humans are likely at play as well \citep{musslick2021rationalizing}.
 
-One unfortunate consequence of introducing cognitive cost into the objective function is that it creates decisions, precisely the thing we wish to avoid by adopting the optimality assumption. The large space of possible utility and cost functions has been identified as an important challenge for the resource-rational approach \citep{bates2020importance,ma2020multiple}.
+Of course, the notion that cognition is costly or effortful goes back much further than this link to bounded optimality. Indeed, simple introspection suggests that that thinking is effortful, and therefore costly in the same way as carrying heavy groceries is.\footnote{%
+  Of course, it is not hard to see how the perceived cost of carrying groceries is itself ultimately a form of opportunity cost, i.e., the other bodily procesess those calories could have been burned to support.
+} Thus, a long history of work has studied how people balance outcome utility and cognitive cost (see \citealp{shenhav2017rational} for a review). One critical insight from this work is that the optimal point on this trade-off is not always the same. For important decisions with clear factors to consider, thinking a lot is often worthwhile. For unimportant decisions, or ones that are too complex to effectively reason about, the benefit of thinking a lot is unlikely to outweigh the cost.
 
-
-\subsubsection{Effort and control costs}
-
-The most straightforward notion of cognitive cost is that thinking is effortful and thus incurs an intrinsic cost \citep{shenhav2017rational}. As a result, we should prefer cognitive processes that involve ``less thinking''. On the other hand, more thinking generally results in making better choices, resulting in a trade-off (in Equation~\ref{eq:intro-resource}). Critically, however, the optimal point on this trade-off is not always the same. For important decisions with clear factors to consider, thinking a lot is often worthwhile. For unimportant decisions, or ones that are too complex to effectively reason about, the benefit of thinking a lot is unlikely to outweigh the cost.
-
-The idea that a rational cognitive process should allocate different amount of effort in different situations has been formalized in many different ways \citep{shenhav2013expected,anderson1990adaptive,lieder2017strategy}. However, all these different approaches draw on a key insight. The choice of how much effort to allocate is analogous to the choice of which action to take in the world. Accordingly, just as we can define the utility of an \emph{action} as the expected utility of the outcome it produces, we can define the utility of \emph{cognition} as the expected utility of the outcome it produces; in the latter case, however, we must also account for the cost of that cognition. This yields:
-\begin{equation}\label{eq:evc1}
-  U(w, c) = 
-    \E_{o \mid w, c} \left[
-      U(o)
-    \right] - \cost(c)
+The idea that one should allocate different amounts of mental effort in different situations has been formalized in many different ways \citep{shenhav2013expected,anderson1990adaptive,lieder2017strategy}. However, all these different approaches draw on a key insight. The choice of how much effort to allocate (or more generally, which cognitive process to use) is analogous to the choice of which action to take in the world. Accordingly, just as expected utility theory defines the optimal action to take in any world state (Equation~\ref{eq:eut}), we can define the optimal cognitive process to use in any given world state as
+\begin{equation}\label{eq:process-world}
+  π^*_w = \E_{o \mid w, π} U(o) - \cost(w, π).
 \end{equation}
-where $c$ corresponds to a ``cognitive action''. Defining the utility of cognitive actions in this way allows us to define an optimal cognitive process as a mapping from states to cognitive actions that always maximizes $U(w,c)$
+
+
+% as we can define the utility of an \emph{action} as the expected utility of the outcome it produces, we can define the utility of a \emph{cognitive process} as the expected utility of the outcome \emph{it} produces cognitive cost. This yields:
+% \begin{equation}\label{eq:evc1}
+%   U(w, c) = 
+%     \E_{o \mid w, c} \left[
+%       U(o)
+%     \right] - \cost(c)
+% \end{equation}
+% where $c$ corresponds to a ``cognitive action''. 
+
+% Defining the utility of cognitive actions in this way allows us to define a bounded optimal cognitive process as a mapping from states to cognitive actions that always maximizes $U(w,c)$, just as a perfectly optimal process maximizes $U(w,a)$.
+% \begin{equation}
+%   \pi^*(w) = \argmax_c U(w, c)
+% \end{equation}
+
 
 % We will refer to decision, those concerning the allocation of mental resources, as \emph{metalevel decisions}. This is contrasted with 
 
@@ -156,7 +179,7 @@ This last example highlights an important feature of all the models discussed in
 
 % Conceptually $U$ and cost are distinct, referring to external and internal concerns, respectively. However, because both are ultimately a function of the cognitive process, we could just as well include cost within the $U$ function. Thus, at the end of the day, resource-rational models are really optimal models with a specific kind of objective function (and perhaps also a more limited set of possible models $\Pi$).
 
-\subsubsection{Information-theoretic costs}
+\subsection{Information and representation}\label{sec:intro-info}
 
 One of the most common choices for the cost function is based on information theory. In these models, the cognitive process forms a \emph{representation} of the state of the world, which then informs the action that is taken. The heart of the cognitive process here is the (probabilistic) mapping from world states $w$ to mental representations $m$. The utility of this mapping is defined as
 \begin{equation}\label{eq:intro-info}
@@ -184,7 +207,7 @@ One interesting result from this literature is that, for the commonly used mutua
 
 Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness. Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
 
-\subsection{Sequential models}
+\subsection{The sequential nature of thought}\label{sec:intro-sequential}
 
 The fact that cognitive processes are sequential, in the sense that they occur over time rather than all at once, is self-evident. Thus, some notion of sequentiality is an essential feature of a model that captures cognitive mechanisms at any level of detail. Here, however, we will use a slightly more restrictive notion of sequentiality. Specifically, we take sequentiality to mean that cognitive processes can be broken down into a sequences of \emph{elementary information processes} \citep{simon1979information,posner1982information,chase1978elementary}, or simply, cognitive operations.
 
@@ -228,16 +251,17 @@ On the other hand, formalizing cognitive processes as mappings from mental state
 
 \pagebreak
 
-\subsection{Optimal sequential models}
+\subsection{Optimal sequential models}\label{sec:intro-final}
 
-\colorlet{optimal}{SchoolColor}
-\definecolor{ecology}{HTML}{4daf4a}
-\definecolor{resource}{HTML}{377eb8}
-\definecolor{info}{HTML}{7B2FB0}
-\definecolor{sequential}{HTML}{D4609A}
-\definecolor{cost}{HTML}{e41a1c}
+\definecolor{optimal}{HTML}{e41a1c}
+\colorlet{simon}{SchoolColor}
+\definecolor{utility}{HTML}{4daf4a}
+\definecolor{info}{HTML}{377eb8}
+\definecolor{sequential}{HTML}{7B2FB0}
+% \definecolor{cost}{HTML}{D4609A}
 
-\newcommand{\highlight}[2]{%
+
+\newcommand{\hl}[2]{%
   {\color{#1!90!black} #2}
 }
 
@@ -247,36 +271,29 @@ On the other hand, formalizing cognitive processes as mappings from mental state
   ]
 }
 
-Having defined and briefly reviewed optimal and dynamic models, we now turn to the key question: How can we define a model that is optimal, resource-constrained, and sequential? To do so, we combine six key insights from the literature reviewed above.
+Having defined and briefly reviewed optimal and dynamic models, we now turn to the key question: How can we define a model that is optimal, resource-constrained, and sequential? To do so, we combine five key insights from the literature reviewed above.
 %
 \begin{enumerate}
-  \specialitem{optimal}{1} An optimal cognitive process is one that maximizes an objective function 
-  (Equation~\ref{eq:intro-optimal}).
+  \specialitem{optimal}{1} An optimal cognitive process is one that maximizes an objective function (Section~\ref{sec:intro-optimal}).
   %
-  \specialitem{ecology}{2} Cognitive procesess only need to work well on the types of problems people encounter frequently 
-  (Equation~\ref{eq:intro-ecology}).
+  \specialitem{simon}{2} Cognitive processes are shaped by the structure of both the external environment and the internal environment (Section~\ref{sec:intro-simon}).
   %
-  \specialitem{resource}{3} The utility of a cognitive process depends both on the utility of the action it produces as well as the cost of executing the process 
-  (Equation~\ref{eq:intro-resource}).
+  \specialitem{utility}{3} The utility of a mental action depends on its effect on behavior as well as its cost (Section~\ref{sec:intro-utility}).
   %
-  \specialitem{info}{4} The action selected by a cognitive process is mediated by the mental state it produces 
-  (Equation~\ref{eq:intro-info}).
+  \specialitem{info}{4} The behavior produced by a cognitive process is mediated by the mental state it produces (Section~\ref{sec:intro-info}).
   %
-  \specialitem{sequential}{5} A cognitive process can be broken down into a sequence of mental operations, or more precisely, a distribution over such sequences 
-  (Equation~\ref{eq:intro-sequential}).
-  %
-  \specialitem{cost}{6} The cost of a cognitive process is the sum of the cost of each operation it performs 
-  (Equation~\ref{eq:intro-cost}).
+  \specialitem{sequential}{5} A cognitive process can be broken down into a sequence of mental operations, with each operation selected based on the current mental state (Section~\ref{sec:intro-sequential}).
 \end{enumerate}%
 Combining these ideas, yields the following definition of an optimal sequential cognitive process:
 %
 \begin{equation}\label{eq:intro-master}
-  π^* = \highlight{optimal}{\argmax_{π}}\ 
+  π^* = \hl{optimal}{\argmax_{π}}\ 
     \E \left[
-      \highlight{resource}{U}(\highlight{ecology}{w}, \highlight{info}{\text{act}(m_t)})
-      \ - \highlight{cost}{\sum_t} \highlight{resource}{\cost(c_t)}
-      \ \middle\vert\ \highlight{sequential}{c_t \sim \pi(m_t)},
-      \ \highlight{ecology}{w \sim E}
+      \hl{utility}{U}(\hl{simon}{w}, \hl{info}{\text{act}(m_t)})
+      \ - \sum_t \hl{utility}{\cost(c_t)}
+      % \ - \hl{sequential}{\sum_t} \hl{utility}{\cost(c_t)}
+      \ \middle\vert\ \hl{sequential}{c_t \sim \pi(m_t)},
+      \ \hl{simon}{m_{t+1} \sim T(m_t, c_t, w)}
     \right]
 \end{equation}
 That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new.
@@ -298,6 +315,7 @@ models ...
 Howes
 POMDP visual search
 
+Sampling as a resource-rational constraint response to Falk's BBS
 
 % \citet{hamrick2015think} 
 % \citet{lieder2018anchoring} 
@@ -342,19 +360,19 @@ POMDP visual search
 % problem: this isn't actually sequentially optimal
 
 
-% \section{Alternative approaches for rational mechanistic modeling}
+%sub \section{Alternative approaches for rational mechanistic modeling}
 
 % Having defined and briefly reviewed optimal and dynamic models, we now turn to the main question explored by this disseration. How can we construct rational mechanistic models? The answer proposed here is the construction of optimal sequential models. But before
 
 % This is by no means a new question, nor is this dissertation the first to propose a general framework for constructing such models. In the following sections, we briefly review this past work, with an emphasis on ...
 
-% \subsection{Ecological rationality}
+%sub \section{Ecological rationality}\label{sec:intro-XX}
 
 
 
 
 
-% \subsection{Optimal but not dynamic}
+%sub \section{Optimal but not dynamic}\label{sec:intro-XX}
 
 
 
