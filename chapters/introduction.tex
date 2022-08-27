@@ -31,13 +31,16 @@ An important property of sequential decision problems is that there is often a d
 
 The power of identifying this parallel between external and internal environments is that it allows us to leverage existing knowledge about sequential decision problems (a substantial chunk of AI research) to build rational mechanistic models of cognition. That is, we can apply the same formalisms and algorithms that might help a robot deliver groceries to instead characterize the problem of resource-bounded cognition, and identify cognitive processes that optimally solve that problem.
 
-\section{The shoulders of giants}
+% \section{The shoulders of giants}
 
-Our approach builds on a long history of work in artificial intelligence and cognitive science. Formally, our approach draws heavily on concepts and tools developed in \emph{rational metareasoning}, a subfield of artificial intelligence that aims to construct artificial agents that make effective use of their limited computational resources \citep{russell1991principles,hay2016principles}. Indeed, in many ways, our approach is simply the application of these ideas to understanding human cognition. At the same time, many of these ideas have parallels in cognitive models, and still more can be traced to the period before the boundary between cognitive modeling and artificial intelligence was well-defined. Below, we review these ideas from a psychological perspective, noting the parallel concepts in AI when relevant. Ultimately, we will synthesize these key insights into a formal definition of rational mechanistic models of cognition.
+\separator
+
+% \newthought{Our approach builds} on 
+\newthought{A long history} of work in artificial intelligence and cognitive science has established the foundations upon which this dissertation builds. Formally, our approach draws heavily on concepts and tools developed in \emph{rational metareasoning}, a subfield of artificial intelligence that aims to construct artificial agents that make effective use of their limited computational resources \citep{russell1991principles,hay2016principles}. Indeed, in many ways, our approach is simply the application of these ideas to understanding human cognition. At the same time, many of these ideas have parallels in cognitive models, and still more can be traced to the period before the boundary between cognitive modeling and artificial intelligence was well-defined. Below, we review these ideas from a psychological perspective, noting the parallel concepts in AI when relevant. Ultimately, we will synthesize these key insights into a formal definition of rational mechanistic models of cognition.
 
 % cognition is \emph{dynamic} (sequential, occuring over time), \emph{bounded} (subject to costs or constraints), and \emph{optimized} (maximizing utility). As illustrated in Table~\ref{tab:comparison}, various combinations of these assumptions are made frequently in models of the mind. However, by capturing all three ideas at once, the current approach has advantages that cannot be achieved with any subset.
 
-\subsection{Optimal models of cognition}\label{sec:intro-optimal}
+\section{Optimal models of cognition}\label{sec:intro-optimal}
 
 What does it mean, formally, for a cognitive model to be rational? Following \citet{anderson1990adaptive}, we formalize rationality in terms of \emph{optimality}. A model of a cognitive process (henceforth just ``a cognitive process'') is optimal if it performs a cognitive function as well as it possibly could. More precisely, an optimal cognitive process is one that produces the maximum value of an \emph{objective function}, out of a set of possible models:
 \begin{equation}\label{eq:intro-optimal}
@@ -72,7 +75,7 @@ From a statistical perspective, optimality acts as an \emph{inductive bias}. Any
 
 Problems arise, however, when optimality isn't even mostly true. And there are many settings where that seems to be the case. To take just one example, recall that according to expected utility theory, one should take actions that yield the highest utility outcomes in expectation. This seems straightforward enough, right? Not for humans. People systematically violate expected utility theory, making choices that cannot be reconciled with any utility function \citep{allais1953comportement,ellsberg1961risk,kahneman1979prospect}. Since then, a major focus in research on human decision-making has been to characterize exactly how and why people violate expected utility theory, for example because they misperceive the probabilities involved \citep{kahneman1979prospect} or don't consider the different actions independently \citep{roe2001multialternative}.
 
-\subsection{Accounting for constraints}\label{sec:intro-constraints}
+\section{Accounting for constraints}\label{sec:intro-constraints}
 
 Herb Simon \citeyearpar{simon1955behavioral} famously offered a different type of explanation for people's failure to maximize utility: People don't maximize Equation~\ref{eq:perfect} because that's not the problem they're actually faced with. In most real-world problems, there are many actions, and each action could result in many different outcomes. Considering every possible outcome of every possible action each time we are faced with a decision would be paralyzing. Not to mention, the utility of an outcome is itself a complicated thing to evaluate (potentially requiring one to consider the action one would take next given that outcome) and we might not know the exact state of the world (either because the information isn't available or because we simply didn't take note of it). For decisions of the complexity that people face every day, even the largest supercomputers would be completely unable to evaluate expected utilities as in Equation~\ref{eq:eut}. For a person to attempt to do so, using a biological computer that uses less power than an incandescent lightbulb, wouldn't just be hopeless---it would be irrational. 
 
@@ -94,7 +97,7 @@ As a definition of rationality for cognitive processes, bounded optimality is pe
 
 Fortunately, these two challenges are not insurmountable, at least if we are willing to make approximations. We address the problem of specifying possible processes in Section~\ref{sec:intro-sequential}, and optimization in Chapter~\ref{sec:formalism}. The challenge of decomposability is addressed in the next section (in particular, Equation~\ref{eq:resource}).
 
-\subsection{The cost and value of mental action}\label{sec:intro-cost}
+\section{The cost and value of mental action}\label{sec:intro-cost}
 
 Traditionally, researchers in psychology have taken a different approach to accounting for cognitive constraints. Intuitively, thinking is \emph{effortful}, and so we avoid it for the same reason we avoid carrying heavy groceries \citep{shenhav2017rational}. On the other hand, more thinking generally results in better outcomes. Thus, there is a fundamental trade-off between the utility of the outcomes we experience and the cost of the mental effort we spend to earn those outcomes \citep{kool2018mental}. Critically, however, the optimal point on this trade-off is not always the same. For important decisions with clear factors to consider, thinking a lot is often worthwhile. For unimportant decisions, or ones that are too complex to effectively reason about, the benefit of thinking a lot is unlikely to outweigh the cost.
 
@@ -123,7 +126,7 @@ The content and interpretation of $c$ varies substantially across different inst
 
 In another instantiation of this principle, $c$ corresponds to a \emph{strategy} for solving a problem. A classic example of this kind of model considers the decision of whether to use a ``model-free'' or ``model-based'' strategy \citep{daw2005uncertaintybased}. Intuitively, a model-free strategy relies on habits or learned associations, while a model-based strategy involves explicit reasoning about the consequences of one's actions. Generally, the model-based system yields better outcomes, but is more costly to execute; people seem to arbitrate between the strategies accordingly \citep{keramati2011speed,kool2017costbenefit}, sometimes using strategies that combine model-free and model-based elements \citep{keramati2016adaptive}. Although this work only makes an intuitive appeal to a cost-benefit tradeoff, \citet{lieder2017strategy} have proposed a model of strategy selection that explicitly optimizes VOC (Equation~\ref{eq:evc1}), showing that it can account for the strategies people use to sort lists and make choices between alternatives that vary on many dimensions.
 
-\subsubsection{Bounded optimality and metalevel rationality}
+\subsection{Bounded optimality and metalevel rationality}
 
 Treating the choice of cognitive actions as analogous to the choice of physical actions has yielded important insights into the flexibility with which people allocate mental effort. But as researchers, we now face a difficult choice. On the one hand, bounded optimality (Equation~\ref{eq:bo}) defines the true problem of resource-contrained cognition. But a cost-benefit tradeoff (Equation~\ref{eq:evc2}) is something we can actually work with. Must we choose between principle and practice?
 
@@ -160,7 +163,7 @@ This is the difference between \emph{metalevel rationality} (Equation~\ref{eq:in
 
 Is all hope lost? Perhaps not. As suggested by the strategy-selection models just mentioned, one does not have to actually perform a cost-benefit analysis in order to select strategies that effectively balance costs and benefits. Building on this idea, \citet{lieder2017strategy} present a model that explicitly approximates the VOC using learned predictive models of the computational cost and outcome utility that will result from applying a strategy to a particular problem. They call this strategy \emph{metacognitive reinforcement learning}. Although a human being with finite experience may not be able to learn VOC exactly, they may be able to learn a relatively good approximation to VOC, especially for the kinds of metacognitive decisions they encounter frequently. In these cases, their behavior may come close to true metalevel rationality. By the same token bounded optimality and metalevel rationality will actually not be so different in these cases. Thus, going forward, we will use metalevel rationality as an approximation to bounded optimality. We further discuss the validity of this assumptions (and possible improvements on it) in the \todo{conclusion}.
  
-\subsection{Representation, action, and the value of information}\label{sec:intro-info}
+\section{Representation, action, and the value of information}\label{sec:intro-info}
 
 Our discussion so far has remained agnostic about an important question: How exactly does cognition influence outcomes? To answer this question, we will draw on another class of models that are used to characterize rational cognition under computational constraints, those based on \emph{information theory}. These models vary widely in their structure and go under different names, including efficient coding \citep{barlow1961possible,stocker2006noise}, rate-distortion theory \citep{sims2016rate}, the free-energy principle \citep{friston2010freeenergy}, and rational inattention \citep{sims2003implications}. Here, we will describe one version of this type of model, which is particularly applicable in decision-making contexts (c.f. \citealp{bhui2021resourcerational}).
 
@@ -225,7 +228,7 @@ One interesting result from this literature is that, for the commonly used mutua
 % Thus, information-theoretic models are well-suited for explaining how we represent the world and why we behave somewhat randomly. But they are perhaps less ideal for understanding the mechanisms that generate those representations or yield that randomness.
 % Nor is it clear how to apply these models in cases where the cost is not naturally cast in terms restricted information flow.
 
-\subsection{The sequential nature of thought}\label{sec:intro-sequential}
+\section{The sequential nature of thought}\label{sec:intro-sequential}
 
 Thus far, we have described models that rationally select mental actions, and models that form mental representations to inform the actions they take in the world. These are key ingredients for a rational mechanistic model of cognition, but something is still missing. All the models we've discussed so far treat the problem of rational metacognitive control as a \emph{static} problem (or a sequence of independent static problems). That is, they consider the selection of a single mental action or a single mental state.\footnote{%
   It is perhaps unfair to call EVC or strategy selection ``static'', given that the control signals often parameterizes a dynamic evidence accumulation process and the strategies are correspond to multi-step algorithms. More precisely, it is the rational metacognitive component of these models that is static. We discuss this further at the end of this section.
@@ -292,7 +295,7 @@ Before we continue, it is important to clarify how the type of sequentiality des
 
 % \pagebreak
 
-\subsection{Optimal sequential models of resource-bounded cognition}\label{sec:intro-final}
+\section{Optimal sequential models of resource-bounded cognition}\label{sec:intro-final}
 
 \definecolor{optimal}{HTML}{e41a1c}
 \colorlet{simon}{SchoolColor}
