@@ -13,8 +13,6 @@ We must be prepared to accept the possibility that what we call ``the environmen
 
 \newthought{The key insight} behind the proposed framework is that cognitive processes are solutions to sequential decision problems. Drawing on a subfield of artificial intelligence known as \emph{rational metareasoning} \citep{matheson1968economic,russell1991principles}, we formalize this insight using the framework of \emph{metalevel Markov decision processes} (metalevel MDPs; \citealp{hay2012selecting}). In this framework, a cognitive process is formalized as a sequential process of executing computational actions that update an agent's mental state. At each moment, the agent must choose whether to continue thinking, refining their mental state but accruing computational cost, or to instead stop thinking and take action. In the former case, they must additionally decide which computation to execute next (i.e., what to think about). In the latter case, they select the action that seems best given their current mental state and receive a reward associated with the external utility of that action.
 
-\todo{define object level, put back below ?}
-
 % in the latter case, they select the optimal action given their current belief and receive a reward associated with the external utility of that action.
 
 In this chapter, I provide a formal description of the framework. The formalization presented here is an adaptation from the framework as proposed in \citet{hay2016principles}. We have modified the framework somewhat to better facilitate the specification of cognitive models.
@@ -150,7 +148,6 @@ A world state $w \in \W$ captures the state of the world that is relevant to the
 % One might be tempted to specify the world state as simply a binary variable indicating which car is better. However, with that definition, we could not specify the probability of drawing a cue in favor of each car in the transition function.
 
 % For example, in a decision-making task, the world state might define the utility of the various actions available to the agent (as in Chapter~\ref{sec:attention}). In a memory task, the world state might correspond to the strength of the memory that the agent is trying to recall (Chapter~\ref{sec:memory}). 
-\todo{Is the memory strength really a ``world'' state?}
 
 \subsection{Mental states}
 
@@ -216,14 +213,14 @@ Substituting our definitions of $U$ and $\pi\act$ into Equation~\ref{eq:term-rew
   R\tally(m, \bot, w) = \begin{cases}
     w &\text{if } x_t > y_t \\
     1-w &\text{if } x_t < y_t \\
-    0.5 &\text{if } x_t = y_t
+    \nicefrac{1}{2} &\text{if } x_t = y_t
   \end{cases}
 \end{equation}
 % $R(m, \bot, w)$ for the tallying example, we will assume that 
-where the $0.5$ comes from taking the average of $w$ and $1 - w$.
+where the $\nicefrac{1}{2}$ comes from taking the average of $w$ and $1 - w$.
 
 Equation~\ref{eq:term-reward} may appear to constrain us to simple one-shot decision-making tasks, such as the ones tallying is intended for. However, it is not as restrictive as it first appears. For example, in Chapter~\ref{sec:memory}, we model a memory recall task by assuming that $\pi\act$ can only perform the ``recall'' action when the activation of a memory exceeds a threshold. In Chapter~\ref{sec:planning}, we model a planning task by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}).\footnote{
-  This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See \todo{conclusion} for a discussion of the problem of interleaved computation and action.
+  This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See \conclusion for a discussion of the problem of interleaved computation and action.
 } 
 
 \begin{figure}[tb!]
@@ -256,21 +253,23 @@ That is, it maximizes the expected return. In a metalevel MDP the return can be 
     c_t \sim \pi(m_t)
   }.
 \end{equation}
-This emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation.
+This is a slightly more precise version of the definition of optimal sequential models of resource-bounded congition given in Equation~\ref{eq:intro-master}.\footnote{%
+  Note that the expectation implicitly depends on the transition function, which was explicit in Equation~\ref{eq:eq:intro-master}, as well as the initial mental state $m_1$ and the set of possible computations.
+} It emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation.
 
 The optimal policy for the tallying example is illustrated in Figure~\ref{fig:tally-policies}. When the cost of computation is high relative to the stakes of the decision, we see that the optimal tallying policy consider cues until either one option has a lead of two cues in its favor, or thirteen cues have been considered in total. This is interestingly different from the suggestion of \citet{gigerenzer2011heuristic}, to first consider a fixed number of cues and then make a choice as soon as one leads by any amount. When deliberation is less costly (or the decision is more important), one option has to lead by four cues to be chosen; but over time, this requirement becomes less strict, with a decision being made after considering at most 79 cues. This resembles the ``collapsing boundaries'' that are often found in optimal evidence accumulation models \citep{drugowitsch2012cost}.
 
-Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In Section~\ref{sec:computing}, we discuss various strategies for tackling this problem. But first, we will discuss a special case of metalevel MDP that can be converted to standard MDPs, an important step in many solution strategies. \todo{check this}
+Unfortunately, identifying optimal metalevel policies is substantially more challenging than writing down their definition. In Section~\ref{sec:computing}, we discuss various strategies for tackling this problem.
 
 % In addition to being a solution to a metalevel MDP, we can also think of a policy as a cognitive model, one which makes predictions about the sequence of cognitive operations a person will perform when performing some task. If we make assumptions about how those cognitive operations generate process-tracing data, for example eye fixations (Chapter~\ref{sec:attention}) or mouse clicks (Chapter~\ref{sec:planning}), the policy (along with the transition function) corresponds to a likelihood model over those data. 
 
-\section{Two views of computation}
+\section{Two views of computation}\label{sec:two-views}
 
 So far, we have characterized computation as a process of executing mental actions that update an agent's internal state. These mental can be contrasted with external actions that update the state of the environment---but they are fundamentally the same type of thing. In the language of Hay (\citeyear{hay2016principles}; Chapter~7), this is the \emph{mechanical view} of computation. This view is non-restrictive; it is relatively easy to see how any algorithm or cognitive model one might concoct could be formalized in this way.
 
 An alterative view, the \emph{Bayesian view}, takes a stronger stance on the nature of computation. It formalizes computations as experiments that generate information about the world \citep{matheson1968economic}. The results of these experiments are synthesized, by Bayesian inference, into posterior distributions over the utility of different possible external actions, thus informing the agent's choice of which action to take. 
 
-It is worth emphasizing that this view is quite different from the standard Bayesian approach in cognitive science (e.g., \citealp{tenenbaum2011how}). While the standard approach treats cognition as a problem of drawing inferences given data, this view treats cognition as a problem of generating the data that drives inference. A closer analogue in cognitive science is found in models active learning \citep{gureckis2012selfdirected,gottlieb2013informationseeking}, but in that case, the data is assumed to be found in the world, rather than generated in the mind.\footnote{We further discuss links between metalevel MDPs and active learning in the \todo{conclusion}}
+It is worth emphasizing that this view is quite different from the standard Bayesian approach in cognitive science (e.g., \citealp{tenenbaum2011how}). While the standard approach treats cognition as a problem of drawing inferences given data, this view treats cognition as a problem of generating the data that drives inference. A closer analogue in cognitive science is found in models active learning \citep{gureckis2012selfdirected,gottlieb2013informationseeking}, but in that case, the data is assumed to be found in the world, rather than generated in the mind.\footnote{We further discuss links between metalevel MDPs and active learning in \conclusion}
 
 Importantly, the two views are not mutually exclusive. They are often compatible interpretations of a single system. The mechanical model emphasizes the process of computation, while the Bayesian model emphasizes its function. In this way, the mechanical and Bayesian models are analogous to Marr's algorithmic and computational levels. Unlike in Marr's levels, however, adopting the Bayesian model is more than just an interpretation; it has practical consequences for what one can do with the model. Specifically, it puts constraints on the types of computation one can consider. All Bayesian metalevel MDPs have a mechanical interpretation, but not vice versa. On the other hand, adopting the Bayesian view has conceptual and technical advantages. Specifically, it provides a formal link between mental states and world states, and it allows us to convert metalevel MDPs into standard MDPs.
 
@@ -294,7 +293,7 @@ Mapping mental states to Bayesian beliefs is powerful because it provides a form
 %
 To be more precise, this policy randomly selects one of the actions that has maximal expected utility given the mental state. This is the default action policy in a Bayesian metalevel MDP, meaning that it is one less choice we have to make as cognitive modelers.
 
-In the Bayesian view, the intial mental state $m_1$ has a special interpretation. It is the \emph{prior}, the distribution over the world state the agent assumes before performing any computation. By default, we will assume that this prior is accurate, i.e., $b_1(w) = \Pr(W=w)$. However, in Chapter~\ref{sec:attention}, we will need to assume some bias in the prior to fully capture human behavior. \todo{clarify bias}
+In the Bayesian view, the intial mental state $m_1$ has a special interpretation. It is the \emph{prior}, the distribution over the world state the agent assumes before performing any computation. By default, we will assume that this prior is accurate, i.e., $b_1(w) = \Pr(W=w)$. However, in Chapter~\ref{sec:attention}, we will need to assume some bias in the prior to fully capture human behavior.
 
 \subsection{Bayesian updating}
 
@@ -311,7 +310,7 @@ In the Bayseian view, computations correspond to experiments that generate infor
 %
 where the second equality is the application of Bayes rule, updating the prior $b_t$ given the likelihood $p_c(o \mid w)$. The transition function describes the full process of sampling an observation and updating the belief accordingly. Denoting the update in Equation~\ref{eq:bayes-update} as ``bayes-update'', the full transition function is defined as
 %
-\begin{equation}
+\begin{equation}\label{eq:bayes-transition}
 \begin{aligned}
   o_t &\sim p_c(\cdot \mid w) \\
   m_{t+1} &= \text{bayes-update}(m_t, o_t, p_c)
@@ -333,7 +332,7 @@ Turning to the transition function, recall that each computation corresponds to 
    \Beta(α_t, β_t + 1) &\text{if } o_t = 0
 \end{cases}
 \end{equation}
-Not only is this form simple, it is remarkably similar to Equation~\ref{eq:tally-transition}. Indeed, given that $p(o_t = 1) = w$, they are equivalent. The only difference between $α_t$ and $x_t$ (and between $β_t$ and $y_t$) is that the $x$ and $y$ are assumed to be initialized to 0, while $α$ and $β$ are initialized to 1 (or some other values to capture a non-uniform prior). That is, $b_t = \Beta(α_1 + x_t, β_1 + y_t)$, providing a direct link between the Bayesian belief state and the mechanical mental state.
+Not only is this form simple, it is remarkably similar to Equation~\ref{eq:tally-transition}. Indeed, given that $p(o_t = 1) = w$, they are equivalent. The only difference between $α_t$ and $x_t$ (and between $β_t$ and $y_t$) is that the $x$ and $y$ are assumed to be initialized to $0$, while $α$ and $β$ are initialized to $1$ (or some other values to capture a non-uniform prior). That is, $b_t = \Beta(α_1 + x_t, β_1 + y_t)$, providing a direct link between the Bayesian belief state and the mechanical mental state.
 
 \subsection{Relation to partially observable Markov decision processes}\label{sec:pomdp}
 
@@ -356,13 +355,9 @@ which is exactly analogous to Equation~\ref{eq:bayes-update}.
  % but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$
 Metalevel MDPs additionally require that all but one action yield strictly negative reward and that the remaining action, $\bot$, leads to a terminal state.
 
-Given that Bayesian metalevel MDPs are a special case of POMDPs, one might reasonably ask why one should bother with metalevel MDPs at all. Indeed, the POMDP framework is more general and more powerful than the metalevel MDP framework. But as many practitioners will tell you, this generality is a curse as well as a blessing; a method that can solve any arbitrary POMDP may not be well suited to solve your particular problem.\footnote{%
+Given that Bayesian metalevel MDPs are a special case of POMDPs, one might reasonably ask why one should bother with metalevel MDPs at all. Indeed, as discussed in Section~\ref{sec:alternative-pomdp}, other researchers have proposed using POMDPs to model an agent's internal environment. However, there are conceptual and technical advantages to using the more restrictive formalism of metalevel MDPs. Conceptually, it is useful to formally distinguish between mental states and world states, and between computational actions and external actions. Although it is sometimes natural to map the belief state in a POMDP to a mental state, a mental state cannot always be reduced to a belief (i.e., when we are not taking a strictly Bayesian view of computation). From a technical perspective, POMDPs describe a very general and challenging class of problems; as a result, general-purpose POMDP solvers are notoriously inefficient.\footnote{%
   ``The best thing about POMDPs is that everything's a POMDP. But the worst thing about POMDPs is that everything's a POMDP.'' (Michael Littman, personal communication).
-} Focusing on the specific case defined by metalevel MDPs allows us to develop more targeted and efficient solution strategies. Furthermore, not all metalevel MDPs have a Bayesian interpretation. Although they can still be cast as a POMDP, the formulation is much less natural, as the roles of states and beliefs become muddied.\footnote{%
-  \todo{this needs work}
-  %  Is a decision tree really just a ``belief'' about the rewards at future states? Although it can be formalized this way, doing so obscures the intended semantics of the model, and it will become increasingly difficult as one adopts an increasingly precise model of the actual computation involved. 
-  It is especially difficult outside of decision-making contexts, where the termination reward depends directly on the mental state (not on an action selected based on that mental state). In this case, the mental state $m$ must be part of the \emph{state} of the POMDP, rather than the belief. However, if we want to have a consistent framework, we would then need to model $m$ as part of the state in the fully Bayesian cases as well. This would result in very unnatural model specifications, and it would lose much of the appeal of using the POMDP framework in the first place (e.g., using Equation~\ref{eq:pomdp-update} to define the belief update).
-} Thus, metalevel MDPs can be viewed as special cases of POMDPs, and they draw on many of the same ideas as POMDPs. However, for both conceptual and technical reasons, metalevel MDPs may be a more useful framework for modeling the specific kind of sequential decision problem posed by cognition.
+} Focusing on the specific case defined by metalevel MDPs allows us to develop more targeted and efficient solution strategies (e.g., Section~\ref{sec:bmps}). 
 
 Nevertheless, noting the formal similarities between Bayesian metalevel MDPs and POMDPs allows us to take advantage of a powerful tool from the POMDP literature. Specifically, we can draw on the the concept of \emph{belief MDPs} \citep{kaelbling1998planningb} to convert a Bayesian metalevel MDP into an equivalent MDP, where the world state has been marginalized out. We refer to this as the ``marginalized'' metalevel MDP.\footnote{We don't just call them ``belief metalevel MDPs'' because the state still corresponds to a mental state, which can function as more than just a belief state (see Section~\ref{sec:marginal-mechanical}).}
 
@@ -599,7 +594,7 @@ All of the strategies we have discussed so far are \emph{model-based}. That is, 
 
 \section{Bayesian metalevel policy search}\label{sec:bmps}
 
-Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging. Indeed, as we show in Appendix~\ref{TODO}, off-the-shelf deep learning methods can perform quite poorly.
+Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging. Indeed, as we show in Appendix~\ref{app:bmps}, off-the-shelf deep learning methods can perform quite poorly.
 
 The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles}. Specially, BMPS draws on work quantifying the \emph{value of information} generated by computation. 
 
