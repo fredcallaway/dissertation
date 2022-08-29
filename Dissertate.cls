@@ -13,6 +13,7 @@
 % \usepackage{algpseudocode}
 \usepackage{minted}
 \usepackage{sidecap}
+\usepackage{dsfont}
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{Dissertate}[2014/03/25 v2.0 Dissertate Class]
@@ -106,24 +107,27 @@
 \RequirePackage{mathspec}
 
 \setmathfont(Digits,Latin,Greek)[
-    Numbers=OldStyle,
+    % Numbers=OldStyle,
     BoldFont       = * Bold,
     ItalicFont     = * Italic,
     BoldItalicFont = * Bold Italic,
-    % Numbers={Proportional}
 ]{Minion Pro}
 \setmathrm{Minion Pro}
 
 \AtBeginEnvironment{tabular}{\addfontfeature{RawFeature=+tnum}}
 \widowpenalty=300
 \clubpenalty=300
-\setromanfont[Numbers=OldStyle, Ligatures={Common, TeX}, Scale=1.0]{Minion Pro}
-\newfontfamily{\smallcaps}[RawFeature={+c2sc,+scmp}]{Minion Pro}
+\setromanfont[
+    Numbers=Proportional,
+    Ligatures={Common, TeX},
+    Scale=1.0
+]{Minion Pro}
+% \newfontfamily{\smallcaps}[Numbers=Proportional,RawFeature={+c2sc,+scmp}]{Minion Pro}
 
 \setsansfont[Scale=MatchLowercase, BoldFont={Lato Bold}]{Lato Regular}
 \setmonofont[Scale=0.8]{Source Code Pro}
-\RequirePackage[labelfont={bf,sf,footnotesize,singlespacing},
-                textfont={sf,footnotesize,singlespacing},
+\RequirePackage[labelfont={bf,sf,small,singlespacing},
+                textfont={sf,small,singlespacing},
                 justification={justified},
                 singlelinecheck=false,
                 margin=0pt,
@@ -150,7 +154,7 @@
 \renewcommand\listtablename{Listing of tables}
 
 % Endmatter
-\renewcommand{\setthesection}{\arabic{chapter}.A\arabic{section}}
+% \renewcommand{\setthesection}{\arabic{chapter}.A\arabic{section}}
 
 % References.
 \renewcommand\bibname{References}
@@ -330,17 +334,17 @@
     \pagenumbering{arabic}
 }
 
-\renewcommand{\backmatter}{
-    \begin{appendices}
-        \include{chapters/appendixA}
-    \end{appendices}
-    \input{endmatter/personalize}
-    \clearpage
-    \bibliography{references}
-    \addcontentsline{toc}{chapter}{References}
-    \bibliographystyle{apalike2}
-    % \include{endmatter/colophon}
-}
+% \renewcommand{\backmatter}{
+%     \begin{appendices}
+%         \include{chapters/appendixA}
+%     \end{appendices}
+%     \input{endmatter/personalize}
+%     \clearpage
+%     \bibliography{references}
+%     \addcontentsline{toc}{chapter}{References}
+%     \bibliographystyle{apalike2}
+%     % \include{endmatter/colophon}
+% }
 
 % everything below makes each citation a single link (rather than author and year)
 \usepackage{etoolbox}
