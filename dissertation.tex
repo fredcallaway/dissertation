@@ -7,6 +7,7 @@
 \nobibliography*
 
 \input{commands}
+\newcommand{\conclusion}{\textcolor{red}{the conclusion}}
 \begin{document}
 
 % the front matter
@@ -25,24 +26,25 @@
 
 % \setcounter{chapter}{1}
 
-\include{chapters/introduction}
+
+% \include{chapters/introduction}
 % \include{chapters/metamdp}
 % \include{chapters/attention}
 % \include{chapters/memory}
-% \include{chapters/planning}
+\include{chapters/planning}
 % \include{chapters/conclusion}
 
 \definecolor{chaptergrey}{rgb}{0.6, 0.6, 0.6}
 \begin{appendices}
     % \include{chapters/app-attention}
     % \include{chapters/app-memory}
-    % \include{chapters/app-planning}
+    \include{chapters/app-planning}
 \end{appendices}
 
 \clearpage
 \bibliography{references,extra}
 \addcontentsline{toc}{chapter}{References}
-\bibliographystyle{apalike}
+\bibliographystyle{apalike2}
 \include{endmatter/colophon}
 
 
