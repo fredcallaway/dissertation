@@ -117,7 +117,7 @@ In order to compare our model to the predictions of the aDDM \citep{krajbich2010
   \centering
   \includegraphics[width=0.7\textwidth]{figs/attention/supp-voi-vpi.pdf}
   \caption{\captiontitle{Illustration of the value of information features}.
-    The solid line shows the average value of the item chosen after different numbers of computations selected by a near-optimal policy assuming no computational costs. The dashed lines show values for two of the VOI features in the initial belief state: $\VOImy$ is the value after one computation and $\VPI$ is the asymptotitc value after infinite computations.
+    The solid line shows the average value of the item chosen after different numbers of computations selected by a near-optimal policy assuming no computational costs. The dashed lines show values for two of the VOI features in the initial mental state: $\VOImy$ is the value after one computation and $\VPI$ is the asymptotitc value after infinite computations.
   }
   \label{fig:attention-voi}
 \end{figure}
@@ -139,12 +139,12 @@ The myopic value of information is the value of the information acquired by a si
 % \end{equation*}
 %
 \begin{equation*}
-  \VOImy(b_t,c) = \E_{b_{t+1} \mid b_t, c}\left[
-    R(b_{t+1},\bot)
-  \right] - R(b, \bot).
+  \VOImy(m_t,c) = \E_{m_{t+1} \mid m_t, c}\left[
+    R(m_{t+1},\bot)
+  \right] - R(m_t, \bot).
 \end{equation*}
 %
-In our model, this is equal to the expected value of the item that will be chosen after taking an additional sample minus the expected value of an item chosen based on the current beliefs. That is,
+In our model, this is equal to the expected value of the item that will be chosen after taking an additional sample minus the expected value of an item chosen based on the current mental state. That is,
 %
 % \begin{equation}
 %   \VOImy(b, c) = \E_{\mu_{t+1}}\left[
@@ -155,7 +155,7 @@ In our model, this is equal to the expected value of the item that will be chose
 % \end{equation}
 %
 \begin{equation*}
-  \VOImy(b_t, c) = \E_{\mu_{t+1} \mid \mu_t, \lambda_t} \left[
+  \VOImy(m_t, c) = \E_{\mu_{t+1} \mid \mu_t, \lambda_t} \left[
     \max_i \mu_{t+1}^{(i)}
 \right] - \max_i \mu_t^{(i)}.
 \end{equation*}
@@ -180,11 +180,11 @@ To derive an analytic expression for Equation~\ref{eq:myopicmax}, we first deriv
   {\currentlam+\sigma_{x}^{-2}}.
 \end{equation}
 %
-Since $x_t \mid u^{(c)} \sim \Normal(u^{(c)},\sigma_{x}^{2}$) and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. Additionally, because the belief is a distribution over the true utility, we have $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,1/\currentlam)$. Combining these two statements, we see that $\conditionalx$ is a Gaussian whose mean is itself a Gaussian. Applying the fact that $\Normal(\mu, \sigma^2) = \mu + \Normal(0,  \sigma^2)$, we can then derive that $\conditionalx \sim \Normal(\currentmean, \nicefrac{1}{\currentlam}) + \Normal(0, \sigma_x)$, which reduces to $\Normal(\currentmean, \nicefrac{1}{\currentlam}+\sigma_{x}^{2})$.
+Since $x_t \mid u^{(c)} \sim \Normal(u^{(c)},\sigma_{x}^{2}$) and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. Additionally, because the mental state is a distribution over the true utility, we have $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,1/\currentlam)$. Combining these two statements, we see that $\conditionalx$ is a Gaussian whose mean is itself a Gaussian. Applying the fact that $\Normal(\mu, \sigma^2) = \mu + \Normal(0,  \sigma^2)$, we can then derive that $\conditionalx \sim \Normal(\currentmean, \nicefrac{1}{\currentlam}) + \Normal(0, \sigma_x)$, which reduces to $\Normal(\currentmean, \nicefrac{1}{\currentlam}+\sigma_{x}^{2})$.
 % Then, because $E[X+Y]=E[X]+E[Y]$ and $\Var[X+Y]=\Var[X]+\Var[Y]$ when $X$ and $Y$ are Gaussian, we get that $\E[\conditionalx]=\currentmean$ and $\Var[\conditionalx]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$.
 Finally, applying the linear transformation of $x_t$ given by Equation~\ref{eq:update}, we have
 % Since $x_t \mid u^{(c)}\sim u^{(c)}+\Normal(0,\sigma_{x}^{2}$), and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. 
-% Furthermore, using the fact that $u^{(c)} \mid \currentmean\sim \Normal(\currentmean,1/\currentlam)$, and that $E\left[X+Y\right]=E\left[X\right]+E\left[Y\right]$ and $\Var\left[X+Y\right]=\Var\left[X\right]+\Var\left[Y\right]$ when $X$ and $Y$ are Gaussian, we get that $E\left[x_t\mid b_t\right]=\currentmean$ and $\Var\left[x_t\mid b_t\right]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$ . From this, it follows that
+% Furthermore, using the fact that $u^{(c)} \mid \currentmean\sim \Normal(\currentmean,1/\currentlam)$, and that $E\left[X+Y\right]=E\left[X\right]+E\left[Y\right]$ and $\Var\left[X+Y\right]=\Var\left[X\right]+\Var\left[Y\right]$ when $X$ and $Y$ are Gaussian, we get that $E\left[x_t\mid m_t\right]=\currentmean$ and $\Var\left[x_t\mid m_t\right]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$ . From this, it follows that
 %
 \begin{equation*}
   \postmean \sim
@@ -243,7 +243,7 @@ Finally, putting this together we find that $\VOImy(b,c)$ is equal to
 Whereas $\VOImy$ captures the information value of a single sample, $\VPIitem$ captures the information value of an infinite number of samples for one item, that is, the value of knowing the exact value of one item. Formally,
 
 \begin{equation*}
-  \VPIitem(b_t,c)=\E_{u^{(c)} \mid \currentmean, \currentlam} \left[
+  \VPIitem(m_t,c)=\E_{u^{(c)} \mid \currentmean, \currentlam} \left[
     \max \left\{ u^{(c)},\max_{i\neq c}\,\mu_t^{(i)} \right\}
   \right] -\max_{i}\mu_t^{(i)}.
 \end{equation*}
@@ -251,7 +251,7 @@ Whereas $\VOImy$ captures the information value of a single sample, $\VPIitem$ c
 The derivation is similar to that of $\VOImy$, but instead of taking the expectation over the posterior mean after one computation, $\postmean$, we take the expectation over the true utility, $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,\nicefrac{1}{\currentlam})$. Thus, we apply the same steps beginning with [\ref{eq:emaxtrick}], but replacing $\postmean$ with $u^{(c)} \mid \currentmean, \currentlam$. This results in $\VPIitem(b, c)$ equal to
 %
 % $\mu_\mu$ with $\currentmean$ and $\sigma^2_\mu$ with $\nicefrac{1}{\currentlam}$ 
-% Trivially, we have $\E\left[u^{(c)} \mid b_t\right]=\currentmean$ and $\Var\left[u^{(c)} \mid b_t\right]=\nicefrac{1}{\currentlam}$. Repeating the same steps as in the previous section, we get that $\VPIitem(b,c)$ is equal to
+% Trivially, we have $\E\left[u^{(c)} \mid m_t\right]=\currentmean$ and $\Var\left[u^{(c)} \mid m_t\right]=\nicefrac{1}{\currentlam}$. Repeating the same steps as in the previous section, we get that $\VPIitem(b,c)$ is equal to
 %
 \begin{equation*}
   \Phi(\beta')\cdot\max_{i\neq c}\mu_t^{(i)}+\left(1-\Phi(\beta')\right)\cdot\left(\currentmean+\frac{\phi\left(\beta'\right)}{1-\Phi\left(\beta'\right)}
@@ -309,7 +309,7 @@ where $F_{X}$ is the CDF of $X$. Next, we can express the CDF of the maximum of 
   F_{\max\mathcal{X}}(x)=\prod_{X\in\mathcal{X}}F_{X}(x),
 \end{equation}
 %
-because the maximum of a set is less than $x$ if and only if each element in the set is less than $x$. In our case, the set $\chi$ contains the belief distributions for each item.
+because the maximum of a set is less than $x$ if and only if each element in the set is less than $x$. In our case, the set $\chi$ contains the posterior distributions for each item.
 % that is, $\chi = \{ \Normal(\mu_t^{(i)}, \nicefrac{1}{\lambda_t^{(i)}}) \}$.
 Letting $M$ denote $\max \mathcal{X}$, we can define its CDF as
 %
