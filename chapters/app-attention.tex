@@ -289,10 +289,10 @@ $\VPI$ captures the information value of learning the exact value of every item 
 \end{equation}
 %
 
-For the case of $N$ items, the conditional expectation term is given by the integral
+For the case of $n$ items, the conditional expectation term is given by the integral
 %
 \begin{equation*}
-  \int...\int\left[\max_{i}u^{(i)}\prod_{i=1}^{k}\Normal(u^{(i)};\mu_t^{(i)},\nicefrac{1}{\lambda_t^{(i)}})\right]du^{(1)}...\,du^{(N)}.
+  \int...\int\left[\max_{i}u^{(i)}\prod_{i=1}^{k}\Normal(u^{(i)};\mu_t^{(i)},\nicefrac{1}{\lambda_t^{(i)}})\right]du^{(1)}...\,du^{(n)}.
 \end{equation*}
 %
 Unfortunately, there is no analytic solution to this integral. However, we can substantially reduce our computational burden by reducing to a piecewise one-dimensional integral. First, we can express the expectation of any random variable as a piecewise integral,
@@ -314,7 +314,7 @@ because the maximum of a set is less than $x$ if and only if each element in the
 Letting $M$ denote $\max \mathcal{X}$, we can define its CDF as
 %
 \begin{equation*}
-  F_{M}(m)=\prod_{i=1}^{N}\Phi\left(\sqrt{\lambda_t^{(i)}}\left(m-\mu_t^{(i)}\right)\right).
+  F_{M}(m)=\prod_{i=1}^{n}\Phi\left(\sqrt{\lambda_t^{(i)}}\left(m-\mu_t^{(i)}\right)\right).
 \end{equation*}
 %
 Combining Equations [\ref{eq:vpi}], [\ref{eq:piecewise}], and [\ref{eq:cdfmax}], we arrive at the following expression for $\VPI(b)$:

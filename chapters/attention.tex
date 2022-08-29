@@ -104,19 +104,20 @@ to stop sampling and choose the item with the highest expected value. In this ca
 
 \subsection{Metalevel Markov decision process}\label{sec:attention-mdp}
 
-To characterize optimal attention allocation, we cast the model as a metalevel MDP in which the mental states correspond to distributions over the value of each item and the computations correspond to fixating on an item and taking a sample of its value. We detail the four components of the metalevel MDP below.
+To characterize optimal attention allocation, we cast the model as a metalevel MDP in which the mental states correspond to distributions over the value of each item and the computations correspond to fixating on an item and taking a sample of its value. We detail the five components of the metalevel MDP below.
+
+\paragraph{World states}
+The world state defines the true subjective utility of each item in the choice set. We denote the utility of item $i$ as $u^{(i)}$. The dimensionality of the  world state space is thus equal to the number of items, $n$.
 
 \paragraph{Mental states}
-A mental state $m$ corresponds to the agent's belief about the value of each item. That is, we are fully adopting the Bayesian view of computation (Section~\ref{sec:two-views}). We will thus sometimes refer to a mental state as simply a belief. 
-
-Concretely, the mental state corresponds to a set of posterior distributions over each item's value. Because the distributions are Gaussian, they can be represented by two vectors, $\mathbf{\mu}$ and $\mathbf{\lambda}$, that specify the mean and precision of each distribution. That is 
+A mental state $m$ corresponds to the agent's belief about the value of each item. That is, we are fully adopting the Bayesian view of computation (Section~\ref{sec:two-views}). Concretely, the mental state corresponds to a set of posterior distributions over each item's value. Because the distributions are Gaussian, they can be represented by two vectors, $\mathbf{\mu}$ and $\mathbf{\lambda}$, that specify the mean and precision of each distribution. That is 
 $$
 p(u^{(i)} \mid m) = \Normal(u^{(i)}; \mu^{(i)}, \nicefrac{1}{\lambda^{(i)}})
 $$
-To model the switching cost, the mental state must also encode the currently fixated item (taking a null value, $\oslash$, in the initial mental state). Thus, a mental state is a tuple $m_t = (\mathbf{\mu}_t, \mathbf{\lambda}_t, \last_t)$. The dimensionality of the mental state space is $2N + 1$ where $N$ is the number of items.
+To model the switching cost, the mental state must also encode the currently fixated item (taking a null value, $\oslash$, in the initial mental state). Thus, a mental state is a tuple $m_t = (\mathbf{\mu}_t, \mathbf{\lambda}_t, \last_t)$. The dimensionality of the mental state space is $2N + 1$ where $n$ is the number of items.
 
 \paragraph{Computations}
-A computation $c$ corresponds to sampling an item's value and updating the corresponding estimated value distribution. There are $N$ such computations, one for each item. As in all metalevel MDPs, there is an additional operation, $\bot$, that terminates the computation process (in our case, sampling) and selects an optimal external action given the current mental state (in our case, choosing the item with maximal posterior mean).
+A computation $c$ corresponds to sampling an item's value and updating the corresponding estimated value distribution. There are $n$ such computations, one for each item. As in all metalevel MDPs, there is an additional operation, $\bot$, that terminates the computation process (in our case, sampling) and selects an optimal external action given the current mental state (in our case, choosing the item with maximal posterior mean).
 
 \paragraph{Transition function}
 The metalevel transition function describes how computations update mental states. In our model, this corresponds to the sampling and Bayesian belief updating procedure described above. Given the current mental state, $m_t = (\mathbf{\mu}_t, \mathbf{\lambda}_t, \last_t)$, and computation, $c$, the next mental state, $m_{t+1} = (\mathbf{\mu}_{t+1}, \mathbf{\lambda}_{t+1}, \last_{t+1})$, is sampled from the following generative process:
@@ -131,13 +132,13 @@ The metalevel transition function describes how computations update mental state
   \last_{t+1} &= c\\
 \end{aligned}
 \end{equation}
-
-
+Note that $x$ corresponds to the ``outcome'' of computation ($o$ in Equation~\ref{eq:bayes-transition}).
 
 \paragraph{Reward function}
 Finally, the metalevel reward function incorporates both the cost of computation and the utility of the chosen action. The metalevel reward for sampling is defined
+
 $$
-R(b_t, c_t) = -\cost(b_t, c_t) = -(\samplecost + \mathbf{1}(\last_t \neq \oslash \wedge c_t \neq \last_t)\,\switchcost).
+R(b_t, c_t) = -\cost(b_t, c_t) = -(\samplecost + \mathds{1}(\last_t \neq \oslash \wedge c_t \neq \last_t)\,\switchcost).
 $$
 That is, the cost of sampling includes a fixed cost, $\samplecost$, as well as an additional switching cost, $\switchcost$, that is paid when sampling from a different item than that sampled on the last time step. We assume that this cost is not paid for the first fixation; however, this assumption has no effect on the optimal policy for reasonable parameter values.
 
@@ -159,7 +160,7 @@ In the case of trinary---but not binary---choice, we additionally see a stark as
 To see why this is optimal, note that sampling is only valuable insofar as it affects choice, and that the chosen item is the one with maximal estimated value when sampling stops. Thus, the optimal policy generally fixates on the item for which gathering more evidence is most likely to change which item has maximal expected value. There are two ways for this to happen: either the value of the current best item is reduced below the second-best item, or the value of some alternative item is increased above the best item. The former can only happen by sampling the best item, and the latter is \emph{ceteris paribus} most likely to occur by sampling the second-best item because it is closer to the top position than the third-best item (\figref{fig:attention2}{b} bottom). However, if uncertainty is much greater for the third-best item, this can outweigh the larger difference in estimated value (\figref{fig:attention2}{b} top). See \citet{sepulveda2020visual} for a more formal justification for value-directed attention in a simplified non-dynamic case.
 
 \subsection{The prior distribution}
-Recall that the initial belief about each item's value is set to the DM's prior belief about the distribution of values in the environment; that is $\mu_0^{(i)} = \bar{\mu}$ and $\lambda_0^{(i)} = \bar{\sigma}^{-2}$. This corresponds to the DM assuming that each item's value is drawn from a prior distribution of true values given by $u^{(i)} \sim \Normal(\bar{\mu}, \bar{\sigma}^2)$. This assumption is plausible if this is the actual distribution of items that the DM encounters, and she is a Bayesian learner with sufficient experience in the context under study. However, given that these models are typically used to study choices made in the context of an experiment (as we do here), the DM might not have learned the exact prior distribution at work. As a result, we must consider the possibility that she has a \emph{biased prior}.
+Recall that the initial mental state captures the DM's prior belief about the distribution of values in the environment; that is $\mu_0^{(i)} = \bar{\mu}$ and $\lambda_0^{(i)} = \bar{\sigma}^{-2}$. This corresponds to the DM assuming that each item's value is drawn from a prior distribution of true values given by $u^{(i)} \sim \Normal(\bar{\mu}, \bar{\sigma}^2)$. This assumption is plausible if this is the actual distribution of items that the DM encounters, and she is a Bayesian learner with sufficient experience in the context under study. However, given that these models are typically used to study choices made in the context of an experiment (as we do here), the DM might not have learned the exact prior distribution at work. As a result, we must consider the possibility that she has a \emph{biased prior}.
 
 
 In order to investigate the role of the prior on the model predictions, we assume that it takes the form of a Gaussian distribution with a mean and standard deviation related to the actual empirical distribution as follows:
@@ -179,7 +180,7 @@ We apply the model to two influential simple choice datasets: a binary food choi
 
 To compare the model predictions to human fixation behavior, we assume that each sample takes 100ms\footnote{This choice is not important: changing the assumed duration leads to a change in the fitted parameters, but not in the qualitative model predictions.} and that contiguous samples drawn from a single item correspond to a single fixation. We fit the model's five free parameters by maximum likelihood estimation applied to summary statistics for each trial (specifically, we collapse the sequence of fixations into proportions of time on each item; see Section~\ref{sec:attention-estimation} for details). In order to compare the model predictions with the observed patterns out-of-sample, we estimate the parameters using only the even trials, and then simulate the model in odd trials. 
 
-Importantly, since the same model can be applied to N-item choices, we fit a common set of parameters jointly to the pooled data in both datasets. Thus, any differences in model predictions between binary and trinary choices are \emph{a priori} predictions resulting from the structure of the model, and not differences in the parameters used to explain the two types of choices. 
+Importantly, since the same model can be applied to $n$-item choices, we fit a common set of parameters jointly to the pooled data in both datasets. Thus, any differences in model predictions between binary and trinary choices are \emph{a priori} predictions resulting from the structure of the model, and not differences in the parameters used to explain the two types of choices. 
 
 In order to explore the role of the prior, we also fit versions of the model in which the prior bias term was fixed to $\alpha = 0$ or $\alpha = 1$. The former corresponds to a strongly biased prior and the latter corresponds to a completely unbiased prior. 
 
@@ -225,7 +226,6 @@ Several additional patterns in \figref{fig:attention3}{} are worth highlighting.
   \subcap{A} Histogram of number of fixations in a trial.
   \subcap{B} Number of fixations as a function of decision difficulty, as measured by the relative rating of the best item.
   \subcap{C} Duration of fixation by fixation number. Final fixations are excluded from all but the last bin.
-  See \figref{fig:attention3}{} for more details.
   }
   \label{fig:attention4}
 \end{figure}
@@ -249,7 +249,7 @@ The original binary and trinary choice papers observed a systematic change in fi
     \subcap{A} Distribution of fixation advantage of the fixated item, computed at the beginning of each new fixation. Fixation advantage is defined as the cumulative fixation time to the item  minus the mean cumulative fixation time to the other item(s). First fixations are excluded in this plot.
     \subcap{B} Similar to (A), except that we compare the fixation advantage between the fixated item and the other item that could have been fixated but was not. First and second fixations are excluded in this plot.
     \subcap{C} The probability that the item with greater alternative fixation advantage is fixated, as a function of that advantage.
-    See \figref{fig:attention3}{} for more details.}
+}
   \label{fig:attention5}
 \end{figure}
 
@@ -275,7 +275,6 @@ Note, however, that a purely mechanical effect can account for this basic patter
   \subcap{C} Probability of fixating the lowest rated item as a function of the cumulative fixation time to any of the items.
   \subcap{D} Probability that the fourth fixation is to the first-fixated item as a function of the difference in rating between that item and the second-fixated item.
   \subcap{E} Probability that the third fixation is to the first fixated item as a function of its rating.
-  See \figref{fig:attention3}{} for more details.
   }
   \label{fig:attention6}
 \end{figure}
@@ -304,7 +303,6 @@ Finally, the model makes a striking prediction regarding the location of the thi
   \subcap{A} Probability that the last fixated item is chosen as a function of its relative rating.
   \subcap{B} Probability that the left item is chosen as a function of its final fixation advantage, given by total fixation time to the left item minus the mean total fixation time to the other item(s).
   \subcap{C} Probability of choosing the first-seen item as a function of the first-fixation duration.
-  See \figref{fig:attention3}{} for more details.
   }
   \label{fig:attention7}
 \end{figure}
@@ -426,7 +424,7 @@ To account for trials that are not well explained by our model, we use add-$n$ s
     \epsilon\,\frac{1}{C}+(1-\epsilon)\,\mathcal{L}(d\mid\theta) 
   \right),
 \]
-where $C=N\cdot5^{N+1}$ is the total number of cells in the histogram. Importantly, this error model is only used to approximate the likelihood; it is not used for generating the model predictions in the figures---indeed, it could not be used in this way because the error model is defined over the summary statistics, and cannot generate full sequences of fixations. Thus, the $\epsilon$ parameter should be interpreted in roughly the same way as the bandwidth parameter of a kernel density estimate \citep{turner2014generalized}, rather than as an additional free parameter of the model.
+where $C=n\cdot5^{n+1}$ is the total number of cells in the histogram. Importantly, this error model is only used to approximate the likelihood; it is not used for generating the model predictions in the figures---indeed, it could not be used in this way because the error model is defined over the summary statistics, and cannot generate full sequences of fixations. Thus, the $\epsilon$ parameter should be interpreted in roughly the same way as the bandwidth parameter of a kernel density estimate \citep{turner2014generalized}, rather than as an additional free parameter of the model.
 
 
 We then use this approximate likelihood function to identify a maximum likelihood estimate, $\hat{\theta}=\argmax \like$. Based on manual inspection, we identified the promising region of parameter space to be $\sigma_{x}\in(1,5)$, $\samplecost\in(0.001,0.01)$, $\switchcost\in(0.003,0.03)$, and $\beta\in(100,500)$.
@@ -435,7 +433,7 @@ We then ran an additional quasi-random search of 10,000 points within this space
 Note that the optimal policy does not depend on $\alpha$ because the DM believes her prior to be unbiased (by definition) and makes her fixation decisions accordingly.
 The alternative, optimizing the policy conditional on $\alpha$, would imply that the DM is internally inconsistent, accounting for the bias in her fixations but not in the prior itself.
 Thus, we optimize $\alpha$ separately from the other parameters.
-Specifically, we consider 10,000 possible instantiations of all the other parameters, find optimal policies once for each instantiation, and evaluate the likelihood for seven values of $\alpha$; these seven values included the special cases of 0 and 1 as well as five additional randomly-spaced values with a random offset (roughly capturing the low-discrepancy property of the Sobol sequence).
+Specifically, we consider 10,000 possible instantiations of all the other parameters, find optimal policies once for each instantiation, and evaluate the likelihood for seven values of $\alpha$; these seven values included the special cases of $0$ and $1$ as well as five additional randomly-spaced values with a random offset (roughly capturing the low-discrepancy property of the Sobol sequence).
 
 We found that the stochasticity in the policy optimization and likelihood estimation coupled with weak identifiability for some parameters resulted in slightly different results when re-running the full procedure; thus, to give a rough sense of the uncertainty in the estimate, we identify the top thirty parameters, giving us both mean and standard deviation for each parameter and the total likelihood.
 
@@ -444,7 +442,7 @@ $\sigma_x = 2.6 \pm 0.216$,
 $\alpha = 0.581 \pm 0.118$,
 $\switchcost =  0.00995 \pm 0.001$,
 $\samplecost = 0.00373 \pm 0.001$, and
-$\beta = 364.0 \pm 81.2$
+$\beta = 364.0 \pm 81.2$.
 The units of these parameter estimates are standard deviations of value (i.e., $\bar{\sigma}$). 
 %
 For the model with $\alpha = 0$, the fitted parameters were
