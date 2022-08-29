@@ -197,10 +197,11 @@ We fit our models to participants at the individual level and obtained out-of-sa
   \includegraphics[width=\textwidth]{figs/planning/fig4.pdf}
   \caption{\captiontitle{Experiment~2 results.}
     Each column shows one experimental condition.
-    \subcap{A} Example trials. Each condition is characterized by a different location-dependent reward distribution in which large values are found at the beginning of each path, at any location, or at the end of each path, respectively.
-    \subcap{B} Pareto curves. Each point shows the average reward attained and number of clicks made by a participant (black dots) or model (colors match panel C). In each condition one classical algorithm achieves near optimal performance.
-    \subcap{C} Model comparison. Best, Depth, and Breadth refer to the versions of the model that performed best in Experiment~1, as shown in \figref{fig:planning-exp1}{}. Of these classical algorithms, the one that achieves the best reward-click trade off (shown in panel B) also best predicts human behavior. Depth limits are excluded because they allow the best-first and depth-first models to mimic breadth-first search.
-    \subcap{D} Behavioral indicator of planning strategy. Each panel shows the probability of making a second click on the same path as the first, depending on the value revealed by that first click. Human data is in black and model colors match panel C. For human data, points show means and error bars show bootstrapped $95\%$ confidence intervals, both computed across participants. In each condition one of the classical planning strategies captures the qualitative behavioral pattern, but only the optimal model captures the pattern in every condition. All heuristic mechanisms are excluded from this plot. See \figref{fig:second_click_alt}{} for the same plot with the full models (including Myopic).
+    \subcap{A} Example trials. Large values are found at the beginning of each path (decreasing variance), at any location (constant variance), or at the end of each path (increasing variance).
+    \subcap{B} Pareto curves. Each point shows the average reward attained and number of clicks made by a participant (black dots) or model (colors match panel C). % In each condition one classical algorithm achieves near optimal performance.
+    \subcap{C} Model comparison. Best, Depth, and Breadth refer to the versions of the model that performed best in Experiment~1 (excluding depth limits to prevent other Best and Depth from mimicking Breadth). Of these classical algorithms, the one that achieves the best reward-click trade off (shown in panel B) also best predicts human behavior.
+    \subcap{D} Behavioral indicator of planning strategy. Each panel shows the probability of making a second click on the same path as the first, depending on the value revealed by that first click. In each condition, one heuristic model captures the behavioral pattern, but only the optimal model captures the behavior in all conditions.
+    Human data is in black and model colors match panel C. All heuristic mechanisms are excluded (see \figref{fig:second_click_alt}{} for the full models). For human data, points show means and error bars show bootstrapped 95\% confidence intervals, both computed across participants.
   }
   \label{fig:planning-exp2}
 \end{figure}
@@ -252,7 +253,7 @@ However, we also see a systematic deviation from the optimal model predictions. 
   \caption{\captiontitle{Experiment~4 results.} 
     \subcap{A} Task: participants acted as a travel agent, attempting to find a low-cost route from a start city to a goal city. They could reveal the price of passing through each city using a textual search interface.
     \subcap{B} Model comparison. Light bars show models augmented with a forward-search bias.
-    \subcap{C} The probability of a participant inspecting a city without a revealed parent (i.e., violating forward search) as a function of the value of doing so. This value is defined as the maximal Q value for expanding a node not on the frontier minus the maximal Q value for expanding a node on the frontier. The line shows a logistic regression fit and points show binned means. The shaded regions and error bars show $95\%$ confidence intervals.
+    \subcap{C} The probability of a participant inspecting a city without a revealed parent (i.e., violating forward search) as a function of the value of doing so. This value is defined as the maximal Q value for expanding a node not on the frontier minus the maximal Q value for expanding a node on the frontier. The line shows a logistic regression fit and points show binned means. The shaded regions and error bars show 95\% confidence intervals.
   }
   \label{fig:planning-exp4}
 \end{figure}
@@ -387,9 +388,9 @@ p\select^H(s, a) = \frac{
 where $f\select^{\textsc{alg}}(s, a)$ denotes a node-scoring function for each algorithm; specifically, 
 \begin{equation}\label{eq:scoring}
 \begin{aligned}
-  f\select^{\textsc{best}}(s, c_i) &= V(s, i) = \max_{p \in \lbrace \P \mid i \in p  \rbrace} V(s, p) \\
-  f\select^{\textsc{depth}}(s, c_i) &= \mathrm{depth}(s, i)\\
-  f\select^{\textsc{breadth}}(s, c_i) &= -\mathrm{depth}(s, i).
+  f\select^{\textsc{\ best}}(s, c_i) &= V(s, i) = \max_{p \in \lbrace \P \mid i \in p  \rbrace} V(s, p) \\
+  f\select^{\textsc{\ depth}}(s, c_i) &= \mathrm{depth}(s, i)\\
+  f\select^{\textsc{\ breadth}}(s, c_i) &= -\mathrm{depth}(s, i).
 \end{aligned}
 \end{equation}
 We chose these node scoring functions to ensure that in the limit $\beta\select\rightarrow\infty$, the model's selection rule is deterministic and exactly matches the corresponding algorithm. Pure best-first search always expands a node with maximal expected value, pure depth-first search always expands the deepest node in the tree, and pure breadth-first search always expands every node at each depth before expanding any at the next depth. However, To account for variability in human selection decisions, we allow for $\beta\select\in [0,\infty)$. 
