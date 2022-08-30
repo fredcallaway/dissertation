@@ -195,8 +195,8 @@ where $\lambda$ defines the conversion between utility and information cost.
 % where $U(w, \pi\act(m))$ is a shorthand for the expected outcome utility, $\E_{o \mid w, \pi\act(m)} U(o)$. 
 There are two key ideas to take away from this equation. First, cognitive processes can produce intermediate mental states, which are used to select actions. Second, both the action utility and cost depend on the mental state, and these two forces are in a fundamental conflict. A precise representation of the world allows one to select good actions, but such representations are costly to form.
 
-Rational metareasoning provides another way to think about the mental state. Specifically, we can think about $m$ as a \emph{belief} about the state of the world, $p(w \mid m)$. Assuming that $\pi\act$ is optimal (that is, that it always selects the action with highest expected utility given the representation), we can define the \emph{value of information} \citep{matheson1968economic} in the representation as
-\begin{equation}
+Rational metareasoning provides another way to think about the mental state. Specifically, we can think about $m$ as a \emph{belief} about the state of the world, $p(w \mid m)$. Assuming that $\pi\act$ is optimal (that is, that it always selects the action with highest expected utility given the representation), we can define the \emph{value of information} \citep{matheson1968economic} in the representation as the expected utility of the action that would be taken based on that information/representation:
+\begin{equation}\label{eq:intro-voi}
   % \VOI(m) = \max_a \expectunder{U(w, a)}{w \sim P(w \mid m)}
   \VOI(m) = \E_w \left[U\big(w, \pi\act(m)\big)\right] =
     \max_a \E_{w \mid m} U(w, a)
@@ -340,181 +340,12 @@ Combining these ideas, yields the following definition of an optimal sequential 
       \ \hl{simon}{m_{t+1} \sim T(m_t, c_t, w)}
     \right]
 \end{equation}
-That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new. And the idea to combine these ideas is not entirely new either. We discuss other optimal sequential models of cognition in the \todo{conclusion}.
+That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new.
 
-In the next chapter, we formalize these ideas, showing how we can derive Equation~\ref{eq:intro-master} as the optimal policy for a metalevel Markov decision process.
+The idea combine these ideas is not entirely new either. For example, there is a long history of modeling optimal speed-accuracy tradeoffs using evidence accumulation models, like the ones described in the previous section. \citet{bogacz2006physics} showed that the drift diffusion model is the continous limit of the \emph{sequential probability ratio test} (SPRT; \citealp{wald1945sequential}), an optimal stopping rule for collecting evidence about binary hypotheses (c.f. \citealp{gold2002banburismus}). For any given level of evidence coherence (problem difficulty), there is some fixed decision threshold that maximizes the reward rate, which is equivalent to maximizing a linear combination of choice utility and cost under certain assumptions.\footnote{
+  For a given decision problem, there is some time cost such that maximizing the reward rate will also maximize the reward minus cost \citep{wald1948optimum,drugowitsch2012cost}. However, this mapping will vary for problems of different difficulty or stakes. For example, increasing the payoffs for correct and incorrect decisions by a multiplicative factor does not change the optimal reward-rate strategy, but it does change the optimal utility-minus-cost strategy.
+}. However, this analysis relies on a number of assumptions that rarely hold in the real world. Explicitly modeling evidence accumulation as a sequential decision problem has allowed researchers to characterize optimal stopping rules in more complex cases \citep{drugowitsch2012cost,fudenberg2018speed,tajima2019optimal}. Going beyond the decision of \emph{when} to accumulate evidence, the question of \emph{where} to accumulate evidence has been addressed in optimal models of visual search, which characterize the optimal sequence of eye movments one should make when searching for a target image amongst distractors \citep{butko2008ipomdp,acharya2017human,hoppe2019multistep}. Optimal sequential models have also been applied to characterize rational strategies for using working memory \citep{todd2008learning}, episodic memory \citep{lu2022neural}, and long-term memory \citep{zhang2022optimal}. We further discuss these related approaches in \conclusion.
 
+This dissertation helps to unify the work reviewed above by providing a common framework for modeling many different kinds of cognitive processes. Furthermore, by explicitly connecting to both the rational metareasoning literature and the more general reinforcement learning literature, we build bridges with which we can import both mathematical tools and psychological concepts. The former allows us to identify optimal strategies for architectures that are too complex for standard methods (e.g., Section~\ref{sec:bmps}). The latter allows us to apply what we know about how people learn to act adaptively in the world to understand how they learn to think adaptively using their own cognitive architectures (through ``metacognitive reinforcement learning'', discussed further in \conclusion).
 
-
-% \citet{hamrick2015think} 
-% \citet{lieder2018anchoring} 
-
-
-
-
-% \begin{equation}
-%   π^* = \argmax_{π} \E_w \left[
-%     \E_{\cseq \sim π(w)} \left[
-%       \E_{m \mid \cseq} \left[
-%         U(w, a_m)
-%       \right]
-%       - \sum_i \cost(c_i)
-%     \right]
-%   \right].
-% \end{equation}
-
-
-% \begin{equation}
-%     π^* = \argmax_{\cseq}\,  U(\cseq) - \cost(\cseq).
-% \end{equation}
-
-
-% \begin{equation}
-%   π^* = \argmax_{π} \E_{\cseq \mid π} \left[
-%     U(a_n) - \sum_i \cost(c_i)
-%   \right]
-% \end{equation}
-% \begin{equation}
-%   π^* = \argmax_{π} \E_{\cseq \mid π} \left[
-%     \E_{a \mid \cseq} [ U(a) ] - \sum_i \cost(c_i)
-%   \right]
-% \end{equation}
-
-% This substitution yields little insight on its own. Specifically, what is the utility of a sequence of cognitive operations? Intuitively, the utility of cognition comes from how it affects our actions. Thus, let $\mathrm{act}_N$ be the action we would take after executing the cognitive process $(c_1, c_2, \ldots c_N)$. Further, we can assume that the cost of each operation is independent. This yields
-% \begin{equation}
-%     π^* = \argmax_{(c_1, c_2, \ldots c_N)} U(\mathrm{act}_N) - \sum_i^N \cost(c_i).
-% \end{equation}
-% That is, an optimal sequential cognitive process is one which maximizes the utility of the action that the cognitive process produces minus the total cost of all the operations it performs. We express this intuition more precisely in the following chapter (Equation~\ref{eq:optimal-meta-policy-expanded}).
-
-% problem: this isn't actually sequentially optimal
-
-
-%sub \section{Alternative approaches for rational mechanistic modeling}
-
-% Having defined and briefly reviewed optimal and dynamic models, we now turn to the main question explored by this disseration. How can we construct rational mechanistic models? The answer proposed here is the construction of optimal sequential models. But before
-
-% This is by no means a new question, nor is this dissertation the first to propose a general framework for constructing such models. In the following sections, we briefly review this past work, with an emphasis on ...
-
-%sub \section{Ecological rationality}\label{sec:intro-XX}
-
-
-
-
-
-%sub \section{Optimal but not dynamic}\label{sec:intro-XX}
-
-
-
-
-% In this way, resource-rationality is more similar \emph{ecological rationality}, a framework based on the idea that people use computationally frugal heuristics, which are highly effective for the kinds of problem that people actually encounter \citep{gigerenzer1999simple,goldstein2002models,todd2012ecological}. For example, if the other players in an environment are using a wide variety of decision strategies, then a heuristic that ignores the other players payoffs entirely may perform best \citep{spiliopoulos2020map}. However, while proponents of ecological rationality explicitly reject the notion of optimization under constraints (e.g. \citealp{gigerenzer1999simple}, Ch. 1), optimization is at the heart of resource-rational models.
-
-
-
-% More recently, the notion of optimality has been extended to account not only for the demands imposed by the external environment but also the demands imposed by our own cognitive limitations \citep{howes2009rational,lewis2014computational,gershman2015computational,griffiths2015rational,lieder2020resourcerational}. This approach dates back to Simon \citep{simon1955behavioral} and has been especially useful in the domain of decision-making, where it has been used to explain both how long people deliberate \citep{bogacz2006physics,drugowitsch2012cost,tajima2016optimal,tajima2019optimal,fudenberg2018speed} and also what people think about \citep{callaway2021fixation,jang2021optimal} while making ``simple'' (i.e., non-sequential) choices. However, to the best of our knowledge, there has been no such analysis in the domain of planning, despite the especially critical role that computational limitations play in this case (but c.f. \citep{sezener2019optimizing,mattar2018prioritized} for closely related efforts, which we discuss further below).
-
-
-
-% The use of optimization in cognitive models is more controversial. 
-
-
-% The basic premise of the approach is that the mind should be well adapted to its environment, through some combination of learning and evolution \citep{anderson1990adaptive}. Optimization simply takes this idea to the logical extreme, assuming that the mind is adapted \emph{as well as possible} to the environment.
-
-
-
-% % Dynamic: DDMs.
-
-% % Control: attention, metacognition.
-
-% % Adaptive: rational analysis, economics
-
-% % More interesting are models that capture two of the three properties.
-
-% % Dynamic + Control: cognitive architectures.
-
-% % Dynamic + Adaptive: ???
-
-% % Control + Adaptive: EVC
-
-
-% % \newcommand{\yes}{\checkmark &}
-% % \begin{table}[tb]
-% %   \caption{Classification of cognitive models.}
-% %   \label{tab:comparison}
-% %   \centering
-% %   \begin{tabular}{cccc|c}\toprule
-% %   Dynamic & Controlled & Optimized & Notable Examples \\
-% %   \midrule
-% %   \yes & &
-% %     DDM 
-% %   \\ & \yes &
-% %     Attention, metacognition 
-% %   \\ & & \yes
-% %     Rational analysis, economics 
-% %   \\ \yes \yes &
-% %     Cogntive architectures, ecological rationality
-% %   \\ \yes & \yes 
-% %     Bogacz ?
-% %   \\ & \yes \yes 
-% %     EVC, information-theoretic
-% %   \\ \yes \yes \yes
-% %     This dissertation 
-% %   \\ \bottomrule
-% %   \end{tabular}
-% % \end{table}
-
-
-% sampling
-% information theoretic
-% rational analysis
-% ecological rationality
-% EVC
-% cognitive architectures
-
-% % \begin{table}[tb]
-% %   \caption{caption here}
-% %   \label{tab:tablename}
-% %   \centering
-% %   \begin{tabular}{ccc|c}\toprule
-% %   Dynamic & Control & Adaptive & Examples \\
-% %   \midrule
-% %   \yes & &     DDM \\
-% %   & \yes &     Attention, metacognition \\
-% %   & & \yes     Rational analysis, economics \\
-% %   \yes \yes &  Cogntive architectures \\
-% %   \yes & \yes  ? \\
-% %   & \yes \yes  EVC \\
-% %   \yes \yes \yes  This dissertation \\
-% %   \bottomrule
-% %   \end{tabular}
-% % \end{table}
-
-
-
-% In comparison to non-rational dynamic models, the proposed approach
-% - naturally captures metacognition and control
-%   - c.f. aDDM which assumes random attention
-%   - c.f. metamemory which ignores control
-% - avoids combinatorial search
-
-% Compared with non-sequential rational models, 
-
-
-
-%  % the problem posed by the internal environment (what I will call the \emph{meta-level} problem) is exactly analagous to the problem posed by the external environment (the \emph{object-level} problem). 
-
-
-
-
-
-
-
-
-% In comparison to non-dynamic rational models
-% - captures the process/mechanism (c.f. information-theoretic accounts)
-% - more optimal
-% - captures sequential dependence
-
-
-
-% % Taken from planning (cut there?)
-% These challenges---hypothesis generation, generalizable prediction, and functional explanation---are not unique to planning; indeed, they arise in nearly all areas of cognition. In many domains, progress in addressing these challenges has been made by analyzing optimal solutions to the problem a cognitive system is meant to solve \citep{marr1982vision,anderson1990adaptive}. This approach has generated insight into a wide range of problems, including decision-making \citep{savage1954foundations}, generalization \citep{tenenbaum2001generalization}, categorization \citep{anderson1991adaptive,ashby1995categorization}, perception \citep{knill1996perception}, and information-seeking \citep{oaksford1994rational,gureckis2012selfdirected}. More recently, the notion of optimality has been extended to account not only for the demands imposed by the external environment but also the demands imposed by our own cognitive limitations \citep{howes2009rational,lewis2014computational,gershman2015computational,griffiths2015rational,lieder2020resourcerational}. This approach dates back to Simon \citep{simon1955behavioral} and has been especially useful in the domain of decision-making, where it has been used to explain both how long people deliberate \citep{bogacz2006physics,drugowitsch2012cost,tajima2016optimal,tajima2019optimal,fudenberg2018speed} and also what people think about \citep{callaway2021fixation,jang2021optimal} while making ``simple'' (i.e., non-sequential) choices. However, to the best of our knowledge, there has been no such analysis in the domain of planning, despite the especially critical role that computational limitations play in this case (but c.f. \citep{sezener2019optimizing,mattar2018prioritized} for closely related efforts, which we discuss further below).
+In the next chapter, we present the formal framework that makes this possible:  \emph{metalevel Markov decision processes}. This framework formalizes the problem of sequential interaction with a cognitive architecture, the problem for which Equation~\ref{eq:intro-master} is the optimal solution.
