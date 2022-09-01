@@ -3,12 +3,66 @@
 \label{conclusion}
 
 
-- pseudo reward for thinking (pleasure)
-- dissociation between agent and environment is kind of homunculus like
-- connection to active learning
+Indeed, there are several dimensions on which the framework could be extended in future work.
+
+
+
+
+
+
+\section{Other approaches to optimal sequential models of cognition}
+
+
+
+\subsection{POMDP}\label{sec:alternative-pomdp}
+
+
+\section{Explaining (away) the metalevel homunculus}
+
+One of the most significant challenges for the metalevel MDP framework is the problem of infinite regress. As mentioned in the Introduction (Section~\ref{sec:bound-meta}), the framework assumes that people are \emph{metalevel rational}, meaning that they choose computational actions to optimally balance a cost-benefit tradeoff. However, it does not explain how those choices are themselves made. In this way, the framework assume a ``metalevel homonculus'', an unbounded, perfectly rational agent that always knows just what thought to think next (c.f. \citealp{botvinick2014computational}). Although we have seen that models making this assumption sometimes align quite well with human behavior, without explaining how people actually produce that metalevel ``behavior'', the models are incomplete.
+
+There are two general types of solution to a homonculus problem. One approach is to \emph{explain away} the homonculus, that is, to suggest an alternative model in which the role that the homonculus filled is eliminated.\footnote{%
+  A famous example of this approach is \citet{dennett1993consciousness}, who proposes a model of consciousness in which there is no need for an ``I'' to experience it.
+}. In the context of metalevel MDPs, this corresponds to proposing a model in which there is no component corresponding to a policy, no distinction between the processes that controls cognition and the processes that simply ``do'' cognition. For an example of this approach, \citet{tajima2019optimal} show that the optimal stopping policy for multi-alternative value-based choice can be well approximated by a simple fixed threshold applied to a neural circuit with an urgency signal and divisive normalization. The role for a metalevel controler is explained away.
+% Importantly, proposing a ``homonculus-free'' model does not invalidate the original model, which continues to serve as a rational benchmark.
+
+An alternative approach is to \emph{explain} the homonculus, that is, to propose a realistic model of how the homonculus works. Critically, this model cannot draw on unbounded computational resources; in fact, for a metalevel controller to be useful, it most likely needs to use very little computational resources. The most likely source of such a controller is learning. Specifically, drawing on familiar concepts from MDPs, a metalevel policy could be learned by model-free reinforcement learning.
+
+
+% One of the earliest examples of metacognitive reinforcement learning is the working memory model of \citet{oreilly2006making}.
+
+% This rules out model-based strategies (including all of the solution methods used in this dissertation), which leaves learning and evolved traits. The former is very plausible and there is some evidence to support it, discussed below. We speculate about one possible evolved trait in Section~\ref{sec:TODO}.
+
+
+
+\subsection{Programs and subprocesses}
+  - habit of thought (cushman2015habitual, and the paper distinguishing sequences from action values)
+
+
+
+
+
+
+
+The framework assumes that people 
+
+solve the problem of resource-bounded cognition by allocating their cognitive resources rationally, but it does not specify how people know 
+
+
+
+\subsection{The joy of thinking}
+
+\subsection{Partially observable minds}
+
+\subsection{Optimizing the architecture}
+
+botvinick2014computational: representational basis set
+
+\subsection{Multiple agents in the mind}
+
+
 - partially observable mind
 - multiple agents in the mind
-- metalevel rationality vs bounded optimality (Russell \& Subramanian, 1995)
 - hierarchical metalevel RL?
-  - habit of thought (cushman2015habitual, and the paper distinguishing sequences from action values)
 - optimizing the architecture
+
