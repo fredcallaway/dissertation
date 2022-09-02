@@ -172,7 +172,7 @@
     \chapter{#2}
     \begin{flushright}
     {\large\itshape #1}
-    \vspace{1.3\baselineskip}
+    \vspace{1.4\baselineskip}
     \end{flushright}
 }
 

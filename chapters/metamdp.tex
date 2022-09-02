@@ -26,8 +26,8 @@ In this chapter, I provide a formal description of the framework. The formalizat
 \begin{figure*}
   \centering
   \includegraphics[width=0.8\textwidth,page=1,trim=0 100 0 200]{diagrams/metamdp.pdf}
-  \caption{%
-  \captiontitle{Markov decision processes.} A Markov decision process (MDP) formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions (squares) that change the state of the world (circles) and generate rewards (diamonds), which the agent seeks to maximize. The arrows indicate direct causality; thus, the reward and state at each time step depend only on the state and action at the previous time step, and the agent selects an action based only on the current state. The dotted arrow indicates the elided sequence of states between the first and last two.
+  \caption{\captiontitle{Markov decision processes.}
+    A Markov decision process (MDP) formalizes the problem of acting adaptively in a dynamic environment. The agent executes actions (squares) that change the state of the world (circles) and generate rewards (diamonds), which the agent seeks to maximize. The arrows indicate direct causality; thus, the reward and state at each time step depend only on the state and action at the previous time step, and the agent selects an action based only on the current state. The dotted arrow indicates the elided sequence of states between the first and last two.
   }
   \label{fig:mdp-diagram}
 \end{figure*}
@@ -120,7 +120,8 @@ This concludes our brief overview of MDPs. We are now ready to describe metaleve
   \centering
   \includegraphics[width=0.8\textwidth,page=2,trim=0 100 0 50]{diagrams/metamdp.pdf}
   % \includegraphics[width=\textwidth]{figs/metamdp.pdf}
-  \caption{\emph{Metalevel Markov decision processes}. A metalevel MDP formalizes the problem of thinking efficiently within one's own internal mental environment. The agent executes computations that update their mental state and incur cognitive cost. When the agent executes the termination operation $\bot$, they take an action in the external environment and receive an external reward. The elements that capture the external environment are indicated in blue. These formally distinguish metalevel MDPs from standard MDPs.
+  \caption{\captiontitle{Metalevel Markov decision processes}.
+    A metalevel MDP formalizes the problem of thinking efficiently within one's own internal mental environment. The agent executes computations that update their mental state and incur cognitive cost. When the agent executes the termination operation $\bot$, they take an action in the external environment and receive an external reward. The elements that capture the external environment are indicated in blue. These formally distinguish metalevel MDPs from standard MDPs.
   }
   \label{fig:metamdp-diagram}
 \end{figure*}
@@ -226,7 +227,8 @@ Equation~\ref{eq:term-reward} may appear to constrain us to simple one-shot deci
 \begin{figure}[tb!]
   \centering
   \includegraphics[width=\textwidth]{figs/policies.pdf}
-  \caption{\captiontitle{Optimal policies for the tallying metalevel MDP.} The policy is illustrated as a graph, where each node represents a mental state. States in which the optimal policy continues computing are gray, and states in which the optimal policy terminates are in blue and red, corresponding to the two possible external actions. The two panels show the optimal policy under different levels of computational cost (0.01 and 0.002, in units defined by the maximal action utility of 1).
+  \caption{\captiontitle{Optimal policies for the tallying metalevel MDP.} 
+    The policy is illustrated as a graph, where each node represents a mental state. States in which the optimal policy continues computing are gray, and states in which the optimal policy terminates are in blue and red, corresponding to the two possible external actions. The two panels show the optimal policy under different levels of computational cost (0.01 and 0.002, in units defined by the maximal action utility of 1).
   }
   \label{fig:tally-policies}
 \end{figure}
@@ -355,9 +357,11 @@ which is exactly analogous to Equation~\ref{eq:bayes-update}.
  % but with $w$ replaced by $s$ and $p_c(o_t \mid w)$ by $O(o_t \mid s, a_t)$
 Metalevel MDPs additionally require that all but one action yield strictly negative reward and that the remaining action, $\bot$, leads to a terminal state.
 
-Given that Bayesian metalevel MDPs are a special case of POMDPs, one might reasonably ask why one should bother with metalevel MDPs at all. Indeed, as discussed in Section~\ref{sec:alternative-pomdp}, other researchers have proposed using POMDPs to model an agent's internal environment. However, there are conceptual and technical advantages to using the more restrictive formalism of metalevel MDPs. Conceptually, it is useful to formally distinguish between mental states and world states, and between computational actions and external actions. Although it is sometimes natural to map the belief state in a POMDP to a mental state, a mental state cannot always be reduced to a belief (i.e., when we are not taking a strictly Bayesian view of computation). From a technical perspective, POMDPs describe a very general and challenging class of problems; as a result, general-purpose POMDP solvers are notoriously inefficient.\footnote{%
+Given that Bayesian metalevel MDPs are a special case of POMDPs, one could reasonably ask why we should bother with metalevel MDPs at all. Indeed, as discussed in Section~\ref{sec:alternative-pomdp}, other researchers have proposed using POMDPs to model an agent's internal environment. However, there are conceptual and technical advantages to using the more restrictive formalism of metalevel MDPs. Conceptually, it is useful to formally distinguish between mental states and world states, and between computational actions and external actions. Although it is sometimes natural to map the belief state in a POMDP to a mental state, a mental state cannot always be reduced to a belief (i.e., when we are not taking a strictly Bayesian view of computation). From a technical perspective, POMDPs describe a very general and challenging class of problems; as a result, general-purpose POMDP solvers are notoriously inefficient.\footnote{%
   ``The best thing about POMDPs is that everything's a POMDP. But the worst thing about POMDPs is that everything's a POMDP.'' (Michael Littman, personal communication).
 } Focusing on the specific case defined by metalevel MDPs allows us to develop more targeted and efficient solution strategies (e.g., Section~\ref{sec:bmps}). 
+
+% \todo{key difference: viewing mental state as part of problem definition rather than part of the solution}
 
 Nevertheless, noting the formal similarities between Bayesian metalevel MDPs and POMDPs allows us to take advantage of a powerful tool from the POMDP literature. Specifically, we can draw on the the concept of \emph{belief MDPs} \citep{kaelbling1998planningb} to convert a Bayesian metalevel MDP into an equivalent MDP, where the world state has been marginalized out. We refer to this as the ``marginalized'' metalevel MDP.\footnote{We don't just call them ``belief metalevel MDPs'' because the state still corresponds to a mental state, which can function as more than just a belief state (see Section~\ref{sec:marginal-mechanical}).}
 
