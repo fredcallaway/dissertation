@@ -3,11 +3,27 @@
 \label{conclusion}
 
 
+\newthought{In this disseration}, we have introduced a general framework for modeling cognition as a sequential decision problem: metalevel Markov decision processes. We then showed how the framework can be applied to derive rational mechanistic models in three different domains: attention, memory, and planning. In each case, we found that human behavior showed substantial qualitative alignment with the optimal metalevel policy. Taken together, the results suggest that human cognitive processes are well-adapted to the internal environments in which they operate. However, in no case did we find perfect correspondence between humans and the optimal policy. Although some of these discrepancies could be explained by the many simplifying assumptions we made, it is likely that people's cognitive processes are not perfectly adaptive. Understanding the source of these deviations may be outside the scope of the framework.
 
+The breadth of domains covered in Chapters~\ref{sec:attention}-\ref{sec:planning} is not insignificant, but the models share many core features. Although Chapters~\ref{sec:attention} and~\ref{sec:memory} considered very different tasks (attention in choice and memory recall), they relied on essentially the same state space and transition structure, based on Gaussian evidence accumulation. This parallels the breadth of domains in which evidence accumulation models have been applied. Our model of planning (Chapter~\ref{sec:planning}) employed a very different type of state space (decision trees), it shares with Chapter~\ref{sec:attention} the idea that decision-making can be understood as gathering information about rewards (c.f. \citealp{tajima2016optimal,sezener2019optimizing}). All three chapters rely on probalistic models that specify how the effects of computations relate to an unknown world state. Although these similarities undercut the claimed generality of the approach (see TODO), they can also be viewed as a strength. By specifying models using a common framework, it is easier to transfer concepts and computational tools between domains.
 
-\section{Other approaches to optimal sequential models of cognition}
+\section{Kindred efforts}
 
+The idea of modeling cognitive processes as optimal solutions to sequential decision problems is not unique to this dissertation. There are at least three major strands of research in this area, which we briefly review below.
 
+\subsection{Optimal evidence accumulation}
+
+As mentioned in the introduction, there is a long history of modeling optimal speed-accuracy tradeoffs using evidence accumulation models. Early work (e.g., \citealp{bogacz2006physics,vul2009one}) focused on binary choices with accuracy-based rewards (e.g., +1 for correct responses) and known evidence coherence (i.e., the strength of evidence supporting the correct response is always the same). In these cases, the optimal stopping rule is given \emph{sequential probability ratio test} (SPRT): continue collecting evidence until a threshold level of evidence is reached either for or against the hypothesis. However, when any of these assumptions are violated, the SPRT (and by extension) is no longer optimal.
+
+By explicitly modeling evidence accumulation as a sequential decision problem, \citet{drugowitsch2012cost} were able to derive the optimal stopping rule when evidence coherence varies from trial to trial.\footnote{%
+  This problem is more complex because one cannot simply sum up the log likelihoods for each piece of evidence (which could support option A or B). One must maintain a full belief state over the drift rate, which specifies both the correct answer and the coherence (higher absolute values correspond to higher coherence). 
+} This model adopts the same basic evidence accumulation and belief updating dynamics as in Chapter~\ref{sec:attention} and~\ref{sec:memory}, with a single accumulator tracking relative evidence for one choice vs. the other. They showed that the optimal policy corresponds to a threshold that changes over time (rapidly expanding and then slowly collapsing). Building on this work, \citet{tajima2016optimal} characterized the optimal decision thresholds for value-based choices, where both importance and difficulty depend on the difference in value between the choice options (c.f. \citealp{fudenberg2018speed}). \citet{tajima2019optimal} chararcterize the optimal solution for three-alternative choices, where the mental states and thresholds reside in an three-dimensional space (including time).
+
+Despite this richness, all the models reviewed so far have assumed a very simple cognitive architecture, in which there are only two possible cognitive operations: gather more evidence, or stop. Building on the Tajima et al. model, \citet{jang2021optimal} derived the optimal policy for the case when the agent can only sample from one item at a time (more precisely, when one the value of the attended item produces less noisy samples). Without switching costs, \citet{fudenberg2018speed} showed that it is optimal to perfectly balance attention to each item (alternating at each time step), but in the presence of switching costs, the optimal policy takes on a more interesting structure. As we showed in Chapter~\ref{sec:attention}, the optimal policy takes on even richer structure when there are more than two alternatives, preferentially attending to items with high estimated value. However, the high dimensionality of the state space makes it impossible to exactly identify the optimal policy for ternary choice using backwards induction (the method employed in the Drugowitsch, Tajima, and Jang papers; described in Section~\ref{sec:backinduct}). We were only able to (approximately) identify the optimal policy in this case using the BMPS algorithm (Section~\ref{sec:bmps}), which we developed specifically to solve metalevel MDPs. This highlights the value of using a formalism that is tailored to the specific type of sequential decision problems posed by cognition.
+
+Another line of work in economics has also sought to characterize optimal evidence accumulation in cases where the agent can control the nature of evidence sampled \citep{woodford2014stochastic,hebert2017rational}. The key distinguishing feature of these models is the assumption of a very flexible cognitive architecture in which the agent can gather an arbitrary form evidence at each time step (formally a conditional distribution of a signal given the true world state). Paradoxically, allowing for such flexibility actually makes it easier\footnote{%
+  Assuming you have the math training of an Econ PhD.
+} to identify the optimal policy, as it can be derived analytically. However, this flexibility may limit the ability of the model to account for human cognitive processes, which are likely forced to adapt to a more restrictive architecture.
 
 \subsection{POMDP}\label{sec:alternative-pomdp}
 
@@ -16,7 +32,7 @@
 
 There are several dimensions on which the framework could be extended in future work.
 
-\subsection{Learning the metalevel homunculus}
+\subsection{Educating the metalevel homunculus}
 
 One of the most significant challenges for the metalevel MDP framework is the problem of infinite regress. As mentioned in the Introduction (Section~\ref{sec:bound-meta}), the framework assumes that people are \emph{metalevel rational}, meaning that they choose computational actions to optimally balance a cost-benefit tradeoff. However, it does not explain how those choices are themselves made. In this way, the framework assumes a ``metalevel homonculus'': an unbounded, perfectly rational agent that always knows just what thought to think next (c.f. \citealp{hazy2006banishing,botvinick2014computational}). Explaining (or perhaps explaining away) the homonculus is critical for these models to provide a complete explanation of how people effectively allocate computational resources.
 
@@ -60,8 +76,10 @@ A third assumption of the framework is that only the policy, and not the metalev
 
 There are two timescales at which adaptation of an organism's cognitive architecture could occur (in animals): evolutionary and developmental. Clearly, evolution has a major role in shaping the total amount of biological resources allocated to cognition (e.g., brain volume), as well as the ease with which certain types of computations can be learned and executed. However, at the level of abstraction that we have posed metalevel MDPs, the developmental timescale is likely to be more relevant. Indeed, it is natural to view many types of learning as a process of developing new mental states and computational actions. For example, as a consequence of reading this dissertation, you have (hopefully) acquired a computation along the lines of ``identify the computational actions in this cognitive model''.
 
+\subsection{Renouncing the reverend}  % Abandoning Bayes
 
-\section{Final remarks}
+
+\section{Parting words}
 
 
 
