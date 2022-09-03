@@ -51,6 +51,7 @@
 \newcommand{\considered}{_c}
 \newcommand{\other}{_{\text{other}}}
 \newcommand{\tally}{_{\text{tally}}}
+\newcommand{\Uterm}[1][m]{U \big(w, \pi\act(#1) \big)}
 
 \newcommand{\w}{\vec{w}}
 
@@ -96,10 +97,16 @@
 \newcommand{\VOCapprox}{\widehat{\text{VOC}}(b, c; \vec{w})}
 \newcommand{\like}{\mathcal{L}(D \mid \theta)}
 
+\newcommand{\nextbest}{\max_{i \neq c} \mu_t^{(i)}}
+\newcommand{\postmean}{\mu_{t+1}^{(c)}}
+\newcommand{\currentmean}{\mu_{t}^{(c)}}
+\newcommand{\currentlam}{\lambda_{t}^{(c)}}
+\newcommand{\voiCDF}{\Phi \left( \frac{a - \mu_\mu}{\sigma_\mu} \right)}
+\newcommand{\conditionalx}{x_t \mid \currentmean, \currentlam}
 
 % MEMORY
 
-\newcommand{\mNormal}[1]{\mathcal{N}\left( #1 \right)}
+\newcommand{\mNormal}[1]{\mathrm{Normal}\left( #1 \right)}
 % \newcommand{\Normal}[1]{\mathrm{Normal}\left( #1 \right)}
 \newcommand{\Binomial}[1]{\mathrm{Binomial}\left( #1 \right)}
 

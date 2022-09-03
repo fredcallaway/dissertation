@@ -173,7 +173,7 @@ The key idea in information-theoretic approaches to bounded rationality is to vi
   w \xrightarrow[{\displaystyle \pi\enc}]{\text{\tiny encoder}} m 
     \xrightarrow[{\displaystyle \pi\act}]{\text{\tiny decoder}} a
 \end{equation}
-The agent then receives utility $U \big(w, \pi\act(m) \big)$, a shorthand for the expected outcome utility given the state and selected action, $\E_{o \mid w, \pi\act(m)} U(o)$.
+The agent then receives utility $\Uterm$, a shorthand for the expected outcome utility given the state and selected action, $\E_{o \mid w, \pi\act(m)} U(o)$.
 
 Cognitive constraints are operationalized as an information bottleneck, limiting the amount of information that $m$ can have about $w$, either by making $\pi\enc$ stochastic or by making the number of possible representations less than the number of world states (often both). Different forms of this constraint are possible; a common one is mutual information, which can be intuitively understood as the reduction in uncertainty (entropy, $H$) about the state of the world after observing the mental representation:
 \begin{equation}
@@ -187,7 +187,7 @@ To cast this type of model as an optimal cognitive model (in terms of Section~\r
 \begin{equation}\label{eq:intro-info}
   V(π) = \E_w \left[
     \E_{m \sim π\enc(w)} \left[
-      U \big(w, \pi\act(m) \big)
+      \Uterm
     \right]
   \right] - \lambda I_\pi(m, w).
 \end{equation}
@@ -198,7 +198,7 @@ There are two key ideas to take away from this equation. First, cognitive proces
 Rational metareasoning provides another way to think about the mental state. Specifically, we can think about $m$ as a \emph{belief} about the state of the world, $p(w \mid m)$. Assuming that $\pi\act$ is optimal (that is, that it always selects the action with highest expected utility given the representation), we can define the \emph{value of information} \citep{matheson1968economic} in the representation as the expected utility of the action that would be taken based on that information/representation:
 \begin{equation}\label{eq:intro-voi}
   % \VOI(m) = \max_a \expectunder{U(w, a)}{w \sim P(w \mid m)}
-  \VOI(m) = \E_w \left[U\big(w, \pi\act(m)\big)\right] =
+  \VOI(m) = \E_w \left[\Uterm\right] =
     \max_a \E_{w \mid m} U(w, a)
 \end{equation}
 A derivation for the second equality is given in Equation~\ref{eq:Rbot-derivation} (see Section~\ref{sec:voi} for more discussion of VOI). Using VOI, we can rewrite the information-theoretic objective function (Equation~\ref{eq:intro-info}) as
@@ -333,14 +333,14 @@ Combining these ideas, yields the following definition of an optimal sequential 
 \begin{equation}\label{eq:intro-master}
   π^* = \hl{optimal}{\argmax_{π}}\ 
     \E \left[
-      \hl{utility}{U}(\hl{simon}{w}, \hl{info}{\pi\act(m_t)})
-      \ - \sum_t \hl{utility}{\cost(c_t)}
+      \hl{utility}{U}(\hl{simon}{w}, \hl{info}{\pi\act(m_N)})
+      \ - \sum_{t=1}^N \hl{utility}{\cost(c_t)}
       % \ - \hl{sequential}{\sum_t} \hl{utility}{\cost(c_t)}
       \ \middle\vert\ \hl{sequential}{c_t \sim \pi(m_t)},
       \ \hl{simon}{m_{t+1} \sim T(m_t, c_t, w)}
     \right]
 \end{equation}
-That is, the optimal cognitive process is a way of selecting cognitive operations that, when applied to the types of problems people encounter, yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new.
+That is, the optimal cognitive process is a way of selecting cognitive operations that yields a mental state from which high utility actions can be taken, while at the same time minimizing the total cost of those operations. The equation is certainly complex; but as the tacky coloring reveals, none of these ideas are new.
 
 The idea combine these ideas is not entirely new either. For example, there is a long history of modeling optimal speed-accuracy tradeoffs using evidence accumulation models, like the ones described in the previous section. \citet{bogacz2006physics} showed that the drift diffusion model is the continous limit of the \emph{sequential probability ratio test} (SPRT; \citealp{wald1945sequential}), an optimal stopping rule for collecting evidence about binary hypotheses (c.f. \citealp{gold2002banburismus}). For any given level of evidence coherence (problem difficulty), there is some fixed decision threshold that maximizes the reward rate; this is equivalent to maximizing a linear combination of choice utility and cost under certain assumptions.\footnote{
   For a given decision problem, there is some time cost such that maximizing the reward rate will also maximize the reward minus cost \citep{wald1948optimum,drugowitsch2012cost}. However, this mapping will vary for problems of different difficulty or stakes. For example, increasing the payoffs for correct and incorrect decisions by a multiplicative factor does not change the optimal reward-rate strategy, but it does change the optimal utility-minus-cost strategy.

@@ -185,7 +185,9 @@ Terminating computation (executing $\bot$) always transitions to the terminal st
 \end{equation}
 
 \subsection{Reward function}
-The metalevel reward function $R: \M \times \C \times \W \rightarrow \R$ describes both the costs and benefits of computation. For the former, $R$ assigns a strictly negative reward for all non-terminating computational operations,
+The metalevel reward function $R: \M \times \C \times \W \rightarrow \R$ describes both the costs and benefits of computation. It is defined in terms of three components: a cost function that specifies the cost of executing each computation, an action policy $\pi\act$ that selects an action to take given a mental state, and a utility function $U$ that specifies the utility of each possible action in each world state.
+
+The cost of computation is captured in the reward for non-terminal operations:
 %
 \begin{equation}
 R(m, c, w) = -\cost(m, c) \text{ for } c \neq \bot.
@@ -193,14 +195,14 @@ R(m, c, w) = -\cost(m, c) \text{ for } c \neq \bot.
 %
 We assume that the cost of a computation can depend on the current mental state but not on the state of the world. The cost of computation may include multiple factors. At a minimum, it captures the opportunity cost of the time spent executing the computation (rather than taking actions in the world). The simplest choice is to assume a constant cost for each computation executed. This is a natural choice for the tallying example, with total cost proportional to the number of cues considered.
 
-The benefits of computation are captured by the reward for the termination operation $R(m, \bot, w)$. Intuitively, the benefit of computation is that it allows one to take better actions in the world. Formally, the reward for termination is defined as the utility of the external action that the agent would execute given the current mental state,
+The benefits of computation are captured by the reward for the termination operation, $R(m, \bot, w)$. Intuitively, the benefit of computation is that it allows one to take better actions in the world. Formally, the reward for termination is defined as the utility of the external action that the agent would execute given the current mental state,
 %
 \begin{equation}\label{eq:term-reward}
-  R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
+  R(m, \bot, w) = \Uterm
   % R(m, \bot, w) = \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)},
 \end{equation}
 %
-where $U(w, a)$ specifies the utility of executing action $a$ in the world state $w$ and $\pi\act$ is an \emph{action selection policy} that chooses an action to take based on the current mental state. This policy should be very simple. That is, the mental state should contain sufficient information to choose an action without much additional computation.
+where $U(w, a)$ specifies the utility of executing action $a$ in the world state $w$ and $\pi\act$ is the \emph{action selection policy}, which chooses an action to take based on the current mental state. For simplicity of notation, we will assume that $\pi\act$ selects an action deterministically, but it can also return a distribution over actions. This policy should be very simple. That is, the mental state should contain sufficient information to choose an action without much additional computation.
 
 In the tallying example, $\pi\act$ deterministically selects the car with more favorable cues, selecting randomly otherwise. Specifying $U$ is less straightforward. For simplicity, we assume that the utility derived from car X is proportional to the ratio of cues favoring X. This results in
 \begin{equation}
@@ -249,7 +251,7 @@ How should we determine this policy? The classical cognitive modeling approach i
 That is, it maximizes the expected return. In a metalevel MDP the return can be broken down into two components capturing the costs and benefits of computation,
 \begin{equation}\label{eq:optimal-meta-policy-expanded}
   \pi^* = \argmax_\pi \expect{
-    \expectunder{U\left(w, a\right)}{a \sim \pi\act(m)} -
+    \Uterm[m_N] -
       \sum_{t=1}^{\tmax-1} \cost(m_t, c_t)
   }{
     c_t \sim \pi(m_t)
@@ -417,7 +419,7 @@ The reward for terminating, however, may depend on the state of the world; we mu
   R(m, \bot) = \max_a \expectunder{U(w, a)}{w \sim b_m}.
 \end{equation}
 %
-That is, the marginal termination reward is simply the maximal expected utility of any action. Although this may seem counter-intuitive, there is a simple intuition: if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. We can show this more formally in a simplified case where $\pi\act$ returns a single action with maximal expected utility:
+That is, the marginal termination reward is simply the maximal expected utility of any action. Although this may seem counter-intuitive, there is a simple intuition: if you select an action that has maximal expected utility, the expected utility of the chosen action will be maximal. A skeptical reader might ask whether this is an equivocation: the first use of ``expected'' refers to our subjective predictions, while the latter refers to the actual, objective outcome. However, because we assume beliefs to be accurate (Equation~\ref{eq:belief-accuracy}), the subjective and objective expectations are one and the same. This can be seen in the following derivation:
 \begin{equation}\label{eq:Rbot-derivation}
 \begin{aligned}
 R(m, \bot)
@@ -432,12 +434,10 @@ R(m, \bot)
 The final line follows from
 %
 \begin{math}
-  f\left(\argmax_a f(a)\right) = \max_a f(a)
-  ,
+  f\left(\argmax_a f(a)\right) = \max_a f(a),
 \end{math}
 %
-where $f(a)$ is $\expectunder{U(w, a)}{w \sim b_m}$. It is not difficult to see how this logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.
-\todo{tallying?}
+where $f(a) = \expectunder{U(w, a)}{w \sim b_m}$. Note that the logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.\todo{tallying?}
 
 \subsection{Marginalizing mechanical metalevel MDPs}\label{sec:marginal-mechanical}
 
@@ -673,50 +673,4 @@ How should the weights be determined? Treating the approximation literally, the 
   }
 \end{equation}
 
-The key advantage to BMPS over a more generic RL algorithm is that the policy has a very small number of parameters. This allows us to use an efficient search strategy such as Bayesian optimization. In Appendix~\ref{app:bmps}, we present an evaluation of BMPS trained with Bayesian optimization on several benchmark tasks, finding that it outperforms the blinkered policy described above as well as a generic DQN. In a cognitive modeling application, consistency may be more important than efficiency; in these cases, we can use exhaustive search algorithms that produce similar results when run multiple times. We describe such a method in Section~\ref{sec:attention-policy}.
-
-\todo{Put the evaluations in the UAI paper in the appendix.}
-
-
-% INFORMATION ANGLE
-% In problems with many parameters, this upper bound can be very loose because the optimal metalevel policy might reason only about a small subset of relevant parameters. 
-% To capture this, we introduce an additional feature $\VPIsub(c, b)$ that measures how beneficial it would be to have full information about the parameters that inform the value of the (high-level) action(s) that $c$ is informative about.
-% We model informativeness by a relevance function $f(c,i)$ that returns $1$ if $c$ is informative about $\theta_i$ and $0$ otherwise. Using this relevance function, we define the value value of learning about the subset of parameters that $c$ is informative about as
-% %
-% \begin{dmath}\label{eq:VPIsub}
-% \VPIsub(c, b) = \expect[\theta^* \sim b]{
-%   U(B'_{\text{sub}}(\cdot; c, b, \theta^*))
-% } - U(b)
-% ,   
-% \end{dmath} 
-
-
-
-
-
-% This method is based on an approximation of the VOC as a linear combination of features,
-% \begin{equation}\label{eq:vochat}
-%   \begin{aligned}
-%     \VOCapprox =& w_{1}\VOImy(m,c)+w_{2}\VPIitem(m,c) +
-%      w_{3}\VPI(m) -(\cost(c)+w_{4}),
-%   \end{aligned}
-% \end{equation}
-% for all $c\neq\bot$, with $\widehat{\VOC}(m, \bot; \vec{w}) = \VOC(m,\bot)=0$.
-
-% We briefly define the features here, and provide full derivations in Appendix~\ref{app:attention-derivations}. The VOI terms quantify the \textit{value of information} \citep{howard1966information} that might be gained by different additional computations. Note that the VOI is different from the VOC because the latter includes the costs of computation as well as its benefits. In general, the VOI is defined as the expected improvement in the utility of the action selected based on additional information rather than the current belief state: $E_{\tilde{m} \mid m}[R(\tilde{m}, \bot) - R(m, \bot)]$, where $\tilde{m}$ is a hypothetical future belief in which the information has been gained, the distribution of which depends on the current belief.
-
-% $\VOImy(m,c)$ denotes the expected improvement in choice utility from drawing one additional sample from item $c$ before making a choice, as opposed to making a choice immediately based on the current belief, $m$. $\VPIitem(m,c)$ denotes the expected improvement from learning the true value of item $c$, and then choosing the best item based on that information. Finally, $\VPI(m)$ denotes the improvement from learning the true value of \text{every} item and then making an optimal choice based on that complete information.
-
-% Together, these three features approximate the expected value of information that could be gained by the (unknown) sequence of future samples. Importantly, this true value of information always lies between the lower bound of $\VOImy$ and the upper bound of $\VPI$ (see \figref{fig:attention-voi}), implying that the true VOI is a convex combination of these two terms. Note, however, that the weights on this combination are not constant across beliefs, as assumed in our approximation. Thus, including the $\VPIitem$ term, improves the accuracy of the approximation, by providing an intermediate value between the two extremes. Finally, the last two terms in Equation~\ref{eq:vochat} approximate the cost of computation: $\cost(c)$ is the cost of carrying out computation $c$ and $w_{4}$ approximates the expected future costs incurred under the optimal policy.
-
-% Although maximizing $\VOCapprox$ identifies the policy with the best performance, it is unlikely that humans make attentional decisions using such perfect and noiseless maximization. Thus, 
-% we assume that computations are chosen using a Boltzmann (softmax) distribution   \citep{mcfadden2001economic} given  by
-% \begin{equation}
-%   \pi(c \mid m; \mathbf{w}, \beta) \propto \exp \left\{ \beta\VOCapprox \right\},
-  
-% \end{equation}
-% where the inverse temperature, $\beta$, is a free parameter that controls the degree of noise. Note that computation selection is fully random when $\beta=0$ and becomes deterministic as $\beta\rightarrow\infty$.
-
-
-
-% To identify the weights used in the approximation, we first assume that $w_{i}\ge0$ and $w_{1}+w_{2}+w_{3}=1$, since $w_{1:3}$ features form a convex combination and $w_4$ captures the non-negative future cost.
+The key advantage to BMPS over a more generic RL algorithm is that the policy has a very small number of parameters. This allows us to use an efficient search strategy such as Bayesian optimization. In Appendix~\ref{app:bmps}, we present an evaluation of BMPS trained with Bayesian optimization on several benchmark tasks, finding that it outperforms the blinkered policy described above as well as a generic DQN. In a cognitive modeling application, consistency may be more important than efficiency; in these cases, we can use exhaustive search algorithms that produce similar results when run multiple times. We describe such a method in Section~\ref{sec:attention-ucb}.
