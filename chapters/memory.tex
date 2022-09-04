@@ -68,7 +68,7 @@ The remainder of this paper is organized as follows. We begin by reviewing empir
   \label{fig:model-diagram}
 \end{figure}
 
-\section{Empirical Evidence for Control in Memory Recall}
+\section{Empirical evidence for control in memory recall}
 
 A number of behavioral studies have already suggested that people are capable of using their ability to monitor their memory in the service of controlling their memory processes. At the acquisition phase, a large body of work has investigated how people preferentially allocate study time depending on how well they have learned different pieces of information \citep{dunlosky1998training,metcalfe2009metacognitive,gureckis2012selfdirected}. Another substantial literature has addressed how people choose which memories to maintain or forget \citep{castel2007adaptive,williams2013benefit,suchow2016deciding,hu2019role}. Here, however, we focus specifically on the control of recall.
 
@@ -84,7 +84,7 @@ A related finding, although not one central to control, is that participants giv
 % - Models of metamemory: BIM (hu2021bayesian) and SDRM (jang2012stochastic), based on learning experience, more JOL than FOK
 % - metacognition in decision-making: flemming, sumerfield, drugowitsch, callaway
 
-\section{An Optimal Model of Metamemory for Recall}
+\section{An optimal model of metamemory for recall}
 
 Following classic theories of metamemory (\citealpnelson{}; Figure~\ref{fig:nelson}), we specify our model as two interrelated processes operating at different levels. The \emph{object-level} process includes the mechanisms supporting recall itself. Here, we abstract away from the details of memory search, modeling recall instead as a simple evidence accumulation process \citep{ratcliff2002estimating,sederberg2008context}. The \emph{meta-level} process supervises the object-level process; it \emph{monitors} the rate of progress towards recall and \emph{controls} how long the search process is allowed to continue. Here, we assume that the meta-level process is optimal in the sense that it stops searching when the expected costs of search outweighs the expected benefits.
 
@@ -92,15 +92,15 @@ Importantly, we do not intend this model as a precise characterization of the me
 % To that end, we will assume a simple abstraction of the (object-level) memory search process, and assume that the meta-level process is perfectly optimal with respect to that process. 
 The model is illustrated in Figure~\ref{fig:model-diagram}; we describe its components below.
 
-\subsection{Object-level Process}
+\subsection{Object-level process}
 
 We model recall as a process of evidence accumulation. Evidence accumulation (or ``sequential sampling'') models assume that decisions are made by accumulating noisy information over time until a threshold level of evidence is reached. They have been widely applied in the decision-making \citep{busemeyer1993decision,usher2001time,ditterich2006stochastic,krajbich2010visual} and memory \citep{ratcliff1978theory,sederberg2008context} literatures, and are successful in accounting for the effects of various experimental manipulations on accuracy and response times during recognition and recall tasks \citep{ratcliff2002estimating,sederberg2008context,yonelinas2010recollection}. In our model, the ``evidence'' captures progress towards recalling a target. Thus, when a threshold level of evidence is reached, the target is recalled (blue star in Figure~\ref{fig:model-diagram}).
 
 Concretely, at each time point $t$, the current recall progress $z_t$ is incremented by a sample from a Gaussian distribution,
 %
 \begin{equation}\label{eq:evidence}
-  z_t = z_{t-1} + x_t \,\text{ where }\,
-  x_t \sim \Normal{v, \sigma^2}.
+  z_t = z_{t-1} + x_t \quad\text{where}\quad
+  x_t \sim \mNormal{v, \sigma^2}.
 \end{equation}
 %
 The mean of this distribution, $v$, controls the rate of accumulation; it is often called the \emph{drift rate} (illustrated as a thin dashed blue arrow in Figure~\ref{fig:model-diagram}). In our model, it captures the strength of the memory. The noise $\sigma^2$ captures the consistency of that progress. The target is recalled when the total progress exceeds a threshold $\theta$.
@@ -110,8 +110,8 @@ The mean of this distribution, $v$, controls the rate of accumulation; it is oft
 
 % [Note: Qiong has proposed putting the assumptions first, but I think it is clearer to do concrete then abstract.]
 
-\subsection{Meta-level Process}
-The problem of deciding when to cut off an unsuccessful memory search is addressed by the meta-level process. That is, the meta-level process \emph{controls} how long the object-level process is allowed to continue. How should it do so? From a rational perspective, one should keep searching as long as the probability of recall multiplied by the utility of recall is greater than the expected cost of search \citep{anderson1989human}. Putting this logic into notation, we can define the optimal meta-level action as
+\subsection{Meta-level process}
+The problem of deciding when to cut off an unsuccessful memory search is addressed by the meta-level process. That is, the meta-level process controls how long the object-level process is allowed to continue. How should it do so? From a rational perspective, one should keep searching as long as the probability of recall multiplied by the utility of recall is greater than the expected cost of search \citep{anderson1989human}. Putting this logic into notation, we can define the optimal meta-level action as
 %
 \begin{equation}\label{eq:anderson}
   a^* = \begin{cases}
@@ -122,11 +122,11 @@ The problem of deciding when to cut off an unsuccessful memory search is address
 %
 where $U$ stands for utility. The challenge lies in estimating $p\recall$ and $\E[\text{cost}(\text{search})]$. In our evidence-accumulation model, these values correspond respectively to the probability that the evidence will eventually cross the threshold and the time point at which this occurs. 
 
-Intuitively, one could accurately estimate the probability and cost of future recall if one knew the strength of the target memory, $v$. However, a key assumption of our model---and the metamemory literature more broadly---is that the meta-level process does not have direct access to this information. Instead, we assume that the meta-level process must infer the memory's strength by \emph{monitoring} the object-level process. The existence of such a monitoring process is widely agreed on; however, its precise nature is controversial. In particular, it is unclear to what extent monitoring tracks the underlying memory strength \citep{hart1965memory}, partial recall progress \citep{koriat1993how}, or superficial cues that happen to be predictive of recall \citep{reder1992determines,schwartz1992cue}. Resolving this debate is beyond the scope of this paper. Thus, for simplicity and tractability, we assume that the meta-level process directly observes the state of the object-level process. We emphasize that this is purely a simplifying assumption, and not a claim about how people actually monitor their memory. We return to this point in the discussion.
+Intuitively, one could accurately estimate the probability and cost of future recall if one knew the strength of the target memory, $v$. However, a key assumption of our model---and the metamemory literature more broadly---is that the meta-level process does not have direct access to this information. Instead, we assume that the meta-level process must infer the memory's strength by monitoring the object-level process. The existence of such a monitoring process is widely agreed on; however, its precise nature is controversial. In particular, it is unclear to what extent monitoring tracks the underlying memory strength \citep{hart1965memory}, partial recall progress \citep{koriat1993how}, or superficial cues that happen to be predictive of recall \citep{reder1992determines,schwartz1992cue}. Resolving this debate is beyond the scope of this paper. Thus, for simplicity and tractability, we assume that the meta-level process directly observes the state of the object-level process. We emphasize that this is purely a simplifying assumption, and not a claim about how people actually monitor their memory. We return to this point in the discussion.
 
 Concretely, we assume that the meta-level process observes the current recall progress $z_t$ and the time spent so far $t$, which provides a complete summary statistic for the entire sequence up to time $t$. Given this information, the meta-level process then infers a posterior distribution over the strength of the memory,
 %
-% $p(v \mid z_t, t) = \Normal{v; \mu_t, \sigma_t^2}$ with
+% $p(v \mid z_t, t) = \mNormal{v; \mu_t, \sigma_t^2}$ with
 % \begin{equation}
 % \begin{gathered}
 %   \mu_t = \frac{z_t t \sigma^{-2} + \mu_0 \sigma_0^{-2}}{\sigma_t^{-2}} 
@@ -137,14 +137,14 @@ Concretely, we assume that the meta-level process observes the current recall pr
 %
 \begin{equation}\label{eq:belief}
 \begin{gathered}
-  p(v \mid z_t, t) = \Normal{v; \mu_t, \sigma_t^2} \\
+  p(v \mid z_t, t) = \mNormal{v; \mu_t, \sigma_t^2} \\
   \mu_t = \frac{z_t t \sigma^{-2} + \mu_0 \sigma_0^{-2}}{\sigma_t^{-2}} 
   \quad\quad
   \sigma^2_t = \frac{1}{t \sigma^{-2} + \sigma_0^{-2}}
 \end{gathered}
 \end{equation}
 %
-where $\mu_0$ and $\sigma_0^2$ encode the agent's prior, $\Normal{\mu_0, \sigma_0^2}$. To build intuition, note that with a very weak prior (large $\sigma_0^2$), $\mu_t$ reduces to $\nicefrac{z_t}{t}$, the average rate of recall progress. This time-varying belief about the strength of a memory formalizes the concept of \emph{feeling of knowing}.
+where $\mu_0$ and $\sigma_0^2$ encode the agent's prior, $\mNormal{\mu_0, \sigma_0^2}$. To build intuition, note that with a very weak prior (large $\sigma_0^2$), $\mu_t$ reduces to $\nicefrac{z_t}{t}$, the average rate of recall progress. This time-varying belief about the strength of a memory formalizes the concept of \emph{feeling of knowing}.
 
 Given this estimate of memory strength, how should the meta-level process determine whether to continue searching. That is, how should \emph{monitoring} inform \emph{control}? One intuitively appealing strategy is to estimate future recall progress by repeatedly applying Equation~\ref{eq:evidence}, compute $p\recall$ and $\E[\text{cost}(\text{search})]$ from those estimates, and then choose the optimal action by Equation~\ref{eq:anderson}. However, this strategy fails because it implicitly assumes that the object-level process will be allowed to continue indefinitely---precisely what the meta-level process is intended to prevent. The decision of whether to stop is not made just once; it is continually remade at each time step. As a result, the probability and cost of recall---and therefore the optimal stopping decision---depend on one's future stopping decisions.
 
@@ -172,16 +172,16 @@ Finally, the transition function $T$ captures the dynamics of the object-level p
   T(s_{t+1} | s_t, a) 
   &= p(z_{t+1} \mid t, z_t) \\
   &= \int p(z_{t+1} \mid z_t, v) p(v \mid t, z_t) \ dv \\
-  &= \int \Normal{z_{t+1} - z_t \mid v, \sigma^2} 
-          \Normal{v \mid \mu_t, \sigma_t^2}\ dv \\
-  &= \Normal{z_{t+1} - z_t \mid \mu_t, \sigma^2 + \sigma_t^2}.
+  &= \int \mNormal{z_{t+1} - z_t \mid v, \sigma^2} 
+          \mNormal{v \mid \mu_t, \sigma_t^2}\ dv \\
+  &= \mNormal{z_{t+1} - z_t \mid \mu_t, \sigma^2 + \sigma_t^2}.
 \end{aligned}
 \end{equation}
 %
 The two substitutions in the third line follow from Equations~\ref{eq:evidence} and~\ref{eq:belief}, respectively. The final line is a standard property of Gaussian distributions \citep{murphy2007conjugate}.
 
 
-\subsection{Optimal Policy}
+\subsection{Optimal policy}
 
 We have now defined a meta-level MDP that formalizes the problem of deciding when to give up on recalling a memory. The final step is to specify a strategy for solving that problem. In MDP terms, we need to specify a policy $\pi$ that chooses which action to take in each state. Here, we focus on the optimal policy, which is the one that maximizes the total expected reward. As detailed in the methods, we can identify this policy by computing the optimal value function $V^*$, which specifies the maximal total reward one could expect to gain starting from any given state. To build intuition, we can factorize $V^*$ for the current model into two components, capturing the utility of recall and the cost of search,
 %
@@ -265,7 +265,7 @@ The experiment consisted of four phases: exposure, distractor, pretest, and crit
 
 After a response was given, a metamemory judgment was elicited. When participants gave a response, they were asked ``how confident are you in your response?''. They then pressed a number between 1 and 5 to indicate that they were ``not at all sure'', ``not so sure'', ``more or less sure'', ``nearly sure'', or ``absolutely sure'' their response was correct. If they did not give a response (i.e., they skipped the trial), they were asked ``how much do you feel that you know the word?'', again pressing a number between 1 and 5. The responses were described as: ``I am absolutely sure I do not know the word', ``I am rather sure I do not know the word', ``I have a vague impression I know the word', ``I am rather sure I know the word' and ``I am absolutely sure I know the word''. 
 
-\begin{figure}[ht]
+\begin{figure}[t!]
   \includegraphics[scale=.65]{figs/memory/exp1/rt.pdf}
   \caption{%
     \captiontitle{Opposing effects of memory strength on time to recall vs. skip a target.}
@@ -313,7 +313,7 @@ The simulated response time was determined based on the final value of $t$. We a
 
 The simulated metamemory judgments (confidence and feeling of knowing) were determined based on the posterior mean $\mu_t$ at the final time step, that is, when the target was recalled or the policy terminated search. To account for factors contributing to the judgment besides those captured by our model (e.g., individual differences in scale usage) we first corrupted $\mu_t$ with Gaussian noise, arbitrarily setting the variance to $\nicefrac{\sigma}{2}$. We then binned the continuous measure into five bins, corresponding to the 1-5 response scale. We set the bin boundaries separately for each judgment type in order to match the proportion of each response in the human data.
 
-In order to capture the relationship between performance in the pretest and critical trials, we simulated both phases using the following procedure. For each simulated word/image pair, we sampled its memory strength $v$ from the prior distribution $\Normal{\mu_0, \sigma_0^2}$. The parameters of the prior are free parameters of the model. Next, we simulated the two pretest trials for that pair by rolling out two episodes of the meta-level MDP. For these trials, we set $U\recall$ to the experimentally imposed value of one cent. The search cost $\samplecost$ is a free parameter. We then simulated the critical trial for the pair, setting $U\recall$ to the new value of three cents and increasing $\samplecost$ by the experimentally imposed value of 0.01 cents per sample (0.1 cents per second and 100ms per sample).
+In order to capture the relationship between performance in the pretest and critical trials, we simulated both phases using the following procedure. For each simulated word/image pair, we sampled its memory strength $v$ from the prior distribution $\mNormal{\mu_0, \sigma_0^2}$. The parameters of the prior are free parameters of the model. Next, we simulated the two pretest trials for that pair by rolling out two episodes of the meta-level MDP. For these trials, we set $U\recall$ to the experimentally imposed value of one cent. The search cost $\samplecost$ is a free parameter. We then simulated the critical trial for the pair, setting $U\recall$ to the new value of three cents and increasing $\samplecost$ by the experimentally imposed value of 0.01 cents per sample (0.1 cents per second and 100ms per sample).
 
 \paragraph{Parameter estimation}
 
@@ -352,7 +352,7 @@ The parameters are fit by maximum likelihood estimation using the procedure desc
 
 % Although the qualitative predictions are largely insentive to these parameters (as shown in Appendix~XXX), they must be tuned to produce predictions in a similar range to the human data. We 
 
-\subsubsection{Statistical Analyses}
+\subsubsection{Statistical analyses}
 
 All reported regressions are linear mixed-effects models with random slopes and intercepts for each participant. We use logistic regression for binary outcome variables and linear regression otherwise. When the dependent variable is a duration, we report coefficients in units of seconds. Degrees of freedom are estimated using the Satterthwaite method. As pre-registered, we excluded 106 participants who skipped more than 90\% of non-practice critical trials because these participants were likely not engaging seriously with the task. We additionally excluded one trial with a response time under 30ms (as planned but not explicitly pre-registered).
 
@@ -394,7 +394,7 @@ On each trial, participants were presented with two cues and could recall the ta
 
 \subsection{Predictions}
 
-\begin{figure}[ht]
+\begin{figure}[t!]
   \centering
   \includegraphics[width=\textwidth]{figs/memory/exp2_predictions.pdf}
   \caption{\captiontitle{Experiment 2 optimal policy and predictions.} With two possible memories to recall, the optimal policy partitions the state space into three sections where it is optimal to either: continue searching for the currently attended memory (blue), switch to the other memory (yellow) or give up (pink). The optimal policy depends on the recall progress and time spent on both memories; here we show two slices of the full four-dimensional state space, setting the time spent on the unattended memory to 10 timesteps and its progress to either 0.1 (left) or 1 (right). The gray lines show example progress traces for a weak (dark gray) and moderately strong (light gray) attended memory. The arrows highlight two key features of the optimal policy: it is less likely to switch when the currently attended memory is generating rapid progress, but more likely to switch if the unattended memory has already shown promise.}
@@ -545,11 +545,11 @@ Did participant's long final fixations reflect rational commitment or random com
 
 In this experiment, we found evidence of a richer form of meta-level control of memory. Specifically, when presented with two cues associated with different target memories, our participants directed their attention towards the cue associated with the stronger memory. This was reflected in the overall proportion of fixation time, the timecourse of fixations, and the duration of individual non-final fixations. The latter two results are especially important because they are behavioral signatures of metacognitive control during the retrieval process itself (before recall is completed or abandoned). To our knowledge, this is the first empirical demonstration of a dynamic metamemory process unfolding over time. 
 
-\section{General Discussion}
+\section{General discussion}
 
 In this paper, we presented an optimal model of meta-level control for cued recall. The model consists of a metacognitive process that monitors the progress of a basic recall process, and optimally controls how long the process is allowed to continue (either terminating recall or switching to recall of a different memory). In two experiments, we showed that human behavior is qualitatively consistent with the predictions of this model. In Experiment 1, we replicated and extended the findings of \citet{costermans1992confidence}, showing that people were faster to recall targets with higher strength (as indicated by both subjective judgments and objective performance) but slower to give up on targets with higher strength. In Experiment 2, we showed that people also attend to stronger memories when they can choose between two possible targets. Together, our results suggest that people can estimate the strength of a memory they are trying to recall and use this information to adaptively control their retrieval efforts.
 
-\subsection{An Explicit Instantiation of a Classic Theory}
+\subsection{An explicit instantiation of a classic theory}
 
 Our results contribute to the metamemory literature by providing (to our knowledge) the first computationally explicit instantiation of the classic theory of metamemory proposed by Nelson and Narens \citeyearpar{nelson1990metamemory} in the context of memory recall. According to this theory, metacognition involves the interaction between a meta-level process and an object-level process, where the meta-level process monitors the state of the object-level process and controls it accordingly. In the context of memory recall, they proposed a verbal model in which feeling of knowing is generated by ``an evaluation in terms of whether there has been sufficient progress to continue'', with the process terminating in an omission error when this feeling of knowing no longer ``exceeds the FOK threshold for claiming to know the answer''. They went on to suggest that this model could account for the correlation between feeling of knowing and response time on omission trials.
 
@@ -563,7 +563,7 @@ Formalizing Nelson and Naren's model as an MDP also allows us to create a concep
 
 % This idea, that an agent's ``environment may lie, in part, within the skin of the biological organism'' is not new \citep{simon1955behavioral}.
 
-\subsection{Rational Analysis for Metamemory}
+\subsection{Rational analysis for metamemory}
 
 Outside of metamemory, the intellectual roots of our model lie in Anderson's \citeyearpar{anderson1990adaptive} rational analysis, with early work demonstrating that the forgetting behavior commonly observed in lab settings is not a weakness or peculiarity of the memory system, but instead a reflection of rational adaptation to the statistics of the environment \citep{anderson1989human}. The key idea underlying both this models and ours is that memory (and cognition more generally) can be treated as an optimization problem. More recently, researchers have emphasized that this optimization problem must also account for the constraints imposed by our limited computational resources \citep{griffiths2015rational,howes2009rational,lewis2014computational,gershman2015computational}. This approach, sometimes called resource-rational analysis, has generated insight into a wide variety of cognitive processes (see \citealp{lieder2020resourcerational} for a review).
 
@@ -586,7 +586,7 @@ Importantly, like the other resource-rational models reviewed above, our model a
 
 % The fact that the human data follows the same pattern speaks to the strength of the rational modeling approach. By assuming optimality, we can make \emph{a priori} predictions about how behavior will change as the structure of the problem changes.
 
-\subsection{Imperfect Monitoring and Cue Familiarity}
+\subsection{Imperfect monitoring and cue familiarity}
 While our results make a strong case for the existence of an adaptive metamemory control system in the human mind, we do not claim to have characterized the precise nature of this system. Indeed, for simplicity and tractability, we made several assumptions that are most likely inaccurate. 
 % For example, the distribution of memory strength is likely not exactly Gaussian and the true dynamics of recall progress are only coarsely described by a Brownian diffusion process (likely having a more staltory structure).
 Perhaps most critically, we assumed that the meta-level process has direct access to the state of the object-level process (the recall progress). This form of monitoring can be seen as a simplified form of Koriat's \citeyearpar{koriat1993how} accessibility model. Specifically, our simplification does not allow for the possibility that incorrect partial information is recalled, which eliminates any divergence between feeling of knowing and recall progress. While this assumption greatly simplified the implementation of the model and has precedence in previous metamemory models \citep{suchow2016deciding,hu2019role}, perfect monitoring is intuitively implausible and it is inconsistent with the sensitivity of feeling-of-knowing judgments to spurious information generated during recall \citep{koriat1993how} and manipulations that do not affect accuracy (discussed below).
@@ -599,7 +599,7 @@ It is thus plausible that metamemory draws on both partial recall progress and o
 
 Finally, we emphasize that our we do not take our empirical results to support any specific theory of monitoring. Although we have only implemented a model that monitors partial recall, we believe that similar predictions could be made by a model whose monitoring component is based purely on cue familiarity. For this reason, we have taken care not to claim that our results suggest that people can monitor the progress of memory recall. Our results simply suggest that people are capable of inferring the \emph{strength} of a memory. Rigorously evaluating computational models of exactly how people make that inference will require additional data. Developing a paradigm to produce that data is another critical direction for future research.
 
-\subsection{Beyond Cued Recall}
+\subsection{Beyond cued recall}
 
 Although we have focused on cued recall, the decision about when to terminate search is present in almost all naturalistic recall tasks, including, for example, free recall. The basic principle of our model is that this decision should be made by balancing the benefit and probability of recall with the cost of search, a principle we inherit from \citet{anderson1989human}. This is in contrast to existing models of free recall such as the context maintenance and retrieval (CMR) model, which assumes that search is terminated either when a target memory is retrieved or after a fixed amount of time has passed \citep{polyn2009context,lohnas2015expanding}. Alternatively, according to the Search of Associative Memory (SAM) model, search is terminated after a fixed number of retrieval attempts that do not result in recall of a new word \citep{raaijmakers1981search}. In both models, the decision to terminate recall is based on a general stopping rule independent of the state of the memory system. Integrating a rational metacognitive stopping rule into these models is an interesting direction for future research. Empirically validating such a model will likely require additional data, as participants in free recall experiments are typically given a fixed amount of time to recall as many items as possible; the decision to terminate search cannot be observed in this setting.
 
@@ -616,7 +616,7 @@ Metamemory goes beyond simply deciding when to terminate search. In Experiment~2
 % FRED: This paragraph feels out of place. Perhaps we can find other places to cite zhang and lu. (We could probably leave lu out if we can't find a place).
 % Other important factors to optimize memory recall performance include the decision about how to initiate the memory search and in which order to recall a sequences of items \citep{zhang2022optimal}. One may also choose to rely on external memory aids, perhaps based on an estimate of the probability of recall without aid \citep{hu2019role}. In some cases, one might decide not to search long-term memory at all and instead rely on information in working memory \citep{lu2022neural}. 
 
-\subsection{Beyond Memory}
+\subsection{Beyond memory}
 
 Our results also contribute to the literature on metacognition more broadly. Beyond memory, a wide variety of functional roles for metacognition have been proposed, including the regulation of perception \citep{deroy2016metacognition}, judgment \citep{polania2019efficient,lebreton2015automatic}, decision-making \citep{yeung2012metacognition,demartino2013confidence}, learning \citep{fromer2021expectations,nassar2012rational}, information seeking \citep{boldt2019confidence,desender2018subjective}, and social interaction \citep{frith2012role}. Some of these roles have been incorporated into computational models that formally describe how confidence might inform decision about e.g., when to opt out of a difficult trial \citep{kiani2009representation}, when to change one's mind given additional evidence \citep{folke2016explicit}, how to interpret error feedback \citep{fromer2021expectations}, or where to fixate in visual search \citep{stewart2022humans}. However, these models often assume that the functional role of metacognition is \emph{static}. Although the mechanism underlying confidence judgments may be dynamic (typically being based on evidence accumulation \citealp{vickers1970evidence,pleskac2010twostage,moreno-bote2010decision}), any resulting metacognitive control occurs in a separate stage, typically as a single action, and not feeding back onto the object-level process in a dynamic, interleaved way. In an influential review, \citet{yeung2012metacognition} identified this as a critical gap to be explored in future research.
 
