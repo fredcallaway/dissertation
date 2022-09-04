@@ -10,12 +10,7 @@
 % \renewcommand{\thefigure}{\Alph{table}}
 % \renewcommand{\thefigure}{\Alph{figure}}
 
-\newcommand{\nextbest}{\max_{i \neq c} \mu_t^{(i)}}
-\newcommand{\postmean}{\mu_{t+1}^{(c)}}
-\newcommand{\currentmean}{\mu_{t}^{(c)}}
-\newcommand{\currentlam}{\lambda_{t}^{(c)}}
-\newcommand{\voiCDF}{\Phi \left( \frac{a - \mu_\mu}{\sigma_\mu} \right)}
-\newcommand{\conditionalx}{x_t \mid \currentmean, \currentlam}
+
 
 % \newgeometry{left=1.2in, right=1.2in, top=1in, bottom=1in}
 % \onecolumn
@@ -26,7 +21,7 @@
 
 This datasets for binary and trinary choice were initially reported in \citet{krajbich2010visual} and \citet{krajbich2011multialternative}, respectively. For the convenience of the reader, we include the task description from the original papers.
 
-\subsection{Binary choice}
+\subsection{Binary choice}\label{sec:binary-choice}
 
 The experiment consisted of 39 Caltech students. Only subjects who self-reported regularly eating the snack foods (for example, potato chips and candy bars) used in the experiment and not being on a diet were allowed to participate. These steps were taken to ensure that the food items we used would be motivationally relevant. This would not have been the case if the subjects did not like junk food. Subjects were asked to refrain from eating for 3 h before the start of the experiment. After the experiment they were required to stay in the room with the experimenter for 30 min while eating the food item that they chose in a randomly selected trial (see below). Subjects were not allowed to eat anything else during this time.
 
@@ -42,6 +37,16 @@ Subjects’ fixation patterns were recorded at 50 Hz using a Tobii desktop-mount
 Thirty Caltech students participated in the experiment. The screening, pre-experimental instructions, eye-tracking and liking rating phase were identical to those used in the binary choice task described in the previous section.
 
 In the choice phase, subjects made their choices using the keyboard. The choice screen had a free response time. The items shown in each trial were randomly chosen. In all trials the three items were displayed in a triangular formation with the left and right items at the same vertical position, and the center item at the opposite vertical position. In half of the trials the center item was on the top half of the screen, and in the other half it was on the bottom half of the screen. Subjects indicated their choice by pressing the left, down, or right arrow keys for the left, center, and right items, respectively. After subjects indicated their choice, a yellow box was drawn around the chosen item (with the other item still on the screen) and displayed for 1 s, followed by a fixation screen, before the beginning of the next trial.
+
+\section{UCB policy optimization}\label{sec:attention-ucb}
+
+To identify a set of 80 near-optimal policies, we used a method based on upper-confidence bound bandit algorithms \citep{auer2002finite}.
+
+Each ``bandit'' corresponds to a weight vector for the BMPS policy (Equation~\ref{eq:attention-bmps}). We sample $8000$ such weight vectors to roughly uniformly tile the space of possible weights. Concretely, we divide a three-dimensional hypercube into $800= 20^3$ equal-size boxes and sample a point uniformly from each box. The first two dimensions are bounded in $(0, 1)$ and are used to produce $w_{1:3}$ using the following trick: Let $x_1$ and $x_2$ be the lower and higher of the two sampled values. We then define $w_{1:3}$ = $[x_1, x_2 - x_1, 1 - x_2]$. If $x_1$ and $x_2$ are uniformly sampled from $(0, 1)$, and indeed they are, then this produces $w_{1:3}$ uniformly sampled from the 3-simplex. The third dimension produces the future cost weight; we set $w_4 = x_3 \cdot \mathrm{maxcost}$ where maxcost is the lowest cost such that the policy would always terminate in the initial mental state. 
+
+Next, we simulate $100$ decision trials for each of the resulting policies, providing a baseline level of performance. Using these simulations, we compute an upper confidence bound of each policy's performance equal to $\hat{\mu}_i + 3\hat{\sigma}_i$, where $\hat{\mu}_i$ and $\hat{\sigma}_i$ are the empirical mean and standard deviations of the metalevel returns sampled for policy $i$. A standard UCB algorithm would then simulate from the policy maximizing this value. However, because we are interested in identifying a set of policies, we instead select the top $80$ (i.e. $1\%$ of) policies and simulate $10$ additional trials for each, updating $\hat{\mu}_i$ and $\hat{\sigma}_i$ for each one. We iterate this step $5000$ times. 
+
+Finally, we select the $80$ policies with the highest expected performance as our characterization of optimal behavior in the metalevel MDP. To eliminate the possibility of fitting noise in the optimization procedure, we use one set of policies to compute the likelihood on the training data and re-optimize a new set of policies to generate plots and compute the likelihood of the test data. Note that we use the box sampling method described in the previous paragraph rather than a deterministic low discrepancy sampling strategy \citep{sobol1967distribution} so that the set of policies considered are not exactly the same in the fitting and evaluation stages.
 
 
 \section{Individual fits}\label{app:attention-individual}
@@ -132,17 +137,17 @@ Here we present derivations of the value of information (VOI) features used by t
 \subsection{Myopic Value of Information}
 The myopic value of information is the value of the information acquired by a single computation, that is, the expected increase in decision quality from executing a single computation and then deciding rather than making a decision immediately. Formally,
 %
-% \begin{equation*}
+% \begin{equation}
 %   \VOImy(b,c) = \E_{B_{t+1}}\left[
 %     R(B_{t+1},\bot) \mid C_t=c, B_t=b
 %   \right] - R(b, \bot).
-% \end{equation*}
+% \end{equation}
 %
-\begin{equation*}
+\begin{equation}
   \VOImy(m_t,c) = \E_{m_{t+1} \mid m_t, c}\left[
     R(m_{t+1},\bot)
   \right] - R(m_t, \bot).
-\end{equation*}
+\end{equation}
 %
 In our model, this is equal to the expected value of the item that will be chosen after taking an additional sample minus the expected value of an item chosen based on the current mental state. That is,
 %
@@ -154,11 +159,11 @@ In our model, this is equal to the expected value of the item that will be chose
 % .
 % \end{equation}
 %
-\begin{equation*}
+\begin{equation}
   \VOImy(m_t, c) = \E_{\mu_{t+1} \mid \mu_t, \lambda_t} \left[
     \max_i \mu_{t+1}^{(i)}
 \right] - \max_i \mu_t^{(i)}.
-\end{equation*}
+\end{equation}
 %
 Because $\mu_{t+1}$ differs from $\mu_t$ only for item $c$, we can rewrite the expectation term as
 %
@@ -186,21 +191,21 @@ Finally, applying the linear transformation of $x_t$ given by Equation~\ref{eq:u
 % Since $x_t \mid u^{(c)}\sim u^{(c)}+\Normal(0,\sigma_{x}^{2}$), and $\postmean$ is a linear transformation of $x_t$, it follows that $\postmean$ is a Gaussian random variable. 
 % Furthermore, using the fact that $u^{(c)} \mid \currentmean\sim \Normal(\currentmean,1/\currentlam)$, and that $E\left[X+Y\right]=E\left[X\right]+E\left[Y\right]$ and $\Var\left[X+Y\right]=\Var\left[X\right]+\Var\left[Y\right]$ when $X$ and $Y$ are Gaussian, we get that $E\left[x_t\mid m_t\right]=\currentmean$ and $\Var\left[x_t\mid m_t\right]=\nicefrac{1}{\currentlam}+\sigma_{x}^{2}$ . From this, it follows that
 %
-\begin{equation*}
+\begin{equation}\label{eq:attention-marginal}
   \postmean \sim
     \Normal(\mu_\mu, \sigma^2_\mu)
-\end{equation*}
+\end{equation}
 where
-\begin{equation*}
+\begin{equation}
   \mu_\mu =  \frac{\sigma_{x}^{-2}}{\lambda_{t+1}^{(c)}}\currentmean+\frac{\currentlam\currentmean}{\lambda_{t+1}^{(c)}}=\currentmean
-\end{equation*}
+\end{equation}
 and
-\begin{equation*}
+\begin{equation}
   \sigma^2_\mu = {\left(\frac{\sigma_{x}^{-2}}{\lambda_{t+1}^{(c)}}\right)}^{2}\left(\frac{1}{\currentlam}+\sigma_{x}^{2}\right).
-\end{equation*}
+\end{equation}
 %
 
-Having derived the distribution of Equation $\postmean$, we now turn to the expected maximum in [\ref{eq:myopicmax}]. From basic probability theory we know that for any constant $z$ and random variable $X$,
+Having derived the distribution of $\postmean$, we now turn to the expected maximum in [\ref{eq:myopicmax}]. From basic probability theory we know that for any constant $z$ and random variable $X$,
 %
 \begin{equation}
   \label{eq:emaxtrick}
@@ -215,55 +220,55 @@ Having derived the distribution of Equation $\postmean$, we now turn to the expe
 %
 Substituting $\nextbest$ for $z$ and $\postmean$ for $X$, we can use this formula to derive an analytical solution for the myopic value of information. First, we have
 %
-\begin{equation*}
+\begin{equation}
   \Pr\left[\postmean\le \max_{i\neq c}\,\mu_t^{(i)}\right]=\Phi\left(\beta\right),
-\end{equation*}
+\end{equation}
 %
 where $\Phi$ is the cumulative density function (CDF) of a standard Gaussian , and 
 %
-\begin{equation*}
+\begin{equation}
   \beta=\frac{\max_{i\neq c}\,\mu_t^{(i)}-\mu_{\mu}.}{\sigma_{\mu}}
-\end{equation*}
+\end{equation}
 %
 Next, we apply the standard formula for the expectation of a truncated Gaussian, giving us
 %
-\begin{equation*}
+\begin{equation}
   E\left[\postmean\mid\postmean>\max_{i\neq c}\,\mu_t^{(i)}\right]=\mu_{\mu}+\frac{\phi\left(\beta\right)}{1-\Phi\left(\beta\right)}\sigma_{\mu},
-\end{equation*}
+\end{equation}
 %
 where $\phi$ is the standard normal probability density function.
 Finally, putting this together we find that $\VOImy(b,c)$ is equal to
 %
-\begin{equation*}
+\begin{equation}
   \Phi(\beta)\cdot\max_{i\neq c}\mu_t^{(i)}+\left(1-\Phi(\beta)\right)\cdot\left(\mu_{\mu}+\frac{\phi\left(\beta\right)}{1-\Phi\left(\beta\right)}\sigma_{\mu}\right)-\max_{i}\mu_t^{(i)}.
-\end{equation*}
+\end{equation}
 
 
 \subsection{Value of Perfect Information About One Item}
 Whereas $\VOImy$ captures the information value of a single sample, $\VPIitem$ captures the information value of an infinite number of samples for one item, that is, the value of knowing the exact value of one item. Formally,
 
-\begin{equation*}
+\begin{equation}
   \VPIitem(m_t,c)=\E_{u^{(c)} \mid \currentmean, \currentlam} \left[
     \max \left\{ u^{(c)},\max_{i\neq c}\,\mu_t^{(i)} \right\}
   \right] -\max_{i}\mu_t^{(i)}.
-\end{equation*}
+\end{equation}
 %
 The derivation is similar to that of $\VOImy$, but instead of taking the expectation over the posterior mean after one computation, $\postmean$, we take the expectation over the true utility, $u^{(c)} \mid \currentmean, \currentlam \sim \Normal(\currentmean,\nicefrac{1}{\currentlam})$. Thus, we apply the same steps beginning with [\ref{eq:emaxtrick}], but replacing $\postmean$ with $u^{(c)} \mid \currentmean, \currentlam$. This results in $\VPIitem(b, c)$ equal to
 %
 % $\mu_\mu$ with $\currentmean$ and $\sigma^2_\mu$ with $\nicefrac{1}{\currentlam}$ 
 % Trivially, we have $\E\left[u^{(c)} \mid m_t\right]=\currentmean$ and $\Var\left[u^{(c)} \mid m_t\right]=\nicefrac{1}{\currentlam}$. Repeating the same steps as in the previous section, we get that $\VPIitem(b,c)$ is equal to
 %
-\begin{equation*}
+\begin{equation}
   \Phi(\beta')\cdot\max_{i\neq c}\mu_t^{(i)}+\left(1-\Phi(\beta')\right)\cdot\left(\currentmean+\frac{\phi\left(\beta'\right)}{1-\Phi\left(\beta'\right)}
   \sqrt{\nicefrac{1}{\currentlam}}\right)
   - \max_{i}\mu_t^{(i)}
-\end{equation*}
+\end{equation}
 %
 where 
 %
-\begin{equation*}
+\begin{equation}
   \beta'=\frac{\max_{i\neq c}\mu_t^{(i)}-\currentmean}{\sqrt{\nicefrac{1}{\currentlam}}}.
-\end{equation*}
+\end{equation}
 %
 
 % %!TEX root = main.tex
@@ -291,9 +296,9 @@ $\VPI$ captures the information value of learning the exact value of every item 
 
 For the case of $n$ items, the conditional expectation term is given by the integral
 %
-\begin{equation*}
+\begin{equation}
   \int...\int\left[\max_{i}u^{(i)}\prod_{i=1}^{k}\Normal(u^{(i)};\mu_t^{(i)},\nicefrac{1}{\lambda_t^{(i)}})\right]du^{(1)}...\,du^{(n)}.
-\end{equation*}
+\end{equation}
 %
 Unfortunately, there is no analytic solution to this integral. However, we can substantially reduce our computational burden by reducing to a piecewise one-dimensional integral. First, we can express the expectation of any random variable as a piecewise integral,
 %
@@ -313,17 +318,17 @@ because the maximum of a set is less than $x$ if and only if each element in the
 % that is, $\chi = \{ \Normal(\mu_t^{(i)}, \nicefrac{1}{\lambda_t^{(i)}}) \}$.
 Letting $M$ denote $\max \mathcal{X}$, we can define its CDF as
 %
-\begin{equation*}
+\begin{equation}
   F_{M}(m)=\prod_{i=1}^{n}\Phi\left(\sqrt{\lambda_t^{(i)}}\left(m-\mu_t^{(i)}\right)\right).
-\end{equation*}
+\end{equation}
 %
 Combining Equations [\ref{eq:vpi}], [\ref{eq:piecewise}], and [\ref{eq:cdfmax}], we arrive at the following expression for $\VPI(b)$:
 %
-\begin{equation*}
+\begin{equation}
   -\int_{-\infty}^{0}F_{M}(x)\ dx 
   + \int_{0}^{\infty}(1-F_{M}(x))\ dx
   -\max_{i}\mu_t^{(i)}.
-\end{equation*}
+\end{equation}
 
 We evaluate these two integrals numerically to a minimum precision of $10^{-5}$ by the adaptive Gauss-Kronrod quadrature method implemented in the QuadGK Julia package.
 
@@ -350,15 +355,15 @@ Second, since $\VOC(b,\bot)=0$, it follows that if $\widehat{\VOC}(b,c^{*})>0$, 
 
 Third, at first sight this approach might seem to be incompatible with the soft-maximizing policy, where computation $c$ is selected with probability proportional to $\exp\beta\widehat{\VOC}(b,c)$. In particular, the standard method for sampling from this distribution requires fully evaluating $\widehat{\VOC}(b,c)$. However, we can circumvent this issue using the Gumbel-max trick \citep{yellott1977relationship}, which provides a way to sample from a Boltzman (softmax) distribution by taking the argmax of the unexponentiated values corrupted by Gumbel noise. Formally,
 %
-\begin{equation*}
+\begin{equation}
   \Pr\left[\argmax_{i}\left\{ x_{i}+\epsilon_{i}\right\} =j\right]=\frac{\exp x_{j}}{\sum_{i}\exp x_{i}}.
-\end{equation*}
+\end{equation}
 %
 As a result, we can rewrite the soft-max policy as 
 %
-\begin{equation*}
+\begin{equation}
   \pi(b;\vec{w},\beta)=\argmax_{c}\left\{ \beta\widehat{VOC}(b,c;w)+\epsilon_{c}\right\} ,
-\end{equation*}
+\end{equation}
 %
 where $\epsilon_{c}\sim\text{Gumbel}(0,1)$. We can then implement steps 1 and 2 of the short-cut, adding $\epsilon_{c}$ to the right hand side of Equation~\ref{eq:vpitrick}, and comparing the lower-bound VOC to an independent Gumbel sample, $\epsilon_\bot$, rather than 0 to capture the noise applied to $\VOC(b,\bot)$.
 

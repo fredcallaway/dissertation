@@ -13,6 +13,7 @@
 % \usepackage{algpseudocode}
 \usepackage{minted}
 \usepackage{sidecap}
+\sidecaptionvpos{figure}{c}
 \usepackage{dsfont}
 
 \NeedsTeXFormat{LaTeX2e}

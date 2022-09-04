@@ -257,7 +257,7 @@ That is, it maximizes the expected return. In a metalevel MDP the return can be 
     c_t \sim \pi(m_t)
   }.
 \end{equation}
-This is a slightly more precise version of the definition of optimal sequential models of resource-bounded congition given in Equation~\ref{eq:intro-master}.\footnote{%
+This is the definition of optimal sequential cognitive processes given in Equation~\ref{eq:intro-master}.\footnote{%
   Note that the expectation implicitly depends on the transition function, which was explicit in Equation~\ref{eq:eq:intro-master}, as well as the initial mental state $m_1$ and the set of possible computations.
 } It emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation.
 
@@ -560,7 +560,7 @@ Here we address a few practical concerns that arise when applying backward induc
 
 While backward induction can identify an exact optimal policy (or approximate it to arbitrary precision), it is only tractable when the (discretized) mental state space is small enough that one can iterate over every state in a reasonable amount of time. When the state space is too large, one must turn to approximate solutions. We discuss several possibilities in the following sections.
 
-\subsection{The myopic policy}
+\subsection{The myopic policy}\label{sec:myopic}
 
 In their pioneering work on metareasoning \citet{russell1991principles} suggested an approximation to rational metareasoning by one-step look-ahead, what they called the metalevel greedy approximation. This myopic (or ``meta-greedy'' policy, which we call the myopic policy, can be defined
 \begin{equation}
