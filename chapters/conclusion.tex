@@ -30,7 +30,7 @@ Another area where optimal sequential models are often found is in visual search
 
 Taking an approach more similar to ours, \citet{acharya2017human} present a POMDP model in which the reward exactly captures the incentives of the task and the opportunity cost of time. Indeed, this model can be viewed as a metalevel MDP in which fixations correspond to computations (as in Chapter~\ref{sec:attention}). Applying the model to the distractor-ratio task, they found that the optimal fixation policy better captured qualitative patterns in human fixation data compared to the ideal observer model. In parallel, \citet{hoppe2019multistep} conducted an experiment specifically designed to distinguish myopic and planned eye movments (this involved using oddly shaped search regions and allowing participants to make exactly one or two fixations). They model the task as an MDP and find that the optimal policy predicts people's average fixation locations almost shockingly well, predicting exactly when and how people deviate from the myopic ideal observer model.
 
-\subsection{POMDP models of decision-making}
+\subsection{POMDP models of decision-making}\label{sec:alternative-pomdp}
 
 Most similar to our work, researchers have recently begun to use POMDPs to model decision-making processes. Building on the models of visual search described above, \citet{chen2017cognitive} present a model of how people direct their eye fixations when making a decision based on information presented in a table. They find that both people and the optimal policy use decision strategies that collect intermediate amounts of information compared to classical strategies (such as take-the-best \citealp{gigerenzer1996reasoning}). This parallels our own predictions and findings in a metalevel MDP model of multi-attribute choice \citep{gul2018discovering}.
 
@@ -55,7 +55,7 @@ One way to make learning easier in the presence of sparse rewards is to adjust t
 } That is, people may experience a reward when they have a ``good thought'' even if it does not immediately lead to an external action \citep{gopnik1998explanation}. Indeed, people appear to place value on external information that cannot be acted on \citep{eliaz2007experimental,gottlieb2018neuroscience}, and researchers have begun to formalize the specific qualities of information that people value \citep{markant2014preference,markant2016selfdirected}. This suggests a fascinating research question: what factors elicit the subjective experience of having a good thought?
 
 
-\subsection{Partially observable minds}
+\subsection{Partially observable minds}\label{sec:partially-observable}
 
 % A key assumption of the metalevel DMP framework is that the agent has direct access to the mental state. Indeed, 
 
@@ -72,7 +72,7 @@ To allow for partial observability in a metalevel MDP, we can simply assume that
   \label{fig:metamdp-joint}
 \end{figure*}
 
-\subsection{Interleaved computation and action}
+\subsection{Interleaved computation and action}\label{sec:interleaved}
 
 A second key structural assumption in the framework is that each metalevel episode occurs within a single external timestep. That is, the world state does not change, and only one external action is executed (at the end of the episode). This has two implications. First, it assumes that the agent can think as long as they want without having to worry about the world state changing. Second, it assumes that information considered while choosing one action cannot influence the selection of future actions. Although these assumptions hold approximately in many experimental and naturalistic tasks, they will not hold in fast-paced dynamic problems (e.g. jay walking) or in sequential problems with stochastic dynamics (e.g. chess).
 
@@ -81,7 +81,7 @@ To model interleaved computation and action, we essentially replace the single w
 In the interleaved case, the decision about how much to think becomes more nuanced. Specifically, one must not only decide \emph{how much} to think but also \emph{when} to think. In some cases, it may make sense to do all of one's thinking up front, as the standard metalevel MDP assumes. This strategy makes sense because it ensures that every action you take is informed by all the computation you do. However, there are at least three reasons one might want to begin acting before having a complete plan. First, one may be able to continue thinking while executing the early part of the plan, for example considering which way one will turn while walking down a long corridor \citep{oceallaigh2015metareasoning}. Second, if the world dynamics are stochastic, knowing how those transitions unfold will allow the agent to focus their planning on the the situtation they actually encounter. Third, forming a complete plan may impose representational costs that could be avoided by only constructing a concrete plan for the immediate future, perhaps having a more abstract plan for the more distant future \citep{ho2020efficiency}.
 
 
-\subsection{Optimizing the architecture}
+\subsection{Optimizing the architecture}\label{sec:optimize-architecture}
 
 A third assumption of the framework is that only the policy, and not the metalevel MDP itself, is optimized. This assumption is almost always made in standard applications of MDPs, as the MDP represents the external environment, which the agent has no direct control over. In contrast, beccause a metalevel MDP represents an agent's internal computational environment, it is likely that the metalevel MDP itself is adapted to the structure of the external problems the agent has to solve.
 

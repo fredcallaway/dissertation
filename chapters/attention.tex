@@ -84,7 +84,7 @@ To characterize optimal attention allocation, we cast the model as a metalevel M
 The world state defines the true subjective utility of each item in the choice set. We denote the utility of item $i$ as $u^{(i)}$. The dimensionality of the  world state space is equal to the number of items, $n$.
 
 \paragraph{Mental states}
-A mental state $m$ corresponds to the agent's belief about the value of each item. Thus, we are fully adopting the Bayesian view of computation (Section~\ref{sec:two-views}). We assume that the belief distributions are Gaussian, parameterized by mean $\mu$ and precision $\lambda$ (precision is the inverse of variance). The belief at time $t$ about the utility of item $i$ is given by
+The mental state $m$ corresponds to the agent's belief about the value of each item. Thus, we are fully adopting the Bayesian view of computation (Section~\ref{sec:two-views}). We assume that the belief distributions are Gaussian, parameterized by mean $\mu$ and precision $\lambda$ (precision is the inverse of variance). The belief at time $t$ about the utility of item $i$ is given by
 \begin{equation}
   b_t\left(u^{(i)}\right) = \Normal(u^{(i)}; \mu_t^{(i)}, \nicefrac{1}{\lambda_t^{(i)}}).
 \end{equation}
