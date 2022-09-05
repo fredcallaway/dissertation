@@ -26,14 +26,11 @@ To rigorously test the fine-grained predictions of the optimal and heuristic mod
     \includegraphics[width=\textwidth]{figs/planning/fig1.pdf}
     \caption{\captiontitle{Formalizing planning under computational constraints.}
       \subcap{A} The basic problem facing an intelligent agent is to take actions that maximize long-run reward. If the agent can predict the consequences of their actions, they can solve this problem by planning.
-      \subcap{B} In one version of planning, the agent constructs a decision tree, where nodes (circles) represent possible future states of the world and edges (arrows) represent possible actions the agent could take. The agent constructs the tree by iteratively considering possible future states, estimating the reward to be gained there, and expanding the search frontier to include states that could be visited next. 
-      Eventually, this procedure will reveal the sequence of actions that maximize reward. But for an agent with limited cognitive resources, exploring the entire tree is usually infeasible. 
+      \subcap{B} In one version of planning, the agent constructs a decision tree where nodes (circles) represent possible future states and edges (arrows) represent possible actions the agent could take. The agent constructs the tree by iteratively considering possible future states, estimating the reward to be gained there, and expanding the search frontier to include states that could be visited next. Eventually, this procedure will reveal the sequence of actions that maximize reward. But for an agent with limited cognitive resources, exploring the entire tree is usually infeasible. 
       This creates the metalevel problem:
       \subcap{C} Which states should the agent consider---or ignore---in order to achieve the best tradeoff between the costs and benefits of planning?
       \subcap{D} The key observation underlying our model is that the basic problem and the metalevel problem are both sequential decision problems. 
       That is, they require the agent to make a sequence of choices, in which the outcome of each choice depends on which choices were made previously. 
-      But while the basic problem is defined by states of the world, physical actions, and external rewards, the metalevel problem is defined by decision trees and the mental operations that build them; the metalevel rewards capture both cognitive costs and also the external reward gained by executing the chosen plan. By formalizing planning in this way
-      ---concretely, as a Markov decision process (MDP)---we can use standard MDP-solving techniques to identify optimal planning strategies.
     }
     \label{fig:planning-model}
 \end{figure}
@@ -48,64 +45,69 @@ To summarize, the problem of planning involves balancing between costs and rewar
 
 \subsection{Metalevel Markov decision process}
 
-To characterize optimal resource-constrained planning, we cast decision-tree search as a metalevel MDP in which the belief states correspond to partially constructed decision trees and the computations correspond to expanding a node in the tree. We detail the four components of the metalevel MDP below.
+To characterize optimal resource-constrained planning, we cast decision-tree search as a metalevel MDP in which the mental states correspond to partially constructed decision trees and the computations correspond to expanding a node in the tree. We detail the five components of the metalevel MDP below.
+
+\paragraph{A note on terminology}
+
+So far, we have used the term ``state'' to refer to states in the \emph{object-level} MDP, that is, the one that defines the planning problem itself. For example, in Figure~\ref{fig:planning-model}, the object-level states are physical locations. Critically, the object-level states are different from the world state (defined below). When it is clear from context, we will continue to use ``state'' to refer to the object-level states. We will use the term ``object-level reward'' to refer to the rewards associated with the object-level MDP.
 
 \paragraph{World states}
 
-A world state $w$ 
+The world state defines the object-level reward that the agent would receive in each object-level state. Following Chapter~\ref{sec:attention}, we denote the reward associated with object-level state $i$ as $u^{(i)}$.\footnote{%
+  This notion of world state may be counter-intuitive at first, as it is really defining the object-level reward function. Note, however, that this is the natural generalization of the world state in Chapter~\ref{sec:attention} (which specified the utility of each item in the choice set) to a sequential object-level problem.
+} We assume that the object-level environment has $n$ states; the world state is thus represented as a vector of length $n$. 
 
-\paragraph{Beliefs}
+\paragraph{Mental state}
 
-A belief state, $b \in \B$, corresponds to a partially constructed decision tree. We make the simplifying assumptions that the external environment is itself tree-structured and known to the agent. Thus, the largest possible decision tree has the same graphical structure as the environment itself. Let $N$ be the size of this tree. We can then represent a decision tree (that is, a belief state) as a vector of length $N$ where each position corresponds to a node in the tree (and a world state). The values, $b_i$, specify either the reward that can be attained at the world state $i$, or a special value, $\oslash$, indicating that the corresponding node has not been expanded yet. In the initial belief state, only the root node (the current world state) has been expanded, always having value $0$; all other nodes have value $\oslash$.
+The mental state $m$ corresponds to a partially constructed decision tree. We make the simplifying assumptions that the external environment is itself tree-structured and known to the agent.\footnote{%
+  This is really quite a simplifying assumption, but also a very challenging one to not make. \citet[Section 5.2]{hay2016principles} presents a sophisticated recursive method for representing search trees of arbitrary size. Such a method could be used to create cognitive models that do not make this assumption.
+} Thus, the largest possible decision tree has the same graphical structure as the environment itself. The mental state can thus be represented as a vector of length $n$ where each position corresponds to a node in the decision tree. The values $m^{(i)}$ specify either the reward that can be attained at the object-level state $i$, or a special value $\oslash$, which indicates that the corresponding node has not been expanded yet. In the initial mental state, only the root node (the initial object-level state) has been expanded, always having value $0$; all other nodes have value $\oslash$.
 
 \paragraph{Computations}
 
-A computation, $c \in \C$, corresponds to expanding a node of the decision tree. This operation determines the cost or reward for visiting a state and integrates that value into the total value of the path leading to that state. There is thus one computation, $c_i$, to expand each node, $i$. In standard decision-tree search, one can only expand nodes that are connected to nodes one has already expanded, the \emph{search frontier}. That is, one can only consider actions in states that are already explicitly represented in the tree. Formally, we define
+A computation $c$ corresponds to expanding a node of the decision tree. This operation determines the cost or reward for visiting an object-level state and integrates that value into the total value of the path leading to that state. There is thus one computation $c^{(i)}$ to expand each node $i$. In standard decision-tree search, one can only expand nodes that are connected to nodes one has already expanded, the \emph{search frontier}. That is, one can only consider actions in states that are already explicitly represented in the tree. Formally, we define
 \begin{equation}
-\frontier(b) = \{c_i \mid b_i = \oslash \wedge b_{\mathrm{parent}(i)} \neq \oslash \}
+\frontier(m) = \{c^{(i)} \mid m^{(i)} = \oslash \wedge m^{(\mathrm{parent}(i))} \neq \oslash \}
 \end{equation}
-and limit the set of allowable computations in belief state $b$ to $\frontier(b)$. Here, $\mathrm{parent}(i)$ is the parent node of the expanded node, the state from which the newly considered state can be reached. Note that, for ease of notation, we have defined $\frontier(b)$ as the set of allowable computations rather than the nodes themselves.
+and limit the set of allowable computations in mental state $m$ to $\frontier(m)$. Here, $\mathrm{parent}(i)$ is the parent node of the expanded node, corresponding to the state from which the newly considered state can be reached. Note that, for ease of notation, we have defined $\frontier(m)$ as the set of allowable computations rather than the nodes themselves.
 
-As in all metalevel MDPs, there is an additional operation, $\bot$, that terminates the computation process.  Upon terminating planning, the agent executes an action sequence that has maximal expected value according to the decision tree it has built up until that point.
+% As in all metalevel MDPs, there is an additional operation, $\bot$, that terminates the computation process.  Upon terminating planning, the agent executes an action sequence that has maximal expected value according to the decision tree it has built up until that point (specified further below).
 
 \paragraph{Transition function}
 
-The metalevel transition function specifies the effect of node expansion on the decision tree. Executing $c_i$ produces an updated $b'$ that is identical to $b$ except that $b'_i$ is set to a reward which is sampled from a node-specific distribution, $R_i$. The node-dependent reward distribution is a key aspect of the environment that we will manipulate in Experiments~2 and~3.
+The metalevel transition function specifies the effect of node expansion on the decision tree. If $c^{(i)}$ is executed in $m_t$, the resulting mental state is identical to $m_t$ except that the entry for node $i$ is set to the true object-level at node $i$:
+\begin{equation}
+  m_{t+1}^{(i)} = u^{(i)}.
+\end{equation}
+The marginal transition function is identical, except that $u^{(i)}$ is sampled from a node-specific distribution $U^{(i)}$ capturing the agent's prior knowledge about the distribution of rewards in the environment. This distribution is a key aspect of the environment that we will manipulate in Experiments~2 and~3.
 
 \paragraph{Reward function}
-Finally, the metalevel reward function captures both the cost of computation and the quality of the plan that is ultimately executed. Specifically, we assume that node expansion has a fixed cost, corresponding to the effort and time spent executing the operation. To capture plan quality, the reward for the termination action is the expected value of the external rewards one will attain while executing the chosen plan. The expected value of a plan is the sum of rewards up to and including the associated node, plus (for an incomplete plan) the expectation of the unknown future rewards. The chosen plan is the one that maximizes this expected value. Thus, the reward for the termination action is equal to the maximal expected value of any plan. 
 
-Formally, we define
-%
+The metalevel reward function captures both the cost of node expansion and the quality of the plan that is ultimately executed. We assume that node expansion has a fixed cost, $R(m, c) = \gamma$. To capture plan quality, the reward for the termination operation is the value of the external rewards one will attain while executing the chosen plan (a sequence of object-level states). We assume that the plan is selected optimally given the current decision tree. For this model, we directly specify the marginal termination reward, which is the maximum expected value of any plan given the current decision tree:
 \begin{equation}
-R(b, c) = \begin{cases}
-  \max_{p \in \P} V(b, p) &\text{if } c = \bot \\
-  -\lambda &\text{otherwise}
-\end{cases}
+R(m, \bot) = \max_{p \in \P} V(m, p),
 \end{equation}
-%
-where $\lambda$ is the cost of node expansion (a free parameter), $p$ is a complete plan (i.e., a sequence of object-level states beginning with the current state and ending with a terminal state), $\P$ is the set of all such plans, and $V(b, p)$ is the expected value of executing a plan given the current belief state, that is
-%
+where $\P$ is the set of possible plans (sequences of object-level states) and $V$ specifies the expected value of a plan:
 \begin{equation}
-  V(b, p) = \sum_{i \in p} 
+  V(m, p) = \sum_{i \in p} 
 \begin{cases}
-\E[R_i] &\mathrm{if\ } b_i = \oslash \\
-b_i &\mathrm{otherwise}.
+\E[U^{(i)}] &\mathrm{if\ } m^{(i)} = \oslash \\
+m^{(i)} &\mathrm{otherwise}.
 \end{cases}
 \end{equation}
 
 % \footnote{Note that the identity of the best plan is updated by each node expansion operation, and thus the selection of the best plan involves little additional computation.}
 
 \subsection{Optimal and heuristic policies}
-We have now specified all four components of a metalevel MDP for decision-tree planning. However, there are countless possible planning algorithms consistent with this general class. To create a complete model, we must specify one additional component: the strategy one uses to select which nodes to expand, and when to stop expanding nodes. Formally, this corresponds to a policy for the metalevel MDP, a distribution over computations in each possible belief state.
+We have now specified all four components of a metalevel MDP for decision-tree planning. However, there are countless possible planning algorithms consistent with this general class. To create a complete model, we must specify one additional component: the strategy one uses to select which nodes to expand, and when to stop expanding nodes. Formally, this corresponds to a policy for the metalevel MDP, a distribution over computations in each possible mental state.
 
-One policy of particular interest is the optimal policy, that is, the one that maximizes the expected total metalevel reward. On a given trial, the total metalevel reward is the external reward attained by executing the chosen plan minus the cost of the node expansions used to construct the plan. The optimal policy thus balances the costs and benefits of search, expanding the nodes that are most likely to improve one's ultimate decision, and only doing so when the expected improvement in decision quality outweighs the cost of expansion. In the terminology of MDPs, the optimal policy selects actions that maximize the optimal state-action value function, $Q(b, c)$. This function specifies the expected total reward an agent will receive (including both cost and decision quality) if she executes the node expansion action $c$ in belief state $b$ and continues selecting actions optimally until termination. Importantly, this function depends on the cost of node expansion; the optimal model's behavior is thus governed by one key free parameter (not including parameters of the error model used to fit human data; see Section~\ref{sec:planning-modelspec}).
+One policy of particular interest is the optimal policy, that is, the one that maximizes the expected total metalevel reward. On a given trial, the total metalevel reward is the external reward attained by executing the chosen plan minus the cost of the node expansions used to construct the plan. The optimal policy thus balances the costs and benefits of search, expanding the nodes that are most likely to improve one's ultimate decision, and only doing so when the expected improvement in decision quality outweighs the cost of expansion.  Importantly, the optimal balance depends on the cost of node expansion; the optimal model's behavior is thus governed by one key free parameter (not including parameters of the noise/lapse model used to fit human data; see Section~\ref{sec:planning-modelspec}).
 
-Exactly computing $Q$ for a large MDP is very computationally intensive. Early work in rational metareasoning proposed that this function can be approximated by a myopic one-step lookahead \citep{russell1991principles}. This myopic policy chooses the planning operation that would be most helpful if the agent had to select a plan immediately afterward. Like the optimal model, this model has one key free parameter, the cost of node expansion.
+Early work in rational metareasoning proposed that optimal metalevel policies can be approximated by a myopic one-step lookahead (\citealp{russell1991principles}; Section~\ref{sec:myopic}). The myopic policy chooses the planning operation that would be most helpful if the agent had to select a plan immediately afterward. Like the optimal model, this model has one key free parameter, the cost of node expansion.
 
 We additionally consider ``heuristic'' policies based on three classical planning algorithms \citep{russell2002artificial}. Breadth-first search first considers all immediate successors of the current state, then the successors of those states, and so on. That is, it prioritizes nodes that are close to the initial state. In contrast, depth-first search constructs a full plan to a terminal state before considering any alternative; it prioritizes nodes that are far from the current state. Finally, best-first search prioritizes nodes on promising paths, that is, nodes that lie on the frontier of plans with high expected value.
 
-These classical algorithms specify the order in which nodes are expanded, but are agnostic about how people might decide when to stop planning. Previous research has proposed a number of heuristics people might use to reduce the amount of planning they must do to reach a decision. We consider four such heuristics. The ``satisficing'' heuristic terminates planning as soon as it finds a path whose expected value exceeds some predefined threshold \citep{simon1955behavioral}. The ``best vs. next'' heuristic terminates planning when one path's expected value is sufficiently greater than any other path's \citep{solway2015evidence}. As discussed below, these two terms respectively correspond to absolute and relative stopping rules in evidence accumulation models. The pruning heuristic stops considering paths once their value falls below a predefined threshold \citep{huys2012bonsai}. The ``depth limitb'' heuristic only considers states that can be reached in some predefined number of steps \citep{macgregor2001information,keramati2016adaptive,krusche2018adaptive,snider2015prospective}. For brevity, we will refer to these heuristic mechanisms for limiting the amount of planning as simply ``heuristic mechanismb''. We assume that people could use any combination of these four mechanisms, resulting in $3 \times 2^4 = 48$ heuristic planning models (three search orders and sixteen combinations of heuristic mechanisms for each). The heuristic models have between $3$ and $9$ parameters depending on which mechanisms are included (see Section~\ref{sec:planning-modelspec}).
+These classical algorithms specify the order in which nodes are expanded, but are agnostic about how people might decide when to stop planning. Previous research has proposed a number of heuristics people might use to reduce the amount of planning they must do to reach a decision. We consider four such heuristics. The ``satisficing'' heuristic terminates planning as soon as it finds a path whose expected value exceeds some predefined threshold \citep{simon1955behavioral}. The ``best vs. next'' heuristic terminates planning when one path's expected value is sufficiently greater than any other path's \citep{solway2015evidence}. As discussed below, these two terms respectively correspond to absolute and relative stopping rules in evidence accumulation models. The pruning heuristic stops considering paths once their value falls below a predefined threshold \citep{huys2012bonsai}. The ``depth limit'' heuristic only considers states that can be reached in some predefined number of steps \citep{macgregor2001information,keramati2016adaptive,krusche2018adaptive,snider2015prospective}. For brevity, we will refer to these heuristic mechanisms for limiting the amount of planning as simply ``heuristic mechanisms''. We assume that people could use any combination of these four mechanisms, resulting in $3 \times 2^4 = 48$ heuristic planning models (three search orders and sixteen combinations of heuristic mechanisms for each). The heuristic models have between $3$ and $9$ parameters depending on which mechanisms are included (see Section~\ref{sec:planning-modelspec}).
 
 \begin{figure}[t!]
     \centering
@@ -126,7 +128,7 @@ Early work on human planning addressed this challenge using ``think aloud'' prot
 
 More recently, researchers have tried to infer people's planning algorithms based only on their external actions \citep{huys2012bonsai,huys2015interplay,daw2005uncertaintybased,solway2015evidence,snider2015prospective,vanopheusden2017computational}. However, the precise nature of a person's planning algorithm is generally only weakly constrained by their actions alone, because there are usually many sequences of planning operations that are consistent with each possible choice. Concretely, in the task illustrated in \figref{fig:planning-task}{} there are $8$ possible choice sequences and over $2.7$ billion node expansion sequences.
 
-How can we collect fine-grained and precise data on human planning processes? A similar problem faced researchers studying how people make non-sequential decisions. To address this challenge, Payne and colleagues developed the Mouselab paradigm \citep{payne1976task,payne1988adaptive}, which traces participantb' decision-making processes by requiring them to click to reveal decision-relevant information. In the original paradigm, participants clicked on cells in a table to reveal the payoffs associated with different outcomes of risky gambles. Here, we apply the same idea to multi-step decision problems, with participants clicking to reveal rewards at hypothetical future states.
+How can we collect fine-grained and precise data on human planning processes? A similar problem faced researchers studying how people make non-sequential decisions. To address this challenge, Payne and colleagues developed the Mouselab paradigm \citep{payne1976task,payne1988adaptive}, which traces participants' decision-making processes by requiring them to click to reveal decision-relevant information. In the original paradigm, participants clicked on cells in a table to reveal the payoffs associated with different outcomes of risky gambles. Here, we apply the same idea to multi-step decision problems, with participants clicking to reveal rewards at hypothetical future states.
 
 
 The task, ``Mouselab-MDP'', is illustrated in \figref{fig:planning-task}{}. On each trial, participants are presented with a route-planning problem, displayed as a graph. Each vertex in the graph (gray circles) corresponds to a future state the participant could visit, and harbors a reward or punishment ($-10$, $-5$, $+5$, or $+10$ with equal probability). The edges in the graph correspond to actions the participant can take to travel between states. The goal is to select a sequence of three actions that maximize the total reward. The potential gains and losses are initially occluded, but the participant can reveal them by clicking on the corresponding state, with the constraint that they can only click on states adjacent to the initial state or a previously revealed state. This constraint ensures that participants follow a forward-planning strategy, as has often been assumed in the literature \citep{huys2015interplay,huys2012bonsai,vanopheusden2017computational,macgregor2001information,keramati2016adaptive,krusche2018adaptive,snider2015prospective}; we remove the constraint in Experiment~3. Each click was followed by a three-second delay.
@@ -161,7 +163,7 @@ In our first experiment, we sought to test the extent to which human planning is
 
 \subsubsection{Overall performance}\label{sec:planning-overall}
 
-To evaluate participantb' performance, we must consider both the scores they achieved as well as the amount of planning effort (i.e., clicking) that they expended. \figref{fig:planning-exp1}{a} thus shows the average reward and number of clicks each participant made per trial. The blue line shows the Pareto front, the maximum average reward attainable for a given average number of clicks. On average, participants earned $0.92$ fewer points than they could have with the same number of clicks. They earned $4.94$ more than clicking randomly ($95\%$ CI [$4.43$, $5.44$]; Wilcoxon test: $z = 8.40, p < .001$). Confidence intervals are boot-strapped over participants and p-values are two-tailed (see Section~\ref{sec:planning-stats}).
+To evaluate participants' performance, we must consider both the scores they achieved as well as the amount of planning effort (i.e., clicking) that they expended. \figref{fig:planning-exp1}{a} thus shows the average reward and number of clicks each participant made per trial. The blue line shows the Pareto front, the maximum average reward attainable for a given average number of clicks. On average, participants earned $0.92$ fewer points than they could have with the same number of clicks. They earned $4.94$ more than clicking randomly ($95\%$ CI [$4.43$, $5.44$]; Wilcoxon test: $z = 8.40, p < .001$). Confidence intervals are boot-strapped over participants and p-values are two-tailed (see Section~\ref{sec:planning-stats}).
 
 \subsubsection{Selection rule: cost-dependent best-first}\label{sec:planning-selection}
 We first considered the order in which the model expands nodes. Inspecting simulations of the optimal planning strategy across a range of costs ($0.05$ to $3.75$, the maximum cost for which any planning occurs), we found that the optimal model expands a node on a path that has maximal expected value between $74.6\%$ and $100\%$ of the time, compared to $51.7\%$ in the random clicking model.
@@ -177,10 +179,10 @@ As a result, the optimal model predicts that the degree to which people follow b
 \subsubsection{Stopping rule: both absolute and relative}\label{sec:planning-stopping}
 By inspecting simulations of the optimal model with a range of costs matching that inferred from human participants, we found that the model was more likely to stop planning when it had found a path with high expected value, consistent with satisficing. However, its stopping decisions were more strongly influenced by the difference between the value of the best path and the next best path. That is, the optimal stopping rule depends primarily on the best path's relative value, but also on its absolute value.
 
-As illustrated in \figref{fig:planning-exp1}{d}, our participantb' decisions to terminate planning were also sensitive to both the absolute and relative value of the best path. A mixed-effects logistic regression with random intercepts and slopes for each participant revealed significant effects of both terms (best path value: $\beta = 0.82$, $95\%$ CI [$0.69$, $0.94$], $z = 12.89$, $p < .001$; best vs. next: $\beta = 1.68$, $95\%$ CI [$1.52$, $1.84$], $z = 20.70$, $p < .001$). However, compared to the coefficients for the optimal model ($\beta = 0.99$, $95\%$ CI [$0.84$, $1.15$] and $\beta = 4.64$, $95\%$ CI [$4.02$, $5.26$]), people appear to be under-sensitive to relative value (note that the confidence intervals for the optimal model are not negligible due to the mixed-effects structure; predictors are standardized by their mean and SD in the human data).
+As illustrated in \figref{fig:planning-exp1}{d}, our participants' decisions to terminate planning were also sensitive to both the absolute and relative value of the best path. A mixed-effects logistic regression with random intercepts and slopes for each participant revealed significant effects of both terms (best path value: $\beta = 0.82$, $95\%$ CI [$0.69$, $0.94$], $z = 12.89$, $p < .001$; best vs. next: $\beta = 1.68$, $95\%$ CI [$1.52$, $1.84$], $z = 20.70$, $p < .001$). However, compared to the coefficients for the optimal model ($\beta = 0.99$, $95\%$ CI [$0.84$, $1.15$] and $\beta = 4.64$, $95\%$ CI [$4.02$, $5.26$]), people appear to be under-sensitive to relative value (note that the confidence intervals for the optimal model are not negligible due to the mixed-effects structure; predictors are standardized by their mean and SD in the human data).
 % However, we still find a significant correlation in the chance-corrected best-first rate ($\rho=-0.347$, $95\%$ CI [$-0.56$, $-0.12$], $p < .001$).
 
-These results are broadly consistent with evidence accumulation models of non-sequential decisions, where relative stopping rules (specifically best vs. next) generally perform better, both in terms of fitting data \citep{ratcliff2004comparison,teodorescu2013disentangling} and maximizing accuracy \citep{mcmillen2006dynamics,bogacz2006physics}. However, although both the model's and our participantb' stopping decisions were primarily driven by relative value, absolute value also played a role. This raises the intriguing possibility that people could be using a hybrid stopping rule in simple value-based choices as well.
+These results are broadly consistent with evidence accumulation models of non-sequential decisions, where relative stopping rules (specifically best vs. next) generally perform better, both in terms of fitting data \citep{ratcliff2004comparison,teodorescu2013disentangling} and maximizing accuracy \citep{mcmillen2006dynamics,bogacz2006physics}. However, although both the model's and our participants' stopping decisions were primarily driven by relative value, absolute value also played a role. This raises the intriguing possibility that people could be using a hybrid stopping rule in simple value-based choices as well.
 
 \subsubsection{Model comparison}\label{sec:planning-comparison}
 Having characterized the qualitative matches and mismatches between participant and optimal behavior in the task, we next sought to quantify the ability of the optimal and heuristic models to predict human behavior quantitatively.
@@ -236,7 +238,7 @@ If people indeed adapt their planning strategy to the environment, we should fin
 
 
 \subsection{Experiment~3: Backwards planning}\label{sec:planning-results3}
-In the previous experiments, we constrained participantb' planning strategies to variations of decision tree search by only allowing them to click on states adjacent to the initial state or a previously-clicked state. However, people may sometimes use planning strategies that are not constrained in this way. For example, they may plan backward from a goal as in means-ends analysis \citep{newell1972human} or they may even consider states in arbitrary order \citep{sutton1990integrated}. Experiment~3 thus investigated a broader class of possible planning algorithms by lifting the forward-planning constraint, allowing participants to click any state at any point.
+In the previous experiments, we constrained participants' planning strategies to variations of decision tree search by only allowing them to click on states adjacent to the initial state or a previously-clicked state. However, people may sometimes use planning strategies that are not constrained in this way. For example, they may plan backward from a goal as in means-ends analysis \citep{newell1972human} or they may even consider states in arbitrary order \citep{sutton1990integrated}. Experiment~3 thus investigated a broader class of possible planning algorithms by lifting the forward-planning constraint, allowing participants to click any state at any point.
 
 As in Experiment~2, we used environments with decreasing, constant, and increasing variance. For this experiment, we employed the transition structure from Experiment~1 and decreased or increased the reward variance exponentially with depth. The constant variance condition used the same reward distribution as Experiment~1. See \figref{fig:planning-exp3}{a} for examples.
 
@@ -271,7 +273,7 @@ However, the tendency towards forward search was not without exception. Particip
 
 \section{Discussion}\label{sec:planning-discussion}
 
-In this paper, we proposed a rational model of resource-constrained planning and compared the predictions of the model to human behavior in a new process-tracing paradigm. Our results suggest that human planning strategies are highly adaptive in ways that previous models cannot capture. In Experiment~1, we found that the optimal planning strategy in a generic environment resembled best-first search with a relative stopping rule. Participant behavior was also consistent with such a strategy. However, the optimal planning strategy depends on the structure of the environment. Thus, in Experiments~2 and~3, we constructed six environments in which the optimal strategy resembled different classical search algorithms (best-first, breadth-first, depth-first, and backward search). In each case, participant behavior matched the environment-appropriate algorithm, as the optimal model predicted.
+In this paper, we proposed a rational model of resource-constrained planning and compared the predictions of the model to human behavior in a new process-tracing paradigm. Our results suggest that human planning strategies are highly adaptive in ways that previous models cannot capture. In Experiment~1, we found that the optimal planning strategy in a generic environment resembled best-first search with a relative stopping rule. Participant behavior was also consistent with such a strategy. However, the optimal planning strategy depends on the structure of the environment. Thus, in Experiments~2 and~3, we constructed six environments in which the optimal strategy resembled different classical search algorithms (best-first, breadth-first, depth-first, and backward search). In each case, participant behavior matched the environment-appropriate algorithm, cs the optimal model predicted.
 
 The idea that people use heuristics that are jointly adapted to environmental structure and computational limitations is not new. First popularized by Herbert Simon \citep{simon1955behavioral}, it has more recently been championed in ecological rationality, which generally takes the approach of identifying computationally frugal heuristics that make accurate choices in certain environments \citep{gigerenzer2008why,gigerenzer2011heuristic,todd2003bounding,gigerenzer1996reasoning}. However, while ecological rationality explicitly rejects the notion of optimality \citep{gigerenzer1999simple}, our approach embraces it, identifying heuristics that maximize an objective function that includes both external utility and internal cognitive cost. Supporting our approach, we found that the optimal model explained human planning behavior better than flexible combinations of previously proposed planning heuristics in seven out of the eight environments we considered (see Table~\ref{tab:order}).
 
@@ -288,11 +290,11 @@ First, in many (but not all) natural environments, the set of states one could f
 
 % One puzzling aspect of our results is that the best-fitting heuristic model in Experiments~1 and 2 did not include pruning. Consistent with the results of Huys and colleagues \citep{huys2012bonsai,huys2015interplay}, we did observe a tendency for people to ignore paths that start with a large negative reward; but in our task, this pattern of behavior was fully accounted for by best-first search. In a more complex task, however, van Opheusden and colleagues \citep{vanopheusden2017computational} found that a combination of best-first search and pruning best explained participant behavior. One possible explanation for this difference is that a key motivation for pruning is to limit the number of possible plans one must hold in working memory (in addition to the number of nodes expanded). Our paradigm removes this working memory constraint, making pruning less useful.
 
-One important limitation of our work is that externalizing planning, as our task does, may alter the internal process that we wish to measure \citep{lohse1996comparison}. Nevertheless, there are at least five reasons to believe that the present results already reveal something important about human planning. First, the paradigm is a direct extension of the Mouselab paradigm, which has been widely used in the multi-attribute and risky-choice literature \citep{payne1988adaptive,ford1989process,payne1993adaptive,gabaix2006costly,schulte-mecklenbeck2011visiting}. Second, our Experiment~1 results replicate previous findings that suggest that participants use a best-first strategy \citep{vanopheusden2017computational} (or, similarly, avoid nodes following large losses \citep{huys2012bonsai}) in the absence of environmental structure that a different algorithm could exploit. Third, we found that people show a bias for forward search even when the task does not require or even encourage it; this suggests that participants are carrying over a strategy that they have developed for naturalistic planning (where such a bias is likely adaptive, as discussed above). Fourth, recent work has noted a parallel between planning and information-seeking (our task could be characterized as the latter), suggesting that similar neural mechanisms may underlie both behaviors \citep{hunt2021formalizing}. Finally, measuring how people plan in the absence of working memory constraints provides a useful comparison point for future work investigating how these constraints shape human planning strategies.
+One important limitation of our work is that externalizing planning, as our task does, may alter the internal process that we wish to measure \citep{lohse1996comparison}. Nevertheless, there are at least five reasons to believe that the present results already reveal something important about human planning. First, the paradigm is a direct extension of the Mouselab paradigm, which has been widely used in the multi-attribute and risky-choice literature \citep{payne1988adaptive,ford1989process,payne1993adaptive,gabaix2006costly,schulte-mecklenbeck2011visiting}. Second, our Experiment~1 results replicate previous findings that suggest that participants use a best-first strategy \citep{vanopheusden2017computational}---or, similarly, avoid nodes following large losses \citep{huys2012bonsai}---in the absence of environmental structure that a different algorithm could exploit. Third, we found that people show a bias for forward search even when the task does not require or even encourage it; this suggests that participants are carrying over a strategy that they have developed for naturalistic planning (where such a bias is likely adaptive, as discussed above). Fourth, recent work has noted a parallel between planning and information-seeking (our task could be characterized as the latter), suggesting that similar neural mechanisms may underlie both behaviors \citep{hunt2021formalizing}. Finally, measuring how people plan in the absence of working memory constraints provides a useful comparison point for future work investigating how these constraints shape human planning strategies.
 
-Comparing human and optimal planning in a more naturalistic paradigm is thus a critical step in future research. One promising approach is to use reaction time in a secondary task as a signal of previous planning (e.g., choosing between a subset of actions \citep{ongchoco2019imagining}, replanning after a random teleportation \citep{ho2020efficiency}, or determining whether a specific state falls on the optimal path \citep{solway2014optimal}). Another approach would be to use eye- or mouse-tracking with a display that only reveals the reward at future states, but not the transition function. However, deploying these paradigms would also require augmenting the model to account for constraints on working memory and imperfect knowledge of the transition function---important but challenging directions for future work.
+Comparing human and optimal planning in a more naturalistic paradigm is thus a critical step in future research. One promising approach is to use reaction time in a secondary task as a signal of previous planning (e.g., choosing between a subset of actions \citealp{ongchoco2019imagining}, replanning after a random teleportation \citealp{ho2020efficiency}, or determining whether a specific state falls on the optimal path \citealp{solway2014optimal}). Another approach would be to use eye- or mouse-tracking with a display that only reveals the reward at future states, but not the transition function. However, deploying these paradigms would also require augmenting the model to account for constraints on working memory and imperfect knowledge of the transition function---important but challenging directions for future work.
 
-A second limitation of our work is that we only consider deterministic environments. This assumption greatly simplifies the task of identifying optimal strategies; in particular, it ensures that it is optimal to do all planning before taking any actions, allowing us to avoid the complexities associated with interleaving planning and action. Although we enforced this plan-then-act structure in our main experiments, a follow-up experiment (reported in Appendix~\ref{app:planning-experiment5}) found that participants rarely violate this ordering when allowed to do so ($3.9\%$ of trials). However, in stochastic environments, planning far ahead may be wasteful because an unexpected transition can render much of that planning irrelevant. In such cases, it may be optimal to take an action and see its result before planning further ahead. Investigating how people adapt their planning strategies in unpredictable environments is thus an important direction for future work.
+A second limitation of our work is that we only consider deterministic environments. This assumption greatly simplifies the task of identifying optimal strategies; in particular, it ensures that it is optimal to do all planning before taking any actions, allowing us to avoid the complexities associated with interleaving planning and action. Although we enforced this plan-then-act structure in our main experiments, a follow-up experiment (reported in Appendix~\ref{app:planning-experiment5}) found that participants rarely violate this ordering when allowed to do so ($3.9\%$ of trials). However, in stochastic environments, planning far ahead may be wasteful because an unexpected transition can render much of that planning irrelevant. In such cases, it may be optimal to take an action and see its result before planning further ahead (discussed further in Section~\ref{sec:interleaved}). Investigating how people adapt their planning strategies in unpredictable environments is thus an important direction for future work.
 
 A third limitation is that we only consider problems with small, unstructured state spaces. This contrasts with early work exploring human planning in massive state spaces with rich internal structure, such as propositional logic \citep{newell1972human}. Although this limitation applies equally to most recent empirical studies of human planning, future work should explore the strategies people use to plan efficiently in more complex environments.
 
@@ -358,60 +360,60 @@ Each participant then performed $8$ trials, the first of which was a practice tr
 
 
 \subsection{Model specifications}\label{sec:planning-modelspec}
-Each of our candidate models corresponds to a parameterized family of metalevel policies. A policy is defined by a state-conditional distribution over actions, $\pi(a \mid s)$. For all models, this distribution is specified as a four-step generative process. First, if the frontier is empty (i.e., all nodes have been clicked or pruned), the model executes the termination action, $\bot$. Second, if the frontier includes at least one node, then a random legal action is executed with some probability, $\varepsilon$. Otherwise (step~3), the model executes $\bot$ with probability $p\stop^M(s)$; the form of this function depends on the model, $M$. Finally (step~4), if the model did not act randomly or terminate, then it selects a node to expand, each node having probability $p\select^M(s, a)$ The models are thus defined by stochastic stopping and selection rules.
+Each of our candidate models corresponds to a parameterized family of metalevel policies. For all models, the policy is specified as a four-step generative process. First, if the frontier is empty (i.e., all nodes have been clicked or pruned), the model executes the termination operation, $\bot$. Second, if the frontier includes at least one node, then a random legal computation is executed with some probability, $\varepsilon$. Otherwise (step~3), the model executes $\bot$ with probability $p\stop^M(m)$; the form of this function depends on the model, $M$. Finally (step~4), if the model did not act randomly or terminate, then it selects a node to expand, each node having probability $p\select^M(m, c)$ The models are thus defined by stochastic stopping and selection rules.
 
 The heuristic models (best-first, depth-first, and breadth-first) all use a common stopping rule that incorporates both the relative and absolute value of the best path identified so far. The stopping probability is a logistic function of a weighted linear combination of these terms, that is,
 \begin{equation}\label{eq:stopH}
-p\stop^H(s) = \frac{1}{1 + \expp{-f\stop(s)}},
+p\stop^H(m) = \frac{1}{1 + \expp{-f\stop(m)}},
 \end{equation}
 where
 \begin{equation}\label{eq:fstop}
-f\stop(s) = 
+f\stop(m) = 
   \beta\satisfice\cdot V\best +
   \beta_{\mathrm{bestnext}}\cdot (V\best - V\nxt ) +
   \theta\stop.
 \end{equation}
-$V\best$ and $V\nxt$ are the expected values of the best and second-best paths given the current belief state, $\theta\stop$ sets the midpoint of the logistic function, and the $\beta$'s control the contribution of each term to its slope. This implementation allows the model to both flexibly interpolate between a relative and an absolute stopping rule and also to vary the precision in the application of the rule. For example, a classic ``hard'' satisficing rule can be created by setting $\beta\satisfice$ to a very large number, $\beta_{\mathrm{bestnext}}$ to zero, and $\theta\stop$ to $-\theta \cdot\beta\satisfice$ where $\theta$ is the aspiration level. This results in
+$V\best$ and $V\nxt$ are the expected values of the best and second-best paths given the current mental state, $\theta\stop$ sets the midpoint of the logistic function, and the $\beta$'s control the contribution of each term to its slope. This implementation allows the model to both flexibly interpolate between a relative and an absolute stopping rule and also to vary the precision in the application of the rule. For example, a classic ``hard'' satisficing rule can be created by setting $\beta\satisfice$ to a very large number, $\beta_{\mathrm{bestnext}}$ to zero, and $\theta\stop$ to $-\theta \cdot\beta\satisfice$ where $\theta$ is the aspiration level. This results in
 \begin{equation}\label{eq:satisfice}
-p\stop^\textsc{satisfice}(s) = \frac{1}{1 + \expp{-\beta\satisfice (V\best - \theta)}},
+p\stop^\textsc{satisfice}(m) = \frac{1}{1 + \expp{-\beta\satisfice (V\best - \theta)}},
 \end{equation}
 that is, a logistic function of the expected value of the best path with slope $\beta\satisfice$ and intercept $\theta$.
 
 We defined the selection rule for each heuristic model so that its policy approximates the corresponding classical search algorithm. To do this, we defined
 \begin{equation}\label{eq:selectH}
-p\select^H(s, a) = \frac{
-  \mathbf{1}(a \in \frontier(s)) \cdot \expp{\beta\select \cdot f\select^{\textsc{alg}}(s, a)}
+p\select^H(m, c) = \frac{
+  \textbf{1}(c \in \frontier(m)) \cdot \expp{\beta\select \cdot f\select^{\textsc{alg}}(m, c)}
   }{
-  \sum_{a' \in \frontier(s)} \expp{\beta\select \cdot f\select^{\textsc{alg}}(s, a')}
+  \sum_{c' \in \frontier(m)} \expp{\beta\select \cdot f\select^{\textsc{alg}}(m, c')}
   },
 \end{equation}
-where $f\select^{\textsc{alg}}(s, a)$ denotes a node-scoring function for each algorithm; specifically, 
+where $f\select^{\textsc{ alg}}(m, c)$ denotes a node-scoring function for each algorithm; specifically, 
 \begin{equation}\label{eq:scoring}
 \begin{aligned}
-  f\select^{\textsc{\ best}}(s, c_i) &= V(s, i) = \max_{p \in \lbrace \P \mid i \in p  \rbrace} V(s, p) \\
-  f\select^{\textsc{\ depth}}(s, c_i) &= \mathrm{depth}(s, i)\\
-  f\select^{\textsc{\ breadth}}(s, c_i) &= -\mathrm{depth}(s, i).
+  f\select^{\textsc{\ best}}(m, c^{(i)}) &= V(m, i) = \max_{p \in \lbrace \P \mid i \in p  \rbrace} V(m, p) \\
+  f\select^{\textsc{\ depth}}(m, c^{(i)}) &= \mathrm{depth}(i)\\
+  f\select^{\textsc{\ breadth}}(m, c^{(i)}) &= -\mathrm{depth}(i).
 \end{aligned}
 \end{equation}
-We chose these node scoring functions to ensure that in the limit $\beta\select\rightarrow\infty$, the model's selection rule is deterministic and exactly matches the corresponding algorithm. Pure best-first search always expands a node with maximal expected value, pure depth-first search always expands the deepest node in the tree, and pure breadth-first search always expands every node at each depth before expanding any at the next depth. However, To account for variability in human selection decisions, we allow for $\beta\select\in [0,\infty)$. 
+We chose these node scoring functions to ensure that in the limit $\beta\select\rightarrow\infty$, the model's selection rule is deterministic and exactly matches the corresponding algorithm. Pure best-first search always expands a node with maximal expected value, pure depth-first search always expands the deepest node in the tree, and pure breadth-first search always expands every node at each depth before expanding any at the next depth. However, to account for variability in human selection decisions, we allow for $\beta\select\in [0,\infty)$. 
 
-The random model takes the same form as the heuristic models, with $f\select^{\textsc{rand}}(s, a) = 0$ and $f\stop(s) = \theta\stop$. This is equivalent to a fixed stopping probability and random selection. In the random model the probability of choosing computations at random is set to zero ($\varepsilon = 0$) because this step is redundant.
+The random model takes the same form as the heuristic models, with $f\select^{\textsc{ rand}}(m, c) = 0$ and $f\stop(m) = \theta\stop$. This is equivalent to a fixed stopping probability and random selection. In the random model the probability of choosing computations at random is set to zero ($\varepsilon = 0$) because this step is redundant.
 
-For the optimal model, we define both the stopping and the selection rules using the optimal state-action value function, $Q_\lambda$, of the metalevel MDP with computational cost $\lambda$. We computed the $Q$ function using dynamic programming. The stopping rule is
+For the optimal model, we define both the stopping and the selection rules using the optimal state-action value function, $Q_\gamma$, of the metalevel MDP with computational cost $\gamma$. We computed the $Q$ function using dynamic programming. The stopping rule is
 \begin{equation}\label{eq:stopO}
-p\stop^O(s) = \frac{ \expp{\beta\stop \cdot Q_\lambda(s,\bot)}}{\sum_{a' \in \frontier(s) \cup \{\bot\}} \expp{\beta\stop  \cdot  Q_\lambda(s, a')}}
+p\stop^O(m) = \frac{ \expp{\beta\stop \cdot Q_\gamma(m,\bot)}}{\sum_{a' \in \frontier(m) \cup \{\bot\}} \expp{\beta\stop  \cdot  Q_\gamma(m, c')}}
 \end{equation}
 and the selection rule is
 \begin{equation}\label{eq:selectO}
-p\select^O(s, a) = \frac{\expp{\beta\select  \cdot  Q_\lambda(s,a)}}{\sum_{a' \in \frontier(s)}\expp{\beta\select  \cdot  Q_\lambda(s, a')}}.
+p\select^O(m, c) = \frac{\expp{\beta\select  \cdot  Q_\gamma(m, c)}}{\sum_{c' \in \frontier(m)}\expp{\beta\select  \cdot  Q_\gamma(m, c')}}.
 \end{equation}
 Note that if $\beta\select = \beta\stop$, this corresponds to a single softmax over the full action space. However, we use separate inverse temperature parameters for stopping and selection to match the flexibility of the error model used by the optimal model to that of the heuristic models.
 
-The myopic model has the same form, but the $Q_\lambda$ function is replaced by a myopic one-step approximation \citep{russell1991principles}, which we denote $Q_\lambda\myopic$. For the termination action, this approximation is exact because the trial ends after this action is executed and thus $Q_\lambda(s, \bot) = Q_\lambda\myopic(s, \bot) = r(s, \bot)$. For expansion, the myopic model approximates the Q value as the expected value of stopping at the next time step (after expanding a node) minus the expansion cost, that is
+The myopic model has the same form, but the $Q_\gamma$ function is replaced by a myopic one-step approximation \citep{russell1991principles}, which we denote $Q_\gamma\myopic$. For the termination operation, this approximation is exact because the trial ends after this action is executed and thus $Q_\gamma(m, \bot) = Q_\gamma\myopic(m, \bot) = r(m, \bot)$. For expansion, the myopic model approximates the Q value as the expected value of stopping at the next time step (after expanding a node) minus the expansion cost, that is
 \begin{equation}
-Q_\lambda\myopic(s, a) = \E_{b' \sim T(\cdot \mid s, a)}\left[ 
-  r(b', \bot)
-\right] - \lambda.
+Q_\gamma\myopic(m, c) = \E_{s' \sim T(\cdot \mid m, c)}\left[ 
+  r(s', \bot)
+\right] - \gamma.
 \end{equation}
 
 \subsection{Pruning and depth limits}\label{sec:planning-pruning}
@@ -420,33 +422,33 @@ To model pruning \citep{huys2012bonsai,huys2015interplay} and depth limits \cite
 We assume that the value-based and depth-based pruning mechanisms operate independently. For each one, the probability of pruning a just-expanded node is defined as a logistic function of the expected value or tree depth of the node. Value-based pruning is defined
 %
 \begin{equation}
-  p\prune^{\textsc{value}}(s, i) = \frac{1}{1 + \expp{
-    -\beta\prune^{\textsc{value}} \cdot (\theta\prune^{\textsc{value}}- V(s, i))}}  
+  p\prune^{\textsc{value}}(m, i) = \frac{1}{1 + \expp{
+    -\beta\prune^{\textsc{value}} \cdot (\theta\prune^{\textsc{value}}- V(m, i))}}  
 \end{equation}
-where $V(s, i)$ is the value of the best path that includes node $i$, defined in Equation~\ref{eq:scoring}. Thus, a path is increasingly likely to be pruned the further below $\theta\prune^{\textsc{value}}$ its expected value is. Depth-based pruning is defined
+where $V(m, i)$ is the value of the best path that includes node $i$, defined in Equation~\ref{eq:scoring}. Thus, a path is increasingly likely to be pruned the further below $\theta\prune^{\textsc{value}}$ its expected value is. Depth-based pruning is defined
 %
 \begin{equation}
-   p\prune^{\textsc{depth}}(s, i) = \frac{1}{1 + \expp{
-    -\beta\prune^{\textsc{depth}} \cdot (\mathrm{depth}(s, i) - \theta\prune^{\textsc{depth}})}}.
+   p\prune^{\textsc{depth}}(m, i) = \frac{1}{1 + \expp{
+    -\beta\prune^{\textsc{depth}} \cdot (\mathrm{depth}(m, i) - \theta\prune^{\textsc{depth}})}}.
 \end{equation}
 %
 Thus, a path is increasingly likely to be pruned the further past the depth limit it is. Finally, the complete heuristic model contains both forms of pruning operating independently, resulting in
 \begin{equation}\label{eq:pprune}
-  p\prune(s, i) = 1 - \left(1 - p\prune^{\textsc{value}}(s, i)\right)
-     \cdot \left(1 - p\prune^{\textsc{depth}}(s, i)\right)
+  p\prune(m, i) = 1 - \left(1 - p\prune^{\textsc{value}}(m, i)\right)
+     \cdot \left(1 - p\prune^{\textsc{depth}}(m, i)\right)
   .
 \end{equation}
 
 Unfortunately, implementing this model exactly requires creating (and marginalizing over) a new latent state variable that specifies which nodes have been pruned. To avoid the formidable computational challenges associated with fitting such a model, we follow Huys et al. \citep{huys2012bonsai,huys2015interplay} and use a mean-field approximation. Specifically, we assume that the stochastic decision of whether to prune each branch is resampled at every time step based on its current expected value, treating the set of pruned nodes at each time step as independent. When computing the stopping and selection probabilities (Equations~\ref{eq:stopH} and \ref{eq:selectH}), we marginalize over all possible frontiers that could result from different combinations of pruning decisions, weighing each by its probability according to Equation~\ref{eq:pprune}.
 
 \subsection{Backward planning and forward-search bias}\label{sec:planning-backward}
-In Experiments~3 and~4, we modified the metalevel MDP to allow planning algorithms that do not correspond to traditional decision-tree search. The formalism described above is maintained with one exception: $\frontier(s)$ in Equations~\ref{eq:selectH}, \ref{eq:stopO}, and \ref{eq:selectO} is replaced with $\mathrm{unexpanded}(s) = \{c_i \mid s_i = \oslash \}$. Although the metalevel state and action spaces are formally the same, we now interpret a metalevel state as a partially computed value function and a metalevel action as computing the reward at a future world state and also integrating this information into the value of its ancestor states (we assume an acyclic transition function).
+In Experiments~3 and~4, we modified the metalevel MDP to allow planning algorithms that do not correspond to traditional decision-tree search. The formalism described above is maintained with one exception: $\frontier(m)$ in Equations~\ref{eq:selectH}, \ref{eq:stopO}, and \ref{eq:selectO} is replaced with $\mathrm{unexpanded}(m) = \{c^{(i)} \mid m^{(i)} = \oslash \}$. Although the metalevel state and action spaces are formally the same, we now interpret a metalevel state as a partially computed value function and a metalevel action as computing the reward at a future world state and also integrating this information into the value of its ancestor states (we assume an acyclic transition function).
 
-However, because we found that participants still showed a strong tendency for forward search, we augmented the selection rule of all models with a forward-search bias, $\beta_{\mathrm{forward}} \cdot \mathbf{1}(a \in \frontier(s))$. For the heuristic models, this term was added to $f\select$. For the optimal and myopic models, it was added inside the exponentiation in the numerator and denominator of Equation~\ref{eq:selectO}.
+However, because we found that participants still showed a strong tendency for forward search, we augmented the selection rule of all models with a forward-search bias, $\beta_{\mathrm{forward}} \cdot \textbf{1}(c \in \frontier(m))$. For the heuristic models, this term was added to $f\select$. For the optimal and myopic models, it was added inside the exponentiation in the numerator and denominator of Equation~\ref{eq:selectO}.
 % $$
-%   p\select^O(s, a) \propto \expp{
-%     \beta\select \cdot Q_\lambda(s,a) + 
-%     \beta_{\mathrm{forward}} \cdot \mathbf{1}(a \in \frontier(s))
+%   p\select^O(m, c) \propto \expp{
+%     \beta\select \cdot Q_\gamma(m,a) + 
+%     \beta_{\mathrm{forward}} \cdot \mathbf{1}(a \in \frontier(m))
 %   }
 % $$
 
