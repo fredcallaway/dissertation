@@ -26,23 +26,17 @@ Suppose we try to recall a forgotten name. The state of our consciousness is pec
 \newcommand{\citealpnelson}{Nelson \& Narens, 1990}
 \nocite{nelson1990metamemory}
 
-
-\newcommand{\citepnelson}{(Nelson \& Narens, 1990)}
-\newcommand{\citetnelson}{Nelson \& Narens (1990)}
-\newcommand{\citealpnelson}{Nelson \& Narens, 1990}
-\nocite{nelson1990metamemory}
-
 \section{Introduction}
 Most of us have experienced moments when we could not recall some piece of information but felt that we knew it (feeling of knowing; \citealp{hart1965memory}), perhaps even sensing that the answer was imminent and only momentarily blocked (tip-of-tongue; \citealp{brown1966tip}). These processes whereby people can examine and make judgments about the content of memory have been termed ``metamemory.'' Different from memory itself, metamemory refers to the higher order processes that monitor and control basic memory processes \citepnelson{}. In this paper, we aim to characterize the functional role of these processes in supporting rapid memory recall.
 
 Most empirical work in metamemory has focused on how people are able to monitor their memory states \citep{reder1992determines,miner1994new,eakin2005illusions} and on the accuracy of metamemory judgments in predicting future recall \citep{hart1965memory,vesonder1985ability,dunlosky1992importance,dunlosky2007metacomprehension}. Recently, these phenomena have been understood through computational models of signal detection \citep{jang2012stochastic} and probability theory \citep{hu2021bayesian}. Less emphasis, however, has been placed on understanding the function of metamemory judgments \citep{schwartz2017metamemory}. In a highly influential paper, \citetnelson{} proposed that the function of metacognitive systems is to allow effective control of ongoing cognition (Figure~\ref{fig:nelson}). For example, they outlined a theory in which a dynamically updated feeling of knowing is used to inform the decision of when to terminate an unsuccessful recall attempt (Figure 5 in \citealpnelson{}). However, despite this early progress, there is (to our knowledge) still no computational model of how these feeling of knowing estimates might be dynamically generated, nor of how they could be used to control recall efforts. Consequently, despite intuitively suggestive findings such as longer search times for items with high feeling of knowing \citep{nelson1984comparison,nhouyvanisvong1998rapid,gruneberg1977methodological,lachman1979metamemory}, it is unclear to what extent metamemory serves an adaptive function in people.
 
-\begin{figure}[t]
+\begin{SCfigure}
   \centering
-  \includegraphics[width=0.4\textwidth]{model-diagram/nelson.pdf}
-  \caption{Illustration of Nelson and Narens' theoretical framework for metamemory: a ``meta-level'' process monitors and controls the performance of a basic ``object-level'' process. Adapted from \citetnelson{}.}
+  \includegraphics[width=0.4\textwidth]{figs/memory/nelson.pdf}
+  \caption{\captiontitle{Illustration of Nelson and Narens' theoretical framework for metamemory.} A ``meta-level'' process monitors and controls the performance of a basic ``object-level'' process. Adapted from \citetnelson{}.}
   \label{fig:nelson}
-\end{figure}
+\end{SCfigure}
 
 We believe two challenges have hindered progress on developing computationally explicit theories of metacognitive control of memory recall. First, on the empirical front, commonly-used metamemory paradigms rely on self-report as the primary evidence of people's metamemory. However, the subjective nature of these reports makes it difficult to evaluate the objective utility of metamemory in guiding recall, as we seek to do. Moreover, because the judgments are most often made after retrieval is completed (or abandoned), the causal relationship between metamemory judgments and memory search behavior is unclear \citep{schwartz2001relation}. For example, it is possible that participants report strong feeling of knowing because they spent a long time searching, rather than vice-versa. Indeed, in perceptual decision-making, manipulating response time (while holding accuracy constant) affects confidence judgments \citep{kiani2014choice}. On the other hand, rapid feeling-of-knowing judgments made before recall (e.g. \citealp{reder1987strategy}) cannot capture knowledge that only becomes available in the course of recall \citep{koriat1993how,nhouyvanisvong1998rapid}. To address this challenge, we developed a metamemory paradigm that allows us to establish a quantitative, objective measurement of memory strength before retrieval. An extension of this paradigm in Experiment 2 additionally allows us to see behavioral signatures of metacognitive control even before retrieval is completed or abandoned, revealing how the dynamic metamemory process unfolds over time. In this way, we can directly test our model's core predictions about how people will direct their recall efforts depending on the strength of the to-be-recalled memories.
 
@@ -51,14 +45,15 @@ The second challenge is a technical one. In many domains of cognitive science, t
 The remainder of this paper is organized as follows. We begin by reviewing empirical work on meta-level control of memory, focusing on the control of recall. Then, we define an optimal model of meta-level control in memory recall and characterize its predictions. Notably, the model predicts that unsuccessful memory searches will be longer when the target memory is (judged to be) stronger, consistent with the findings of \citet{costermans1992confidence}. Next, we describe a cued-recall experiment that conceptually replicates and extends those findings. We confirm all key qualitative predictions of the model and establish moderate quantitative fit. Our second experiment extends the first by allowing participants to choose between two possible recall targets. This introduces a more complex meta-level control problem of selecting which memory to search for at each moment. Using a keypress-contingent display, we compare the timecourse of attention to each cue with the optimal model's search predictions and again achieve a strong qualitative and moderate quantitative fit. We conclude by discussing implications of the results for metamemory and metacognition research more generally, and identifying interesting directions for further research.
 
 
-\begin{figure}[htp]
+\begin{figure}[t!]
   \centering
-  \includegraphics[width=\textwidth]{model-diagram/model.pdf}
-  \caption{A dynamic model of metamemory. Bottom: The object-level recall process is modeled as evidence accumulation. A memory is recalled when a threshold level of evidence is accumulated, with the speed of accumulation (the drift rate) corresponding to the strength of the memory. Top: the meta-level process monitors and controls the object-level recall process. This is modeled as a Markov decision process (MDP) where the states (circles) correspond to beliefs about the memory's strength and the actions determine whether search continues; the rewards capture the cost of search and the cost of failing to retrieve a memory. Solving this MDP yields an optimal policy for determining when to stop searching memory based on partial recall progress.}
+  \includegraphics[width=\textwidth]{figs/memory/model.pdf}
+  \caption{\captiontitle{A dynamic model of metamemory.}
+    Bottom: The object-level recall process is modeled as evidence accumulation. A memory is recalled when a threshold level of evidence is accumulated, with the speed of accumulation (the drift rate) corresponding to the strength of the memory. Top: the meta-level process monitors and controls the object-level recall process. This is modeled as a Markov decision process (MDP) where the states (circles) correspond to beliefs about the memory's strength and the actions determine whether search continues; the rewards capture the cost of search and the cost of failing to retrieve a memory. Solving this MDP yields an optimal policy for determining when to stop searching memory based on partial recall progress.}
   \label{fig:model-diagram}
 \end{figure}
 
-\section{Empirical Evidence for Control in Memory Recall}
+\section{Empirical evidence for control in memory recall}
 
 A number of behavioral studies have already suggested that people are capable of using their ability to monitor their memory in the service of controlling their memory processes. At the acquisition phase, a large body of work has investigated how people preferentially allocate study time depending on how well they have learned different pieces of information \citep{dunlosky1998training,metcalfe2009metacognitive,gureckis2012selfdirected}. Another substantial literature has addressed how people choose which memories to maintain or forget \citep{castel2007adaptive,williams2013benefit,suchow2016deciding,hu2019role}. Here, however, we focus specifically on the control of recall.
 
@@ -68,13 +63,13 @@ Once a memory search has been initiated, how long do people search before giving
 
 A related finding, although not one central to control, is that participants give higher confidence judgments when they recall an answer more quickly \citepnelson{}. In conjunction with the feeling-of-knowing effects, this produces a striking pattern. Treating both feeling of knowing and confidence as judgments of memory strength, we see opposite relationships between judged strength and response time for successful vs.~failed recall. \citet{costermans1992confidence} demonstrated this pattern in a single study. On each trial, participants were given a general knowledge question. Then, if they provided an answer, they gave a confidence judgment; if they were unable to provide an answer, they instead gave a feeling-of-knowing judgment. Costermans et al. found that, on the recall trials, participants gave higher confidence judgments when they responded more quickly. But on the omission trials, participants gave higher feeling-of-knowing judgments when they responded more \emph{slowly}. In the following section, we will show that both of these findings are consistent with a model in which memory recall follows an evidence accumulation process and search is terminated optimally based on metacognitive monitoring of the rate of progress.
 
-\section{An Optimal Model of Metamemory for Recall}
+\section{An optimal model of metamemory for recall}
 
 Following classic theories of metamemory (\citealpnelson{}; Figure~\ref{fig:nelson}), we specify our model as two interrelated processes operating at different levels. The \emph{object-level} process includes the mechanisms supporting recall itself. Here, we abstract away from the details of memory search, modeling recall instead as a simple evidence accumulation process \citep{ratcliff2002estimating,sederberg2008context}. The \emph{meta-level} process supervises the object-level process; it \emph{monitors} the rate of progress towards recall and \emph{controls} how long the search process is allowed to continue. Here, we assume that the meta-level process is optimal in the sense that it terminates search when the expected costs of search outweighs the expected benefits.
 
 Importantly, we do not intend this model as a precise characterization of the mechanisms underlying human metamemory, nor do we hope to achieve a close quantitative fit to data. Instead, our goals are to (1) characterize the problem that a metamemory system must solve, and (2) identify qualitative behavioral signatures of a system that solves this problem well. This will allow us to determine in which ways people can or cannot deploy metamemory adaptively, potentially generating clues about the nature of the true underlying cognitive processes. The model is illustrated in Figure~\ref{fig:model-diagram}; we describe its components below.
 
-\subsection{Object-level Process}
+\subsection{Object-level process}
 
 We model recall as a process of evidence accumulation. Evidence accumulation (or ``sequential sampling'') models assume that decisions are made by accumulating noisy information over time until a threshold level of evidence is reached. They have been widely applied in the decision-making \citep{busemeyer1993decision,usher2001time,ditterich2006stochastic,krajbich2010visual} and memory \citep{ratcliff1978theory,sederberg2008context} literatures, and are successful in accounting for the effects of various experimental manipulations on accuracy and response times during recognition and recall tasks \citep{ratcliff2002estimating,sederberg2008context,yonelinas2010recollection}. In our model, the ``evidence'' captures progress towards recalling a target. Thus, when a threshold level of evidence is reached, the target is recalled (blue star in Figure~\ref{fig:model-diagram}).
 
@@ -82,14 +77,14 @@ Concretely, at each time point $t$, the current recall progress $z_t$ is increme
 %
 \begin{equation}\label{eq:evidence}
   z_t = z_{t-1} + x_t \,\text{ where }\,
-  x_t \sim \Normal{v, \sigma_x^2}.
+  x_t \sim \mNormal{v, \sigma_x^2}.
 \end{equation}
 %
 The mean of this distribution, $v$, controls the rate of accumulation; it is often called the \emph{drift rate} (illustrated as a thin dashed blue arrow in Figure~\ref{fig:model-diagram}). In our model, it captures the strength of the memory. The noise $\sigma_x^2$ captures the consistency of that progress. The target is recalled when the total progress exceeds a threshold $\theta$.
 
 % It is worth noting that we view evidence accumulation as an abstraction of the true processes underlying memory recall. The key assumptions we make about the object-level process are that (1) recall progress is graded rather than all-or-none, and (2) early progress is at least somewhat indicative of the prospect for future progress. These assumptions are also made by verbal theories of metacognitive control in metamemory (e.g., \citealp{koriat2000control}), and are met by many process-level theories of memory recall, for example... 
 
-\subsection{Meta-level Process}
+\subsection{Meta-level process}
 The problem of deciding when to cut off an unsuccessful memory search is addressed by the meta-level process. That is, the meta-level process \emph{controls} how long the object-level process is allowed to continue. How should it do so? From a rational perspective, one should keep searching as long as the probability of recall multiplied by the utility of recall is greater than the expected cost of search \citep{anderson1989human}. Putting this logic into notation, we can define the optimal meta-level action as
 %
 \begin{equation}\label{eq:anderson}
@@ -107,14 +102,14 @@ Concretely, we assume that the meta-level process observes the current recall pr
 %
 \begin{equation}\label{eq:belief}
 \begin{gathered}
-  p(v \mid z_t, t) = \Normal{v; \mu_t, \sigma_t^2} \\
+  p(v \mid z_t, t) = \mNormal{v; \mu_t, \sigma_t^2} \\
   \mu_t = \frac{z_t t \sigma_x^{-2} + \mu_0 \sigma_0^{-2}}{\sigma_t^{-2}} 
   \quad\quad
   \sigma_t^2 = \frac{1}{t \sigma_x^{-2} + \sigma_0^{-2}}
 \end{gathered}
 \end{equation}
 %
-where $\mu_0$ and $\sigma_0^2$ encode the agent's prior, $\Normal{\mu_0, \sigma_0^2}$. To build intuition, note that with a very weak prior (large $\sigma_0^2$), $\mu_t$ reduces to $\nicefrac{z_t}{t}$, the average rate of recall progress. This time-varying belief about the strength of a memory formalizes the concept of \emph{feeling of knowing}.
+where $\mu_0$ and $\sigma_0^2$ encode the agent's prior, $\mNormal{\mu_0, \sigma_0^2}$. To build intuition, note that with a very weak prior (large $\sigma_0^2$), $\mu_t$ reduces to $\nicefrac{z_t}{t}$, the average rate of recall progress. This time-varying belief about the strength of a memory formalizes the concept of \emph{feeling of knowing}.
 
 Given this estimate of memory strength, how should the meta-level process determine whether to continue searching. That is, how should \emph{monitoring} inform \emph{control}? One intuitively appealing strategy is to estimate future recall progress by repeatedly applying Equation~\ref{eq:evidence}, compute $p\recall$ and $\E[\text{cost}(\text{search})]$ from those estimates, and then choose the optimal action by Equation~\ref{eq:anderson}. However, this strategy fails because it implicitly assumes that the object-level process will be allowed to continue indefinitely---precisely what the meta-level process is intended to prevent. The decision of whether to stop is not made just once; it is continually remade at each time step. As a result, the probability and cost of recall---and therefore the optimal stopping decision---depend on one's future stopping decisions.
 
@@ -142,16 +137,16 @@ Finally, the transition function $T$ captures the evidence-accumulation dynamics
   T(s_{t+1} | s_t, a) 
   &= p(z_{t+1} \mid t, z_t) \\
   &= \int p(z_{t+1} \mid z_t, v) p(v \mid t, z_t) \ dv \\
-  &= \int \Normal{z_{t+1} - z_t \mid v, \sigma_x^2} 
-          \Normal{v \mid \mu_t, \sigma_t^2}\ dv \\
-  &= \Normal{z_{t+1} - z_t \mid \mu_t, \sigma_x^2 + \sigma_t^2}.
+  &= \int \mNormal{z_{t+1} - z_t \mid v, \sigma_x^2} 
+          \mNormal{v \mid \mu_t, \sigma_t^2}\ dv \\
+  &= \mNormal{z_{t+1} - z_t \mid \mu_t, \sigma_x^2 + \sigma_t^2}.
 \end{aligned}
 \end{equation}
 %
 The two substitutions in the third line follow from Equations~\ref{eq:evidence} and~\ref{eq:belief}, respectively. The final line is a standard property of Gaussian distributions \citep{murphy2007conjugate}.
 
 
-\subsection{Optimal Policy}
+\subsection{Optimal policy}
 
 We have now defined a meta-level MDP that formalizes the problem of deciding when to give up on recalling a memory. The final step is to specify a strategy for solving that problem. In MDP terms, we need to specify a policy $\pi$ that chooses which action to take in each state. Here, we focus on the optimal policy, which is the one that maximizes the total expected reward. As detailed in the methods, we can identify this policy by computing the optimal value function $V^*$, which specifies the maximal total reward one could expect to gain starting from any given state. To build intuition, we can factorize $V^*$ for the current model into two components, capturing the utility of recall and the cost of search,
 %
@@ -176,8 +171,9 @@ A key advantage of specifying our model as an MDP is that we can apply standard 
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.45]{model-diagram/exp1_predictions.pdf}
-  \caption{Experiment 1 optimal policy and predictions. The optimal policy partitions the state space into two sections, one (blue) in which the policy continues searching, and another (pink) in which it terminates search. The response time for each trial is thus given by the first time point at which the recall progress either exceeds the threshold (recall) or enters the pink region (no recall). In the former case, stronger memories (lighter lines) will result in faster responses because such memories accumulate progress and hit the threshold faster. In the latter case, stronger memories will result in slower responses because such memories can hover in the search region before ultimately hitting the stop region.
+  \includegraphics[scale=0.45]{figs/memory/exp1_predictions.pdf}
+  \caption{\captiontitle{Experiment 1 optimal policy and predictions.}
+    The optimal policy partitions the state space into two sections, one (blue) in which the policy continues searching, and another (pink) in which it terminates search. The response time for each trial is thus given by the first time point at which the recall progress either exceeds the threshold (recall) or enters the pink region (no recall). In the former case, stronger memories (lighter lines) will result in faster responses because such memories accumulate progress and hit the threshold faster. In the latter case, stronger memories will result in slower responses because such memories can hover in the search region before ultimately hitting the stop region.
   }
   \label{fig:exp1_predictions}
 \end{figure}
@@ -190,8 +186,10 @@ Figure~\ref{fig:exp1_predictions} also highlights that the optimal policy can be
 
 \begin{figure}[htb!]
   \centering
-  \includegraphics[width=\textwidth]{task-diagram/exp1.pdf}
-  \caption{Experiment 1 procedure. (A) Participants viewed 40 image-word pairs for two seconds each (exposure). They then completed simple math problems for 60 seconds (distractor). Next, they attempted to recall the word associated with each image, two trials per image (pretest). Finally, they completed one critical trial for each image. (B) Critical trials were similar to pretest trials, except that incorrect responses were penalized. The penalty could be avoided by providing an empty response, ``skipping'' the trial. After giving a response, participants made a metamemory judgment, confidence if they had entered a word and feeling-of-knowing if they had not. A speed bonus was given regardless of the response.}
+  \includegraphics[width=\textwidth]{figs/memory/task_exp1.pdf}
+  \caption{\captiontitle{Experiment 1 procedure.} 
+    \subcap{A} Participants viewed 40 image-word pairs for two seconds each (exposure). They then completed simple math problems for 60 seconds (distractor). Next, they attempted to recall the word associated with each image, two trials per image (pretest). Finally, they completed one critical trial for each image.
+    \subcap{B} Critical trials were similar to pretest trials, except that incorrect responses were penalized. The penalty could be avoided by providing an empty response, ``skipping'' the trial. After giving a response, participants made a metamemory judgment, confidence if they had entered a word and feeling-of-knowing if they had not. A speed bonus was given regardless of the response.}
   \label{fig:task-exp1}
 \end{figure}
 
@@ -264,7 +262,7 @@ The simulated response time was determined based on the final value of $t$. We a
 
 The simulated metamemory judgments (confidence and feeling of knowing) were determined based on the posterior mean $\mu_t$ at the final time step, that is, when the target was recalled or the policy terminated search. To account for factors contributing to the judgment besides those captured by our model (e.g., individual differences in scale usage) we first corrupted $\mu_t$ with Gaussian noise, arbitrarily setting the variance to $\nicefrac{\sigma_x}{2}$. We then binned the continuous measure into five bins, corresponding to the 1-5 response scale. We set the bin boundaries separately for each judgment type in order to match the proportion of each response in the human data.
 
-In order to capture the relationship between performance in the pretest and critical trials, we simulated both phases using the following procedure. For each simulated word/image pair, we sampled its memory strength $v$ from the prior distribution $\Normal{\mu_0, \sigma_0^2}$. The parameters of the prior are free parameters of the model. Next, we simulated the two pretest trials for that pair by rolling out two episodes of the meta-level MDP. For these trials, we set $U\recall$ to the experimentally imposed value of one cent. The search cost $\samplecost$ is a free parameter. We then simulated the critical trial for the pair, setting $U\recall$ to the new value of three cents and increasing $\samplecost$ by the experimentally imposed value of 0.01 cents per sample (0.1 cents per second and 100ms per sample).
+In order to capture the relationship between performance in the pretest and critical trials, we simulated both phases using the following procedure. For each simulated word/image pair, we sampled its memory strength $v$ from the prior distribution $\mNormal{\mu_0, \sigma_0^2}$. The parameters of the prior are free parameters of the model. Next, we simulated the two pretest trials for that pair by rolling out two episodes of the meta-level MDP. For these trials, we set $U\recall$ to the experimentally imposed value of one cent. The search cost $\samplecost$ is a free parameter. We then simulated the critical trial for the pair, setting $U\recall$ to the new value of three cents and increasing $\samplecost$ by the experimentally imposed value of 0.01 cents per sample (0.1 cents per second and 100ms per sample).
 
 \paragraph{Parameter estimation}
 
@@ -299,19 +297,19 @@ The parameters are fit by maximum likelihood estimation using the procedure desc
 
 % We found that the maximum likelihood estimate for this model assigned very large values to the $\alpha_\text{NDT}$ and $\theta_\text{NDT}$, such that non-decision time accounted for about 77\% of the overall response time. As a result, the model predicted almost no effect of pretest accuracy on response times. Thus, to better visualize the behavior of the object-level process without meta-level control, we fixed the non-decision time parameters to the maximum likelihood estimate in the optimal model. We also considered models in which fixation durations were drawn directly from the empirical distribution, or with a Gamma distribution fit to the empirical distribution. None of these models captured the key behavioral pattern. See Appendix~\ref{app:lesioned} for details.
 
-\subsubsection{Statistical Analyses}
+\subsubsection{Statistical analyses}
 
 All reported regressions are linear mixed-effects models with random slopes and intercepts for each participant. We use logistic regression for binary outcome variables and linear regression otherwise. We report non-standardized regression coefficients throughout, with time in units of seconds, accuracy as a proportion (0 to 1), and judgments in the original 1-to-5 scale. Degrees of freedom are estimated using the Satterthwaite method. As pre-registered, we excluded 106 (17\%) participants who skipped more than 90\% of non-practice critical trials because these participants were likely not engaging seriously with the task. We additionally excluded one trial with a response time under 30ms (as planned but not explicitly pre-registered).
 
-\subsubsection{Transparency and Openness}
+\subsubsection{Transparency and openness}
 All sample sizes, exclusion criteria, statistical analyses, modeling procedures, and plotting decisions were pre-registered (\url{https://aspredicted.org/wr9ej.pdf}). After pre-registering, we discovered a conceptual error in our specification of a null model. This led us to remove one plot that we discovered the more flexible null model could capture (indicating that the plot was not actually a good test of rational metamemory). See Appendix~\ref{app:deviation} for details, including the removed plot. Additionally, we previously ran a pre-registered version of this experiment with a smaller sample size and a slightly different analysis (which produced a marginally significant result). See Appendix~\ref{app:previous} for details, including full results with the previous dataset.
 
-\begin{figure}[htp]
-  \includegraphics[width=\textwidth]{figs/exp1/rt.pdf}
+\begin{figure}[t!]
+  \includegraphics[scale=.65]{figs/memory/exp1/rt.pdf}
   \caption{%
-    Opposing effects of memory strength on time to recall vs.~skip a target.
-    (A) Reaction time as a function of metamemory judgment (feeling of knowing for skip trials, confidence for recall trials), separately for trials in which participants correctly recalled the target vs.~skipped without responding (errors are excluded). The left panel shows the predictions of the proposed optimal metamemory model, the center panel shows the predictions of a model with the same recall process but no meta-level control (sampling stopping times randomly), and the right panel shows human data. The models' metamemory judgments are made based on the inferred memory strength at the end of the trial.
-    (B) Response time  as a function of the accuracy rate for the presented cue in the pretest phase. 
+    \captiontitle{Opposing effects of memory strength on time to recall vs. skip a target.}
+    \subcap{A} Reaction time as a function of metamemory judgment (feeling of knowing for skip trials, confidence for recall trials), separately for trials in which participants correctly recalled the target vs. skipped without responding (errors are excluded). The left panel shows the predictions of the proposed optimal metamemory model, the center panel shows the predictions of a model with the same recall process but no meta-level control (sampling stopping time from the empirical distribution), and the right panel shows human data. The models' metamemory judgments are made based on the inferred memory strength at the end of the trial.
+    \subcap{B} The same, but as a function of accuracy rate for the presented cue in the pretest phase. 
     \emph{Note}: Points show means of participant medians and error bars show 95\% bootstrapped confidence intervals over participant medians. Each model is treated as one participant (with one million simulated trials). All plotting decisions (including which effects to show, the aggregation method, and axis limits) were pre-registered.
   }
   \label{fig:exp1_rt}
@@ -319,11 +317,11 @@ All sample sizes, exclusion criteria, statistical analyses, modeling procedures,
 
 \subsection{Results}
 
-As illustrated in Figure~\ref{fig:exp1_rt}A (right), we replicated the basic pattern reported by \citet{costermans1992confidence}. Participants were faster to correctly recall targets that they reported greater confidence in ($B = -0.241$, 95\% CI [-0.290, -0.193], $t(524.4)=-9.81$, $p < .001$), but slower to skip targets that they reported higher feeling-of-knowing for ($B = 0.385$, 95\% CI [0.310, 0.461], $t(189.0)=10.01$, $p < .001$). The confidence effect indicates that people's metamemory judgments correlate with true memory strength (assuming that stronger memories are recalled more quickly), suggestive of metacognitive monitoring. In contrast, the feeling-of-knowing effect suggests that participants spent longer trying to recall targets that they thought they were more likely to recall, a form of metacognitive control.
+As illustrated in \figref{fig:exp1_rt}{A} (right), we replicated the basic pattern reported by \citet{costermans1992confidence}. Participants were faster to correctly recall targets that they reported greater confidence in ($B = -0.241$, 95\% CI [-0.290, -0.193], $t(524.4)=-9.81$, $p < .001$), but slower to skip targets that they reported higher feeling-of-knowing for ($B = 0.385$, 95\% CI [0.310, 0.461], $t(189.0)=10.01$, $p < .001$). The confidence effect indicates that people's metamemory judgments correlate with true memory strength (assuming that stronger memories are recalled more quickly), suggestive of metacognitive monitoring. In contrast, the feeling-of-knowing effect suggests that participants spent longer trying to recall targets that they thought they were more likely to recall, a form of metacognitive control.
 
 To capture these metacognitive judgments in the model, we assume that the judgment (confidence or feeling of knowing) is made based on the inferred evidence accumulation rate at the end of the trial (see Simulation procedure, above). Unsurprisingly, the optimal model infers a higher accumulation rate when a word is recalled faster, and thus produces higher judgments. More importantly, it gives higher feeling-of-knowing judgments for cues which it took longer to skip. A lesioned model with the same object-level process but no metalevel control (sampling skipping times randomly; see Methods above) failed to capture either effect. Interestingly, with some parameter values, the lesioned model can capture either effect in isolation. However, it was not able to predict both effects at once with any parameter configuration (see Appendix~\ref{app:lesion-search}).
 
-While these results are suggestive, the direction of causation is not clear. The metamemory judgment temporally follows the response time; thus, it is entirely possible that participants are actually reporting higher feeling-of-knowing judgments because they spent longer searching. To test whether participants stopping times are truly influenced by an awareness of the memory's strength, we can replace the metamemory judgment with an objective measurement of memory strength, concretely, the proportion of pretest trials in which the target was recalled correctly. As shown in Figure~\ref{fig:exp1_rt}B, the model predicts a similar pattern: faster recalls and slower skips with increasing pretest accuracy.\footnote{%
+While these results are suggestive, the direction of causation is not clear. The metamemory judgment temporally follows the response time; thus, it is entirely possible that participants are actually reporting higher feeling-of-knowing judgments because they spent longer searching. To test whether participants stopping times are truly influenced by an awareness of the memory's strength, we can replace the metamemory judgment with an objective measurement of memory strength, concretely, the proportion of pretest trials in which the target was recalled correctly. As shown in \figref{fig:exp1_rt}{B}, the model predicts a similar pattern: faster recalls and slower skips with increasing pretest accuracy.\footnote{%
     The non-monotonic prediction for skip trials is due to a selection effect: the optimal model only skips high-strength memories when it greatly underestimates the strength. This becomes increasingly unlikely as the trial progresses and more evidence is collected. Thus, these ``erroneous'' skips generally occur quickly (c.f. the ``fast errors'' phenomenon in decision-making  \citealp{ratcliff1998modeling}).
     }
 People were likewise faster to recall targets that they had previously recalled correctly ($B = -0.994$, 95\% CI [-1.237, -0.751], $t(237.3)=-8.02$, $p < .001$). More importantly, they were also slower to skip such targets ($B = 0.405$, 95\% CI [0.268, 0.543], $t(226.0)=5.77$, $p < .001$). The lesioned model could not produce this effect with any parameter values. These results suggest that participants' decisions to stop searching depended on a metacognitive awareness of how likely they were to recall the target.
@@ -337,10 +335,10 @@ The full pattern of results was qualitatively consistent with the optimal model,
 
 \section{Experiment 2}
 
-\begin{figure}[tb!]
+\begin{figure}[t!]
   \centering
-  \includegraphics[width=\textwidth]{task-diagram/exp2.pdf}
-  \caption{Experiment 2 critical trials. Participants were presented with two images on each trial and were instructed to recall the word associated with either of them. Only one cue was visible at a time and participant could flip between them with the D and F keys. At any point they could press J or K to select an image for recall, at which point they had five seconds to enter the associated word. We refer to the periods of time in which one cue was contiguously visible as ``fixations.''}
+  \includegraphics[width=\textwidth]{figs/memory/task_exp2.pdf}
+  \caption{\captiontitle{Experiment 2 critical trials.} Participants were presented with two images on each trial and were instructed to recall the word associated with either of them. Only one cue was visible at a time and participant could flip between them with the D and F keys. At any point they could press J or K to select an image for recall, at which point they had five seconds to enter the associated word. We refer to the periods of time in which one cue was contiguously visible as ``fixations.''}
   \label{fig:task-exp2}
 \end{figure}
 
@@ -350,10 +348,10 @@ On each trial, participants were presented with two cues and could recall the ta
 
 \subsection{Predictions}
 
-\begin{figure}[tb!]
+\begin{figure}[t!]
   \centering
-  \includegraphics[width=\textwidth]{model-diagram/exp2_predictions.pdf}
-  \caption{Experiment 2 optimal policy and predictions. 
+  \includegraphics[width=\textwidth]{figs/memory/exp2_predictions.pdf}
+  \caption{\captiontitle{Experiment 2 optimal policy and predictions.} 
     With two possible memories to recall, the optimal policy partitions the state space into three sections where it is optimal to either: continue searching for the currently attended memory (blue), switch to the other memory (yellow) or give up (pink). The optimal policy depends on the recall progress and time spent on both memories; here we show two slices of the full four-dimensional state space, setting the time spent on the unattended memory to 10 timesteps and its progress to either 0.1 (left) or 1 (right). The gray lines show example progress traces for a weak (dark gray) and moderately strong (light gray) attended memory. The arrows highlight two key features of the optimal policy: it is slower to switch when the currently attended memory is strong (vs. weak), but faster to switch if the unattended memory has already shown promising recall progress (vs. if it has not).
   }
   \label{fig:exp2_predictions}
@@ -431,40 +429,11 @@ with $Q^*(s, \term) = 0$ as before. Besides these differences, the procedure is 
 
 \paragraph{Parameter estimation}
 
-Due to the high dimensionality of the data in this experiment (sequences of fixation durations), maximum likelihood estimation is computationally prohibitive. Although approximate fitting schemes are possible, given that we are not interested in the quantitative fit of the model, we instead used this as an opportunity to test the generalization capabilities of the model (c.f. \citealp{krajbich2011multialternative}). That is, we simply used the best-fitting parameters from Experiment~1. For the switch cost parameter, which was not present in the Experiment~1 model, we arbitrarily set $\switchcost = \samplecost$, noting that the predictions do not depend greatly on the exact value of this parameter. However, because the model must predict the duration of each fixation, the original non-decision time model is no longer appropriate. Instead, we assumed that non-decision time was added to each fixation independently. We fit the parameters of this model by maximizing the likelihood of all non-final fixation durations, assuming (for tractability) that they were independent and identically distributed. We excluded final fixations from this fitting procedure because they have different distributional properties (Figure~\ref{fig:commitment}A). The fitted NDT parameters were (\(
+Due to the high dimensionality of the data in this experiment (sequences of fixation durations), maximum likelihood estimation is computationally prohibitive. Although approximate fitting schemes are possible, given that we are not interested in the quantitative fit of the model, we instead used this as an opportunity to test the generalization capabilities of the model (c.f. \citealp{krajbich2011multialternative}). That is, we simply used the best-fitting parameters from Experiment~1. For the switch cost parameter, which was not present in the Experiment~1 model, we arbitrarily set $\switchcost = \samplecost$, noting that the predictions do not depend greatly on the exact value of this parameter. However, because the model must predict the duration of each fixation, the original non-decision time model is no longer appropriate. Instead, we assumed that non-decision time was added to each fixation independently. We fit the parameters of this model by maximizing the likelihood of all non-final fixation durations, assuming (for tractability) that they were independent and identically distributed. We excluded final fixations from this fitting procedure because they have different distributional properties (\figref{fig:commitment}{A}). The fitted NDT parameters were (\(
     \mu_\text{NDT} = 612,\ 
     \alpha_\text{NDT} = 2.79
 \)).
 
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figs/exp2/overall_timecourse.pdf}
-  \caption{Attention is drawn to stronger cues.
-    (A) The proportion of total viewing time allocated to the first-seen cue image as a function of the difference in pretest accuracy of the first- and second-seen cues. Trials for which the second cue was never shown are excluded. Note that the 95\% confidence intervals are too small to be distinguishable.
-    (B) The probability that the first-seen cue is currently displayed over the course of the trial, split by relative pretest accuracy.
-    % The x-axis extends to the 95\% quantile of response time.
-  \label{fig:timecourse}
-  }
-\end{figure}
-
-\begin{figure}[t]
-  \includegraphics[width=\textwidth]{figs/exp2/nonfinal.pdf}
-  \caption{Non-final fixation durations.
-    (A) The duration of non-final fixations as a function of the pretest accuracy of the currently fixated cue.
-    (B) The same, but for the pretest accuracy of the cue that is \emph{not} currently fixated (first fixations excluded).
-  \label{fig:nonfinal}
-}
-\end{figure}
-
-\begin{figure}[t]
-  \includegraphics[width=\textwidth]{figs/exp2/commitment.pdf}
-  \caption{Rational commitment to stronger cues.
-    (A) The distribution of final and non-final fixation durations.
-    (B) The proportion of fixations on items with lower pretest accuracy than the alternative, separately for fixations of different durations (first fixations excluded). The error bars indicate 95\% confidence intervals computed over the total proportion (including -0.5 and -1) for each participant.
-  \label{fig:commitment}
-}
-\end{figure}
 
 \paragraph{Lesioned model without meta-level control}
 
@@ -482,26 +451,58 @@ To give the lesioned model the best chance of capturing the qualitative effects,
     \alpha_\text{NDT} = 3.56,\ 
 \)).
 
-\subsubsection{Transparency and Openness}
+\subsubsection{Transparency and openness}
 All sample sizes, exclusion criteria, statistical analyses, modeling procedures, and plotting decisions were pre-registered (\url{https://aspredicted.org/xq9nx.pdf}). As in Experiment~1, we used a more flexible lesioned model we originally intended. Due to this change, we elected to fit the parameters of the lesioned model to data rather than using parameters from Experiment~1 as pre-registered. Furthermore, we introduced a new plot and accompanying regression to better distinguish between the models regarding the ``rational commitment'' prediction. See Appendix~\ref{app:deviation} for details. As in Experiment 1, we previously ran a pre-registered version of this experiment; in this case, we reran the experiment because we discovered a conceptual flaw in the original analysis plan. See Appendix~\ref{app:previous} for details, including full results with the previous dataset.
 
 \subsection{Results}
 
-The critical model predictions concern participants' ``fixation'' behavior in the double-cued-recall trials, that is, the sequence of key presses they made to alternately display the two images. The most basic prediction of the optimal model is that participants should attend more to the cue with stronger memory. Intuitively, the target for the stronger cue can be recalled faster, and so time spent looking at this cue is more productive. Indeed, as illustrated in Figure~\ref{fig:timecourse}A, participants spent substantially more time looking at cues that were stronger than the other available cue ($B = 0.191$, 95\% CI [0.182, 0.199], $t(572.0)=42.40$, $p < .001$). However, this pattern is also shown (to a lesser extent) by a lesioned model that randomly switches between the cues. This is due to two properties of the object-level recall process. First, the last fixation is always on the cue whose target is recalled. Second, stronger cues are more likely to be recalled. Together, this implies that stronger cues are more likely to be fixated last, and thus receive more fixations (and more fixation time) on average.
 
-Inspecting the timecourse of attention across the trial (Figure~\ref{fig:timecourse}B) reveals a more nuanced picture. People tend to quickly check both cues (as indicated by the the initial dip in probability of fixating the first cue). Then, if the second cue is stronger (red lines), they continue fixating it. But if the first cue is stronger (blue lines), they switch back to it. From about one to three seconds, participants show an increasingly strong tendency to fixate the stronger cue, and this tendency remains stable for the remainder of the trial. The optimal model shows a similar pattern, although its tendency to fixate the stronger cue emerges faster (as indicated by the earlier divergence of fixation probability for different relative strengths). In the lesioned model, a slight tendency to fixate the stronger cue emerges in the first second, and remains small for the remainder of the trial. This is due to the last-fixation confound discussed above.
+\begin{figure}[t!]
+  \centering
+  \includegraphics[scale=.65]{figs/memory/exp2/overall_timecourse.pdf}
+  \caption{\captiontitle{Attention is drawn to stronger cues.}
+    \subcap{A} The proportion of total viewing time allocated to the first-seen cue image as a function of the difference in pretest accuracy of the first- and second-seen cues. Trials for which the second cue was never shown are excluded. Note that the 95\% confidence intervals are too small to be distinguishable.
+    \subcap{B} The probability that the first-seen cue is currently displayed over the course of the trial, split by relative pretest accuracy.
+    % The x-axis extends to the 95\% quantile of response time.
+  \label{fig:timecourse}
+  }
+\end{figure}
+
+The critical model predictions concern participants' ``fixation'' behavior in the double-cued-recall trials, that is, the sequence of key presses they made to alternately display the two images. The most basic prediction of the optimal model is that participants should attend more to the cue with stronger memory. Intuitively, the target for the stronger cue can be recalled faster, and so time spent looking at this cue is more productive. Indeed, as illustrated in \figref{fig:timecourse}{A}, participants spent substantially more time looking at cues that were stronger than the other available cue ($B = 0.191$, 95\% CI [0.182, 0.199], $t(572.0)=42.40$, $p < .001$). However, this pattern is also shown (to a lesser extent) by a lesioned model that randomly switches between the cues. This is due to two properties of the object-level recall process. First, the last fixation is always on the cue whose target is recalled. Second, stronger cues are more likely to be recalled. Together, this implies that stronger cues are more likely to be fixated last, and thus receive more fixations (and more fixation time) on average.
+
+
+\begin{figure}[t!]
+  \includegraphics[scale=.65]{figs/memory/exp2/nonfinal.pdf}
+  \caption{\captiontitle{Non-final fixation durations.}
+    \subcap{A} The duration of non-final fixations as a function of the pretest accuracy of the currently fixated cue.
+    \subcap{B} The same, but for the pretest accuracy of the cue that is \emph{not} currently fixated (first fixations excluded).
+  \label{fig:nonfinal}
+}
+\end{figure}
+
+
+Inspecting the timecourse of attention across the trial (\figref{fig:timecourse}{B}) reveals a more nuanced picture. People tend to quickly check both cues (as indicated by the the initial dip in probability of fixating the first cue). Then, if the second cue is stronger (red lines), they continue fixating it. But if the first cue is stronger (blue lines), they switch back to it. From about one to three seconds, participants show an increasingly strong tendency to fixate the stronger cue, and this tendency remains stable for the remainder of the trial. The optimal model shows a similar pattern, although its tendency to fixate the stronger cue emerges faster (as indicated by the earlier divergence of fixation probability for different relative strengths). In the lesioned model, a slight tendency to fixate the stronger cue emerges in the first second, and remains small for the remainder of the trial. This is due to the last-fixation confound discussed above.
+
+\begin{figure}[t!]
+  \includegraphics[scale=.65]{figs/memory/exp2/commitment.pdf}
+  \caption{\captiontitle{Rational commitment to stronger cues.}
+    \subcap{A} The distribution of final and non-final fixation durations.
+    \subcap{B} The proportion of fixations on items with lower pretest accuracy than the alternative, separately for fixations of different durations (first fixations excluded). The error bars indicate 95\% confidence intervals computed over the total proportion (including -0.5 and -1) for each participant.
+  \label{fig:commitment}
+}
+\end{figure}
 
 Although the lesioned model was not able to capture the strength or timecourse of the tendency to fixate stronger cues, the fact that it can produce the effect at all casts some doubt on the interpretation of the pattern in human data. Thus, for our next analysis, we inspected the duration of individual non-final fixations, which are clearly not subject to the last-fixation confound. As illustrated in Figure~\ref{fig:exp2_predictions}, the optimal policy's decision to terminate a fixation by switching to the other cue depends on the recall progress of both targets; it is slower to switch when the currently attended cue is generating rapid progress, but faster to switch when the unattended cue has already generated substantial progress. The model thus predicts that non-final fixation durations will increase\footnote{%
-    To be exact, the model predicts a non-monotonic effect such that fixations are longest for intermediate strength cues. This is due to the same selection effect that produces a non-monotonic prediction in Figure~\ref{fig:exp1_rt}B. Switching away from a strong cue suggests that the model incorrectly estimated its strength (because progress happened to be slow at first). This becomes increasingly unlikely as the fixation progresses and more evidence is collected. Such ``erroneous'' switches are thus more likely to occur quickly. 
+    To be exact, the model predicts a non-monotonic effect such that fixations are longest for intermediate strength cues. This is due to the same selection effect that produces a non-monotonic prediction in \figref{fig:exp1_rt}{B}. Switching away from a strong cue suggests that the model incorrectly estimated its strength (because progress happened to be slow at first). This becomes increasingly unlikely as the fixation progresses and more evidence is collected. Such ``erroneous'' switches are thus more likely to occur quickly. 
 } with the pretest accuracy of the fixated cue, but decrease with the pretest accuracy of the non-fixated cue. As illustrated in Figure~\ref{fig:nonfinal}, both of these predictions were confirmed: participants' non-final fixations increased with the pretest accuracy of the fixated cue ($B = 0.106$, 95\% CI [0.075, 0.137], $t(230.7)=6.65$, $p < .001$) and decreased with the pretest accuracy of the non-fixated cue ($B = -0.456$, 95\% CI [-0.578, -0.334], $t(59.7)=-7.32$, $p < .001$; first fixations excluded). The lesioned model predicts no such effect. In fact, it is incapable of predicting either effect under any parameter setting that achieves accuracy levels comparable to our participants (with very low accuracy, it can capture the effect through a selection mechanism; see Appendix~\ref{app:lesion-search}).\footnote{
     Again, the lesioned model predicts a reverse effect due to selection effects similar to those discussed in Experiment~1 and the previous footnote. For the fixated cue's strength, it is exactly the same logic as in Experiment~1. A strong cue is likely to be recalled quickly; it will only be switched away from when a short switching time is sampled. For the non-fixated cue's strength, the logic is more complex. Because we condition on one of the memories being recalled, the non-fixated cue being weak implies that the fixated cue is strong. Following the same logic as before, this in turn implies that a short switching time was sampled (as otherwise the cue would have been recalled).
 }
 
-For our final analysis, we tested the model's ``rational commitment'' behavior, in which the model effectively commits to recalling one memory before it is actually recalled. One observable consequence of this is that the model's final fixations are longer than their non-final fixations, as the commitment decision can occur when the memory is still well below threshold. Consistent with this, Figure~\ref{fig:commitment}A shows that our participants final fixations were indeed longer than their non-final fixations ($B = 0.872$, 95\% CI [0.813, 0.930], $t(435.8)=29.29$, $p < .001$). However, this figure also shows that the lesioned model can capture this effect as well. It is able to do this through a ``random commitment'' mechanism: by assuming a high-variance switching-time distribution, it occasionally samples a very long fixation duration, which is likely to end in recall. 
+For our final analysis, we tested the model's ``rational commitment'' behavior, in which the model effectively commits to recalling one memory before it is actually recalled. One observable consequence of this is that the model's final fixations are longer than their non-final fixations, as the commitment decision can occur when the memory is still well below threshold. Consistent with this, \figref{fig:commitment}{A} shows that our participants final fixations were indeed longer than their non-final fixations ($B = 0.872$, 95\% CI [0.813, 0.930], $t(435.8)=29.29$, $p < .001$). However, this figure also shows that the lesioned model can capture this effect as well. It is able to do this through a ``random commitment'' mechanism: by assuming a high-variance switching-time distribution, it occasionally samples a very long fixation duration, which is likely to end in recall. 
 
-Did participants' long final fixations reflect rational commitment or random commitment? The key distinction between these types of commitment is that it is only rational to commit a memory that is at least as strong as the alternative. Therefore, only with a random commitment strategy will one allocate long fixations to cues that are weaker than the alternative. Figure~\ref{fig:commitment}B thus shows the frequency with which the weaker memory is fixated, separately for fixations of different length. Importantly, we do not limit this analysis to final fixations as this would exclude the cases where the lesioned model sampled a long fixation duration on a low-strength cue, thus selecting for the cases where the lesioned model was ``accidentally'' rational. In both the optimal model and the human data, we see that long fixations are unlikely to be directed to weaker memories. In particular, the probability of fixating the weaker memory significantly decreased with fixation duration ($B = -1.482$, 95\% CI [-1.651, -1.313], $z=-17.22$, $p < .001$; logistic regression, excluding trials where the cues had equal pretest accuracy). In contrast, under the lesioned model, the weaker cues are actually more likely to receive long fixations (because strong cues are likely to be recalled quickly, cutting off long fixations). The fact that people show a strong tendency to not direct long fixations to weak cues despite this selection effect suggests that their commitment decisions were indeed rational.
+Did participants' long final fixations reflect rational commitment or random commitment? The key distinction between these types of commitment is that it is only rational to commit a memory that is at least as strong as the alternative. Therefore, only with a random commitment strategy will one allocate long fixations to cues that are weaker than the alternative. \figref{fig:commitment}{B} thus shows the frequency with which the weaker memory is fixated, separately for fixations of different length. Importantly, we do not limit this analysis to final fixations as this would exclude the cases where the lesioned model sampled a long fixation duration on a low-strength cue, thus selecting for the cases where the lesioned model was ``accidentally'' rational. In both the optimal model and the human data, we see that long fixations are unlikely to be directed to weaker memories. In particular, the probability of fixating the weaker memory significantly decreased with fixation duration ($B = -1.482$, 95\% CI [-1.651, -1.313], $z=-17.22$, $p < .001$; logistic regression, excluding trials where the cues had equal pretest accuracy). In contrast, under the lesioned model, the weaker cues are actually more likely to receive long fixations (because strong cues are likely to be recalled quickly, cutting off long fixations). The fact that people show a strong tendency to not direct long fixations to weak cues despite this selection effect suggests that their commitment decisions were indeed rational.
 
-Note that we we did not pre-register this final analysis because our initial, less flexible, implementation of the lesioned model that sampled switching times from the empirical distribution could not capture the long final fixation effect (see Appendix~\ref{app:deviation}, Figure~\ref{fig:commitment_alt}A). However, the effect also holds in a previously collected dataset, which we did not use when developing Figure~\ref{fig:commitment}B or the accompanying statistical test. This provides a quasi-confirmatory test of the exploratory analysis in the previous paragraph. See Appendix~\ref{app:previous} for details.
+Note that we we did not pre-register this final analysis because our initial, less flexible, implementation of the lesioned model that sampled switching times from the empirical distribution could not capture the long final fixation effect (see Appendix~\ref{app:deviation}, \figref{fig:commitment_alt}{A}). However, the effect also holds in a previously collected dataset, which we did not use when developing \figref{fig:commitment}{B} or the accompanying statistical test. This provides a quasi-confirmatory test of the exploratory analysis in the previous paragraph. See Appendix~\ref{app:previous} for details.
 
 
 For this reason, we did not seek out further predictions to test the rational commitment mechanism. This result must thus be interpreted with some caution.
@@ -510,11 +511,11 @@ For this reason, we did not seek out further predictions to test the rational co
 
 In this experiment, we found evidence of a richer form of meta-level control of memory. Specifically, when presented with two cues associated with different target memories, our participants directed their attention towards the cue associated with the stronger memory. This was reflected in the overall proportion of fixation time, the timecourse of fixations, and the duration of individual non-final fixations. The latter two results are especially important because they are behavioral signatures of metacognitive control during the retrieval process itself (before recall is completed or abandoned). To our knowledge, this is the first empirical demonstration of a dynamic metamemory process unfolding over time. 
 
-\section{General Discussion}
+\section{General discussion}
 
 In this paper, we presented an optimal model of meta-level control for cued recall. The model consists of a metacognitive process that monitors the progress of a basic recall process, and optimally controls how long the process is allowed to continue (either terminating recall or switching to recall of a different memory). In two experiments, we showed that human behavior is qualitatively consistent with the predictions of this model. In Experiment 1, we replicated and extended the findings of \citet{costermans1992confidence}, showing that people were faster to recall targets with higher strength (as indicated by both subjective judgments and objective performance) but slower to give up on targets with higher strength. In Experiment 2, we showed that people also attend to stronger memories when they can choose between two possible targets. Together, our results suggest that people can estimate the strength of a memory they are trying to recall and use this information to adaptively control their retrieval efforts.
 
-\subsection{An Explicit Instantiation of a Classic Theory}
+\subsection{An explicit instantiation of a classic theory}
 
 Our results contribute to the metamemory literature by providing (to our knowledge) the first computationally explicit instantiation of the classic theory of metamemory proposed by Nelson and Narens \citeyearpar{nelson1990metamemory} in the context of memory recall. According to this theory, metacognition involves the interaction between a meta-level process and an object-level process, where the meta-level process monitors the state of the object-level process and controls it accordingly. In the context of memory recall, they proposed a verbal model in which feeling of knowing is generated by ``an evaluation in terms of whether there has been sufficient progress to continue'', with the process terminating in an omission error when this feeling of knowing no longer ``exceeds the FOK threshold for claiming to know the answer'' (p. 137). They went on to suggest that this model could account for the correlation between feeling of knowing and response time on omission trials.
 
@@ -522,7 +523,7 @@ Here, we have formalized this classic model as a sequential decision problem in 
 
 Formalizing Nelson and Naren's model as an MDP also allows us to create a conceptual link between metacognition and reinforcement learning (RL; \citealp{sutton2018reinforcement}). Specifically, we map the meta-level and object-level processes onto the concepts of agent and environment, respectively. That is, we model metacognition as a meta-level agent interacting with an object-level environment in much the same way as one would model, e.g., a mouse (the agent) searching for food in a maze (the environment). RL has become a major theoretical foundation in the psychology and neuroscience of decision-making \citep{niv2009reinforcement,dayan2008decision,glimcher2011understanding}. However, for the most part, it has been used to model the interaction between agents and \emph{external} environments. Applying RL to model the metacognitive interaction between an agent and its \emph{internal} environment (c.f. \citealp{simon1955behavioral}) creates the opportunity to transfer much of what we know about how people learn to act effectively in the world to understand how people learn to think effectively in their own minds \citep{lieder2018rational}.
 
-\subsection{Rational Analysis for Metamemory}
+\subsection{Rational analysis for metamemory}
 
 Outside of metamemory, the intellectual roots of our model lie in Anderson's \citeyearpar{anderson1990adaptive} rational analysis, with early work demonstrating that the forgetting behavior commonly observed in lab settings is not a weakness or peculiarity of the memory system, but instead a reflection of rational adaptation to the statistics of the environment \citep{anderson1989human}. The key idea underlying both this models and ours is that memory (and cognition more generally) can be treated as an optimization problem. More recently, researchers have emphasized that this optimization problem must also account for the constraints imposed by our limited computational resources \citep{griffiths2015rational,howes2009rational,lewis2014computational,gershman2015computational}. This approach, sometimes called resource-rational analysis, has generated insight into a wide variety of cognitive processes (see \citealp{lieder2020resourcerational}, for a review).
 
@@ -534,7 +535,7 @@ Our model draws on several specific ideas from the work described above, in addi
 
 Importantly, like the other resource-rational models reviewed above, our model aims only to characterize the optimal solution to the problem of cognition under limited resources. We have not attempted to explain how the mind might actually approximate that solution. We do note, however, that executing the optimal policy for our model does not require one to continually perform Bayesian inference over the memory strength. Indeed, as illustrated in Figure~\ref{fig:exp1_predictions}, the optimal policy in the one-cue case is defined by a single boundary, such that recall is terminated if the evidence ever falls below it. Although we identified the shape of this optimal boundary with computationally intensive, model-based methods, it could be well-approximated by simple model-free learning mechanisms. Understanding how people learn effective metacognitive strategies is a subject of ongoing research \citep{lieder2018rational,jain2019how,callaway2022leveraging,binz2022heuristics,he2022where}.
 
-\subsection{Imperfect Monitoring and Cue Familiarity}
+\subsection{Imperfect monitoring and cue familiarity}
 While our results make a strong case for the existence of an adaptive metamemory control system in the human mind, we do not claim to have characterized the precise nature of this system. Indeed, for simplicity and tractability, we made several assumptions that are most likely inaccurate. 
 % For example, the distribution of memory strength is likely not exactly Gaussian and the true dynamics of recall progress are only coarsely described by a Brownian diffusion process (likely having a more staltory structure).
 Perhaps most critically, we assumed that the meta-level process has direct access to the state of the object-level process (the recall progress). This form of monitoring can be seen as a simplified form of Koriat's \citeyearpar{koriat1993how} accessibility model. Specifically, our simplification does not allow for the possibility that incorrect partial information is recalled, which eliminates any divergence between feeling of knowing and recall progress. While this assumption greatly simplified the implementation of the model and has precedence in previous metamemory models \citep{suchow2016deciding,hu2019role}, perfect monitoring is intuitively implausible and it is inconsistent with the sensitivity of feeling-of-knowing judgments to spurious information generated during recall \citep{koriat1993how} and manipulations that do not affect accuracy (discussed below).
@@ -547,7 +548,7 @@ It is thus plausible that metamemory draws on both partial recall progress and o
 
 Finally, we emphasize that our we do not take our empirical results to support any specific theory of monitoring. Although we have only implemented a model that monitors partial recall, we believe that similar predictions could be made by a model whose monitoring component is based purely on cue familiarity. For this reason, we have taken care not to claim that our results suggest that people can monitor the progress of memory recall. Our results simply suggest that people are capable of inferring the \emph{strength} of a memory. Rigorously evaluating computational models of exactly how people make that inference will require additional data. Developing a paradigm to produce that data is another critical direction for future research.
 
-\subsection{Beyond Cued Recall}
+\subsection{Beyond cued recall}
 
 Although we have focused on cued recall, the decision about when to terminate search is present in almost all naturalistic recall tasks, including, for example, free recall. The basic principle of our model is that this decision should be made by balancing the benefit and probability of recall with the cost of search, a principle we inherit from \citet{anderson1989human}. This is in contrast to existing models of free recall such as the context maintenance and retrieval (CMR) model, which assumes that search is terminated either when a target memory is retrieved or after a fixed amount of time has passed \citep{polyn2009context,lohnas2015expanding}. Alternatively, according to the Search of Associative Memory (SAM) model, search is terminated after a fixed number of retrieval attempts that do not result in recall of a new word \citep{raaijmakers1981search}. In both models, the decision to terminate recall is based on a general stopping rule independent of the state of the memory system. Integrating a rational metacognitive stopping rule into these models is an interesting direction for future research. Empirically validating such a model will likely require additional data, as participants in free recall experiments are typically given a fixed amount of time to recall as many items as possible; the decision to terminate search cannot be observed in this setting.
 
@@ -555,7 +556,7 @@ Although we have focused on cued recall, the decision about when to terminate se
 
 Metamemory goes beyond simply deciding when to terminate search. In Experiment~2, we considered the problem of arbitrating between multiple externally provided memory cues. In more naturalistic settings, however, people may need to generate their own cues. Indeed, in some cases, people generate information that is incidental to the information they are searching memory for, for example, recalling where people live in an attempt to recall their names \citep{williams1981process}. These incidental pieces of information can then be used as ``stepping stones on the way to the sought-after target'' \citep[p. 334]{koriat2000control}. This metaphor highlights the sense in which memory recall is a sequential decision problem. In our framework, each generated cue would correspond to a meta-level action, with some actions serving only to bring one to a mental state where one can generate a more useful cue. This suggests a fascinating direction for further research: How do people know which ``stones'' are going in the right direction?
 
-\subsection{Beyond Memory}
+\subsection{Beyond memory}
 
 Our results also contribute to the literature on metacognition more broadly. Beyond memory, a wide variety of functional roles for metacognition have been proposed, including the regulation of perception \citep{deroy2016metacognition}, judgment \citep{polania2019efficient,lebreton2015automatic}, decision-making \citep{yeung2012metacognition,demartino2013confidence}, learning \citep{fromer2021expectations,nassar2012rational}, information seeking \citep{boldt2019confidence,desender2018subjective}, and social interaction \citep{frith2012role}. Some of these roles have been incorporated into computational models that formally describe how confidence might inform decision about, e.g., when to opt out of a difficult trial \citep{kiani2009representation}, when to change one's mind given additional evidence \citep{folke2016explicit}, how to interpret error feedback \citep{fromer2021expectations}, or where to fixate in visual search \citep{stewart2022humans}. However, these models often assume that the functional role of metacognition is \emph{static}. Although the mechanism underlying confidence judgments may be dynamic (typically being based on evidence accumulation \citealp{vickers1970evidence,pleskac2010twostage,moreno-bote2010decision}), any resulting metacognitive control occurs in a separate stage, typically as a single action, and not feeding back onto the object-level process in a dynamic, interleaved way. In an influential review, \citet{yeung2012metacognition} identified this as a critical gap to be explored in future research.
 
