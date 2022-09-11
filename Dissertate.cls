@@ -251,23 +251,13 @@
 
 % Formatting guidelines found in:
 % http://www.princeton.edu/~mudd/thesis/MuddDissertationRequirements.pdf
-\renewcommand{\frontmatter}{
-    \input{frontmatter/personalize}
-    \maketitle
-    \copyrightpage
-    \abstractpage
-    \tableofcontents
-    % \listoffigures % optional
-    \dedicationpage
-    \acknowledgments
-}
 
 \renewcommand{\maketitle}{
     \thispagestyle{empty}
     \vspace*{\fill}
     \vspace{75pt}
     \begin{center}
-    \Huge \textcolor{SchoolColor}{\thetitle} \normalsize \\
+    \Huge \thetitle \normalsize \\
     \vspace{100pt}
     \textsc{\theauthor}\\
     \vspace{50pt}
@@ -287,6 +277,7 @@
         \vspace{15pt}
       \@degreemonth\ \@degreeyear
     \rm
+    {\newline \vspace{50pt} \large This draft was compiled on \today\\}
     \end{center}
     \vspace*{\fill}
 }
@@ -306,7 +297,7 @@
     \phantomsection
     \addcontentsline{toc}{chapter}{Abstract}
     \newpage
-    \pagenumbering{roman}
+    % \pagenumbering{roman}
     \setcounter{page}{3}
     \pagestyle{fancy}
     \renewcommand{\headrulewidth}{0.0pt}
@@ -331,8 +322,8 @@
     \noindent
     \input{frontmatter/thanks}
     \vspace*{\fill} \newpage
-    \setcounter{page}{1}
-    \pagenumbering{arabic}
+    % \setcounter{page}{1}
+    % \pagenumbering{arabic}
 }
 
 % \renewcommand{\backmatter}{

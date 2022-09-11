@@ -5,7 +5,7 @@ We must be prepared to accept the possibility that what we call ``the environmen
 \end{savequote}
 
 % \chapter{Formalism}
-\Chapter[Meta-level Markov decision processes]{Formalism}\label{sec:formalism}
+\Chapter[Meta-level Markov decision processes]{Formalism}\label{sec:metamdp}
 % \begin{flushright}
 % {\large\itshape Meta-level Markov decision processes}
 % \vspace{1.3\baselineskip}
@@ -143,6 +143,8 @@ Formally, we define a metalevel MDP by a set of mental states $\M$, a set of com
 
 To make things concrete, we will use a simple running example based on the tallying heuristic for deciding between two possible actions \citep{gigerenzer2011heuristic}. We will consider applying this heuristic to the decision of which car to purchase. To follow this heuristic, we consider a sequence of ``cues'' that might discriminate between the options, marking which car each cue favors (which has better gas mileage? which is more comfortable? etc...). As we go, we simply count up how many cues have favored each car. Then, after considering some number of cues, we pick the car that is favored by more cues. But how many cues should we consider? \citeauthor{gigerenzer2011heuristic} propose considering a fixed number of cues (and, in the case of a tie, considering more cues until one car has more in its favor). Is this the best version of tallying we could use? To answer this question, we can define tallying as a metalevel MDP.
 
+A well-documented and (hopefully) beginner-friendly Julia implementation of the tallying metalevel MDP can be found at \url{https://github.com/fredcallaway/metamdp-example}.
+
 \subsection{World states}
 A world state $w \in \W$ captures the state of the world that is relevant to the agent's current task. Importantly, the agent does not have direct access to the world state, but must infer it from the outcome of computations they perform. Formally, the world state includes any information that is not known to the agent, but affects either the reward or transition functions. In the tallying example, the world state specifies the ratio of cues that favors one car vs. the other; thus, $\W\tally = [0, 1]$. 
 
@@ -169,6 +171,12 @@ The transition function $T: \M \times \C \times \W \rightarrow \Delta(\M)$ descr
 \begin{equation}\label{eq:transition}
 m_{t+1} \sim T(m_t, c_t, w).
 \end{equation}
+Terminating computation (executing $\bot$) always transitions to the terminal state, $m_\bot$:
+%
+\begin{equation}
+  T(m, \bot, w) = \Uniform(\{m_\bot\})
+\end{equation}
+
 In the tallying example, the transition function specifies the probability that each cue count will be incremented when one considers another cue:
 \begin{equation}\label{eq:tally-transition}
   T\tally(m_t, c_t, w) = \begin{cases}
@@ -177,12 +185,6 @@ In the tallying example, the transition function specifies the probability that 
   \end{cases}
 \end{equation}
 where $m_t = (x_t, y_t)$.
-
-Terminating computation (executing $\bot$) always transitions to the terminal state, $m_\bot$:
-%
-\begin{equation}
-  T(m, \bot, w) = \Uniform(\{m_\bot\})
-\end{equation}
 
 \subsection{Reward function}
 The metalevel reward function $R: \M \times \C \times \W \rightarrow \R$ describes both the costs and benefits of computation. It is defined in terms of three components: a cost function that specifies the cost of executing each computation, an action policy $\pi\act$ that selects an action to take given a mental state, and a utility function $U$ that specifies the utility of each possible action in each world state.
@@ -223,14 +225,14 @@ Substituting our definitions of $U$ and $\pi\act$ into Equation~\ref{eq:term-rew
 where the $\nicefrac{1}{2}$ comes from taking the average of $w$ and $1 - w$.
 
 Equation~\ref{eq:term-reward} may appear to constrain us to simple one-shot decision-making tasks, such as the ones tallying is intended for. However, it is not as restrictive as it first appears. For example, in Chapter~\ref{sec:memory}, we model a memory recall task by assuming that $\pi\act$ can only perform the ``recall'' action when the activation of a memory exceeds a threshold. In Chapter~\ref{sec:planning}, we model a planning task by defining $a$ abstractly, as a sequence of concrete actions (or more generally, an \emph{option}; \citealp{sutton1999mdps}).\footnote{
-  This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See \conclusion for a discussion of the problem of interleaved computation and action.
+  This does require that all computation is executed before any external action is performed, but this constraint does not reduce performance in deterministic environments. See Section~\ref{sec:interleaved} for a discussion of the problem of interleaved computation and action.
 } 
 
 \begin{figure}[tb!]
   \centering
   \includegraphics[width=\textwidth]{figs/policies.pdf}
   \caption{\captiontitle{Optimal policies for the tallying metalevel MDP.} 
-    The policy is illustrated as a graph, where each node represents a mental state. States in which the optimal policy continues computing are gray, and states in which the optimal policy terminates are in blue and red, corresponding to the two possible external actions. The two panels show the optimal policy under different levels of computational cost (0.01 and 0.002, in units defined by the maximal action utility of 1).
+    The policy is illustrated as a graph, where each node represents a mental state. States in which the optimal policy continues computing are gray, and states in which the optimal policy terminates are in blue and red, corresponding to the two possible external actions. The two panels show the optimal policy under different levels of computational cost (0.01 and 0.002, in units defined by the maximal action utility of 1). The code that generated this figure can be found at \url{https://github.com/fredcallaway/metamdp-example}.
   }
   \label{fig:tally-policies}
 \end{figure}
@@ -258,7 +260,7 @@ That is, it maximizes the expected return. In a metalevel MDP the return can be 
   }.
 \end{equation}
 This is the definition of optimal sequential cognitive processes given in Equation~\ref{eq:intro-master}.\footnote{%
-  Note that the expectation implicitly depends on the transition function, which was explicit in Equation~\ref{eq:eq:intro-master}, as well as the initial mental state $m_1$ and the set of possible computations.
+  Note that the expectation implicitly depends on the transition function, which was explicit in Equation~\ref{eq:intro-master}, as well as the initial mental state $m_1$ and the set of possible computations.
 } It emphasizes that the optimal policy is the cognitive strategy that best trades off between the costs and benefits of computation.
 
 The optimal policy for the tallying example is illustrated in Figure~\ref{fig:tally-policies}. When the cost of computation is high relative to the stakes of the decision, we see that the optimal tallying policy consider cues until either one option has a lead of two cues in its favor, or thirteen cues have been considered in total. This is interestingly different from the suggestion of \citet{gigerenzer2011heuristic}, to first consider a fixed number of cues and then make a choice as soon as one leads by any amount. When deliberation is less costly (or the decision is more important), one option has to lead by four cues to be chosen; but over time, this requirement becomes less strict, with a decision being made after considering at most 79 cues. This resembles the ``collapsing boundaries'' that are often found in optimal evidence accumulation models \citep{drugowitsch2012cost}.
@@ -390,15 +392,15 @@ One simply samples the world state from the belief before applying the transitio
 \begin{equation}\label{eq:marginal-transition}
 T(m_{t+1} \mid m_t, c_t) = \expectunder{T(m_{t+1} \mid m_t, c_t, w)}{w \sim b_t}.
 \end{equation}
-This expression cannot be simplified in the general case. In practice, we will work with conjugate or discrete beliefs that make this integration tractable.
-\todo{tallying?}
-% In the tallying example,
-% \begin{equation}\label{eq:marginal-transition-tallying}
-% T(m_{t+1} \mid m_t, c_t) = \begin{cases}
-%   \frac{α_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t +1, y_t)\\
-%    \frac{β_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t, y_t+1)\\
-% \end{cases}
-% \end{equation}
+This expression cannot be simplified in the general case. In practice, we will work with conjugate or discrete beliefs that make this integration tractable.  The general strategy is to derive a posterior predictive distribution over the observation, $p(o_t \mid c, m)$, which can be transformed into the transition function by applying bayes-update to the support of this distribution.
+
+In the tallying example, the relevant posterior predictive is given by a Beta-Bernoulli process; the marginal transition is thus defined as
+\begin{equation}\label{eq:marginal-transition-tallying}
+T\tally(m_{t+1} \mid m_t, c_t) = \begin{cases}
+  \frac{α_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t +1, y_t)\\
+  \frac{β_t}{α_t + β_t} &\text{if } m_{t+1} = (x_t, y_t+1).
+\end{cases}
+\end{equation}
 
 \subsection{Marginal reward function}
 
@@ -426,8 +428,7 @@ R(m, \bot)
 &= \expectunder{R(m, \bot, w)}{w \sim b_m} \\
 &= \expectunder{U(w, \pi\act(m))}{w \sim b_m} \\
 &= \expectunder{U\left(w,\, \argmax_a \expectunder{U(w', a)}{w' \sim b_m}\right)}{w \sim b_m} \\
-&= \max_a \expectunder{U(w, a)}{w \sim b_m}
-.
+&= \max_a \expectunder{U(w, a)}{w \sim b_m}.
 \end{aligned}
 \end{equation}
 %
@@ -437,7 +438,25 @@ The final line follows from
   f\left(\argmax_a f(a)\right) = \max_a f(a),
 \end{math}
 %
-where $f(a) = \expectunder{U(w, a)}{w \sim b_m}$. Note that the logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.\todo{tallying?}
+where $f(a) = \expectunder{U(w, a)}{w \sim b_m}$. Note that the logic generalizes to the case where $\pi\act$ samples from the set of optimal actions.
+
+In the tallying example, the marginal termination reward can be derived as
+\begin{equation}
+\begin{aligned}
+  R\tally(m, \bot)
+  &= \max_a \expectunder{U(w, a)}{w \sim b_m}\\
+  &= \max \left\{ 
+    \expectunder{U(w, X)}{w \sim b_m},
+    \expectunder{U(w, Y)}{w \sim b_m}
+  \right\} \\
+  &= \max \left\{ 
+    \expectunder{w}{w \sim b_m},
+    \expectunder{1-w}{w \sim b_m}
+  \right\} \\
+  &= \max \left\{\frac{α}{α + β}, \frac{β}{α + β} \right\},
+\end{aligned}
+\end{equation}
+where $\frac{α}{α + β}$ is the posterior mean of the Beta distribution $b_m$.
 
 \subsection{Marginalizing mechanical metalevel MDPs}\label{sec:marginal-mechanical}
 
@@ -589,14 +608,12 @@ When applying this strategy, one need not (and generally should not) actually co
 
 Unlike directed cognition, the blinkered approximation is strictly better than the myopic policy. However it can only be applied in cases where a small number of computations are relevant to each action. And even then, it cannot account for the synergistic value of learning about multiple external actions. 
 
-\separator
-
 All of the strategies I have discussed so far are \emph{model-based}. That is, they estimate the value of computations by simulating their possible outcomes. This can be contrasted with \emph{model-free} strategies that learn policies by trial and error. In the following section, I describe an algorithm that my colleagues and I developed, which combines model-based and model-free reasoning to quickly identify high-performing metalevel policies.
 
 
 \section{Bayesian metalevel policy search}\label{sec:bmps}
 
-Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging. Indeed, as we show in Appendix~\ref{app:bmps}, off-the-shelf deep learning methods can perform quite poorly.
+Bayesian metalevel policy search, or BMPS, is an algorithm that learns policies for metalevel MDPs. At its core, BMPS is a reinforcement learning (RL) algorithm. And in principle, any reinforcement-learning method could be applied to learn metalevel policies. However, metalevel MDPs pose an especially challenging type of problem for typical RL algorithms. In particular, metalevel MDPs present an extreme form of the \emph{credit assignment problem}. In each episode, the agent takes many computations, but receives only a single external reward. If the agent receives a large termination reward, it is unclear which of the many executed computations were important for producing that good outcome and which could have been skipped. This makes it hard to learn which computations are worth performing. To make matters worse, the termination reward often depends greatly on factors outside of the agent's control. If one is choosing between many bad options, the agent cannot get a good termination reward, not matter how well they compute. Together, these factors make metalevel reinforcement learning very challenging.
 
 The BMPS algorithm attempts to make the learning problem easier by endowing the agent with rich knowledge about the structure of the problem. To do so, it draws on work in rational metareasoning aiming to quantify and understand the value of computation \citep{matheson1968economic,horvitz1987reasoning,russell1991principles}. Specially, BMPS draws on work quantifying the \emph{value of information} generated by computation. 
 
@@ -607,7 +624,7 @@ The value of information (VOI) is defined as the expected utility of a decision 
 \begin{equation}\label{eq:main-voi}
   \VOI(b) = R(b, \bot) = \max_a \expectunder{U(w, a)}{w \sim b},
 \end{equation}
-using the termination reward defined in Equation~\ref{eq:marginal-term-decision}. Note that VOI can only be used when taking the Bayesian view of computation; therefore, I will not distinguish between mental states and beliefs, using $b$ for both.
+using the termination reward defined in Equation~\ref{eq:marginal-term}. Note that VOI can only be used when taking the Bayesian view of computation; therefore, I will not distinguish between mental states and beliefs, using $b$ for both.
 
 VOI is most useful for quantifying the value of information that \emph{we don't have yet}. More precisely, VOI quantifies the expected value of a belief state we will have after gathering more information. Given a distribution of possible future belief states, $B'$, the VOI is defined as
 %
@@ -671,4 +688,4 @@ How should the weights be determined? Treating the approximation literally, the 
   }
 \end{equation}
 
-The key advantage to BMPS over a more generic RL algorithm is that the policy has a very small number of parameters. This allows us to use an efficient search strategy such as Bayesian optimization. In Appendix~\ref{app:bmps}, we present an evaluation of BMPS trained with Bayesian optimization on several benchmark tasks, finding that it outperforms the blinkered policy described above as well as a generic DQN. In a cognitive modeling application, consistency may be more important than efficiency; in these cases, we can use exhaustive search algorithms that produce similar results when run multiple times. I describe such a method in Section~\ref{sec:attention-ucb}.
+The key advantage to BMPS over a more generic RL algorithm is that the policy has a very small number of parameters. This allows us to use an efficient search strategy such as Bayesian optimization. \citet{callaway2018learning} present an evaluation of BMPS trained with Bayesian optimization on several benchmark tasks, finding that it outperforms the blinkered policy described above as well as a generic DQN. In a cognitive modeling application, consistency may be more important than efficiency; in these cases, we can use exhaustive search algorithms that produce similar results when run multiple times. I describe such a method in Section~\ref{sec:attention-ucb}.

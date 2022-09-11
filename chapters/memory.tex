@@ -131,7 +131,7 @@ where $U\recall$ specifies the utility of correct recall (capturing, in our case
 
 Finally, the transition function $T$ captures the dynamics of the object-level process: the fact that $\term$ terminates the process, and (implicitly) the Bayesian belief updating. Note, however, that the object-level dynamics depend on the true memory strength ($v$ in Equation~\ref{eq:evidence}), which the agent does not have access to. Thus, the transition function must marginalize over the strength according to the current belief state:
 %
-\begin{equation}\label{eq:transition}
+\begin{equation}\label{eq:mem-transition}
 \begin{aligned}
   % T(s_{t+1} | s_t, a) = \int p(z_{t+1} \mid z_t, v)p(v \mid z_t, t) \ dv
   T(s_{t+1} | s_t, a) 
@@ -244,7 +244,7 @@ We compute the optimal policy by backwards induction. See \citet{puterman2014mar
 
 Recall that a belief state in the model is a tuple $(z_t, t)$. Because backwards induction can only be applied in finite state spaces, we begin by discretizing the first dimension of the belief into 100 equally sized bins, ranging from $-\theta$ to $\theta$. Note that $\theta$ is the maximum possible value $z_t$ can take. The lower bound of $-\theta$ is an arbitrary choice; we found that the optimal policy for well-fitting parameters always terminated well before this value was reached (e.g., Figure~\ref{fig:exp1_predictions}), suggesting that this imposed lower bound did not meaningfully affect the solution.
 
-We first computed the transition function. To account for the discretization, we computed the probability of transitioning from $(t, z_t)$ to $(t+1, z_{t+1})$ as $\Pr(a < z_{t+1} < b \mid t, z_t)$ where $a$ and $b$ are the boundaries of the bin with $z_{t+1}$ in the center. Because $z_{t+1}|t,z_t$ is Gaussian (Equation~\ref{eq:transition}), we could compute this quantity with standard statistical library functions (the Normal CDF). For most bins, the boundaries were $z_{t+1} \pm \nicefrac{\theta}{100}$. The top bin was clipped at $b = \theta$ and the bottom bin was unbounded, with $a = -\infty$. This ensures that the transition probability from each state sums to one.
+We first computed the transition function. To account for the discretization, we computed the probability of transitioning from $(t, z_t)$ to $(t+1, z_{t+1})$ as $\Pr(a < z_{t+1} < b \mid t, z_t)$ where $a$ and $b$ are the boundaries of the bin with $z_{t+1}$ in the center. Because $z_{t+1}|t,z_t$ is Gaussian (Equation~\ref{eq:mem-transition}), we could compute this quantity with standard statistical library functions (the Normal CDF). For most bins, the boundaries were $z_{t+1} \pm \nicefrac{\theta}{100}$. The top bin was clipped at $b = \theta$ and the bottom bin was unbounded, with $a = -\infty$. This ensures that the transition probability from each state sums to one.
 
 Next, we initialized the value function for all terminal belief states. The value of states with $z_t = \theta$ is $U\recall$ and the value of states with $t=150$ (the maximum trial duration) but $z_t < \theta$ is 0. Then, we iterated backward in time, computing the value of all states with $t=149$ as the maximum of the expected value of each possible action
 %
@@ -395,7 +395,7 @@ At the meta-level, the agent now has three actions: $\stay$, $\switch$, and $\te
 
 The new transition function has two parts. First, if the $\switch$ action is taken, $f$ is flipped. Then the original one-memory transition function is applied to the attended cue, updating the corresponding $t$ and $z_t$ variables. If the left memory is attended, we have
 %
-\begin{equation}\label{eq:transition2}
+\begin{equation}\label{eq:mem-transition2}
   % T(s_{t+1} | s_t, a) = \int p(z_{t+1} \mid z_t, v)p(v \mid z_t, t) \ dv
   T(s_{t+1} | s_t, a) = p(z_{t+1}\cL \mid t\cL, z_t\cL)
 \end{equation}
