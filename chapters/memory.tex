@@ -18,7 +18,7 @@ Suppose we try to recall a forgotten name. The state of our consciousness is pec
   Callaway, F., Griffiths, T. L., Norman, K. A., \& Zhang Q.
 }]{Memory}\label{sec:memory}
 
-\textbf{Note: This chapter has not yet been adapted for the dissertation. It may be updated in the latest version, which can be found at \url{www.fredcallaway.com/dissertation/pdfs/dissertation.pdf}.}
+% \textbf{Note: This chapter has not yet been adapted for the dissertation. It may be updated in the latest version, which can be found at \url{www.fredcallaway.com/dissertation/pdfs/dissertation.pdf}.}
 
 
 \newcommand{\citepnelson}{(Nelson \& Narens, 1990)}
@@ -26,8 +26,7 @@ Suppose we try to recall a forgotten name. The state of our consciousness is pec
 \newcommand{\citealpnelson}{Nelson \& Narens, 1990}
 \nocite{nelson1990metamemory}
 
-\section{Introduction}
-Most of us have experienced moments when we could not recall some piece of information but felt that we knew it (feeling of knowing; \citealp{hart1965memory}), perhaps even sensing that the answer was imminent and only momentarily blocked (tip-of-tongue; \citealp{brown1966tip}). These processes whereby people can examine and make judgments about the content of memory have been termed ``metamemory.'' Different from memory itself, metamemory refers to the higher order processes that monitor and control basic memory processes \citepnelson{}. In this paper, we aim to characterize the functional role of these processes in supporting rapid memory recall.
+\newthought{Most of us have experienced} moments when we could not recall some piece of information but felt that we knew it (feeling of knowing; \citealp{hart1965memory}), perhaps even sensing that the answer was imminent and only momentarily blocked (tip-of-tongue; \citealp{brown1966tip}). These processes whereby people can examine and make judgments about the content of memory have been termed ``metamemory.'' Different from memory itself, metamemory refers to the higher order processes that monitor and control basic memory processes \citepnelson{}. In this paper, we aim to characterize the functional role of these processes in supporting rapid memory recall.
 
 Most empirical work in metamemory has focused on how people are able to monitor their memory states \citep{reder1992determines,miner1994new,eakin2005illusions} and on the accuracy of metamemory judgments in predicting future recall \citep{hart1965memory,vesonder1985ability,dunlosky1992importance,dunlosky2007metacomprehension}. Recently, these phenomena have been understood through computational models of signal detection \citep{jang2012stochastic} and probability theory \citep{hu2021bayesian}. Less emphasis, however, has been placed on understanding the function of metamemory judgments \citep{schwartz2017metamemory}. In a highly influential paper, \citetnelson{} proposed that the function of metacognitive systems is to allow effective control of ongoing cognition (Figure~\ref{fig:nelson}). For example, they outlined a theory in which a dynamically updated feeling of knowing is used to inform the decision of when to terminate an unsuccessful recall attempt (Figure 5 in \citealpnelson{}). However, despite this early progress, there is (to our knowledge) still no computational model of how these feeling of knowing estimates might be dynamically generated, nor of how they could be used to control recall efforts. Consequently, despite intuitively suggestive findings such as longer search times for items with high feeling of knowing \citep{nelson1984comparison,nhouyvanisvong1998rapid,gruneberg1977methodological,lachman1979metamemory}, it is unclear to what extent metamemory serves an adaptive function in people.
 
@@ -54,7 +53,7 @@ The remainder of this paper is organized as follows. We begin by reviewing empir
   \label{fig:model-diagram}
 \end{figure}
 
-\section{Empirical evidence for control in memory recall}
+\subsubsection{Empirical evidence for control in memory recall}
 
 A number of behavioral studies have already suggested that people are capable of using their ability to monitor their memory in the service of controlling their memory processes. At the acquisition phase, a large body of work has investigated how people preferentially allocate study time depending on how well they have learned different pieces of information \citep{dunlosky1998training,metcalfe2009metacognitive,gureckis2012selfdirected}. Another substantial literature has addressed how people choose which memories to maintain or forget \citep{castel2007adaptive,williams2013benefit,suchow2016deciding,hu2019role}. Here, however, we focus specifically on the control of recall.
 
@@ -64,7 +63,7 @@ Once a memory search has been initiated, how long do people search before giving
 
 A related finding, although not one central to control, is that participants give higher confidence judgments when they recall an answer more quickly \citepnelson{}. In conjunction with the feeling-of-knowing effects, this produces a striking pattern. Treating both feeling of knowing and confidence as judgments of memory strength, we see opposite relationships between judged strength and response time for successful vs.~failed recall. \citet{costermans1992confidence} demonstrated this pattern in a single study. On each trial, participants were given a general knowledge question. Then, if they provided an answer, they gave a confidence judgment; if they were unable to provide an answer, they instead gave a feeling-of-knowing judgment. Costermans et al. found that, on the recall trials, participants gave higher confidence judgments when they responded more quickly. But on the omission trials, participants gave higher feeling-of-knowing judgments when they responded more \emph{slowly}. In the following section, we will show that both of these findings are consistent with a model in which memory recall follows an evidence accumulation process and search is terminated optimally based on metacognitive monitoring of the rate of progress.
 
-\section{An optimal model of metamemory for recall}
+\section{Model}
 
 Following classic theories of metamemory (\citealpnelson{}; Figure~\ref{fig:nelson}), we specify our model as two interrelated processes operating at different levels. The \emph{object-level} process includes the mechanisms supporting recall itself. Here, we abstract away from the details of memory search, modeling recall instead as a simple evidence accumulation process \citep{ratcliff2002estimating,sederberg2008context}. The \emph{metalevel} process supervises the object-level process; it \emph{monitors} the rate of progress towards recall and \emph{controls} how long the search process is allowed to continue. Here, we assume that the metalevel process is optimal in the sense that it terminates search when the expected costs of search outweighs the expected benefits. The model is illustrated in Figure~\ref{fig:model-diagram}; we describe its components below.
 
@@ -238,7 +237,7 @@ While these results are suggestive, the direction of causation is not clear. The
     }
 People were likewise faster to recall targets that they had previously recalled correctly ($B = -0.994$, 95\% CI [-1.237, -0.751], $t(237.3)=-8.02$, $p < .001$). More importantly, they were also slower to skip such targets ($B = 0.405$, 95\% CI [0.268, 0.543], $t(226.0)=5.77$, $p < .001$). The lesioned model could not produce this effect with any parameter values. These results suggest that participants' decisions to stop searching depended on a metacognitive awareness of how likely they were to recall the target.
 
-\subsubsection{Discussion}
+\subsubsection{Summary}
 
 In this experiment, we found that participants were faster to recall targets with higher strength but slower to give up on targets with higher strength. Importantly, this pattern held for both a subjective measure of strength (replicating \citealp{costermans1992confidence}) as well as an objective measurement of strength (accuracy on the pretest trials). The latter is critical because it shows that people spent longer searching for memories that they were actually more likely to recall, thus demonstrating the objective utility of metamemory in guiding recall. Furthermore, because pretest accuracy is defined before the critical trials, this measure is not subject to the reverse-causality concern that response times are driving feeling of knowing rather than vice versa \citep{schwartz2001relation}. 
 
@@ -328,11 +327,11 @@ Did participants' long final fixations reflect rational commitment or random com
 
 Note that we we did not pre-register this final analysis because our initial, less flexible, implementation of the lesioned model that sampled switching times from the empirical distribution could not capture the long final fixation effect (see Appendix~\ref{app:deviation}, \figref{fig:commitment_alt}{A}). However, the effect also holds in a previously collected dataset, which we did not use when developing \figref{fig:commitment}{B} or the accompanying statistical test. This provides a quasi-confirmatory test of the exploratory analysis in the previous paragraph. See Appendix~\ref{app:previous} for details.
 
-\subsubsection{Discussion}
+\subsubsection{Summary}
 
 In this experiment, we found evidence of a richer form of metalevel control of memory. Specifically, when presented with two cues associated with different target memories, our participants directed their attention towards the cue associated with the stronger memory. This was reflected in the overall proportion of fixation time, the timecourse of fixations, and the duration of individual non-final fixations. The latter two results are especially important because they are behavioral signatures of metacognitive control during the retrieval process itself (before recall is completed or abandoned). To our knowledge, this is the first empirical demonstration of a dynamic metamemory process unfolding over time. 
 
-\section{General discussion}
+\section{Discussion}
 
 In this paper, we presented an optimal model of metalevel control for cued recall. The model consists of a metacognitive process that monitors the progress of a basic recall process, and optimally controls how long the process is allowed to continue (either terminating recall or switching to recall of a different memory). In two experiments, we showed that human behavior is qualitatively consistent with the predictions of this model. In Experiment 1, we replicated and extended the findings of \citet{costermans1992confidence}, showing that people were faster to recall targets with higher strength (as indicated by both subjective judgments and objective performance) but slower to give up on targets with higher strength. In Experiment 2, we showed that people also attend to stronger memories when they can choose between two possible targets. Together, our results suggest that people can estimate the strength of a memory they are trying to recall and use this information to adaptively control their retrieval efforts.
 
