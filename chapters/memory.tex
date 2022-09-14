@@ -15,7 +15,7 @@ Suppose we try to recall a forgotten name. The state of our consciousness is pec
 
 \Chapter[Optimal metalevel control of memory recall\footnote{%
   This chapter is based on a working paper, with authors:
-  Callaway, F., Griffiths, T. L., Norman, K. A., \& Zhang Q.
+  Callaway, F., Griffiths, T. L., Norman, K. A., \& Zhang Q. This research was supported by a grant from Facebook Reality Labs.
 }]{Memory}\label{sec:memory}
 
 % \textbf{Note: This chapter has not yet been adapted for the dissertation. It may be updated in the latest version, which can be found at \url{www.fredcallaway.com/dissertation/pdfs/dissertation.pdf}.}
@@ -111,7 +111,7 @@ Concretely, we assume that the metalevel process observes the current recall pro
 %
 where $\mu_0$ and $\sigma_0^2$ encode the agent's prior, $\mNormal{\mu_0, \sigma_0^2}$. To build intuition, note that with a very weak prior (large $\sigma_0^2$), $\mu_t$ reduces to $\nicefrac{z_t}{t}$, the average rate of recall progress. This time-varying belief about the strength of a memory formalizes the concept of \emph{feeling of knowing}.
 
-Given this estimate of memory strength, how should the metalevel process determine whether to continue searching. That is, how should \emph{monitoring} inform \emph{control}? To ansewr this question, we can pose the model as a metalevel MDP and identify the optimal policy.
+Given this estimate of memory strength, how should the metalevel process determine whether to continue searching. That is, how should \emph{monitoring} inform \emph{control}? To answer this question, we can pose the model as a metalevel MDP and identify the optimal policy.
 
 \subsection{Metalevel Markov decision process}
 
@@ -161,7 +161,7 @@ The reward function encodes the benefit of recall and the cost of search. We use
 
 \subsection{Optimal policy}
 
-In the metalevel MDP specified above, the policy corresponds to a strategy for deciding when to give up on recalling a memory. To identify the optimal policy, we apply backwards induction (Section~\ref{sec:backinduct}). This method computes the optimal value function of the mdp $V^*$, which specifies the maximal reward that could be gaind in expectation starting from any mental state. To build intuition, we can factorize $V^*$ for the current model into two components, capturing the utility of recall and the cost of search,
+In the metalevel MDP specified above, the policy corresponds to a strategy for deciding when to give up on recalling a memory. To identify the optimal policy, we apply backwards induction (Section~\ref{sec:backinduct}). This method computes the optimal value function of the MDP $V^*$, which specifies the maximal reward that could be gained in expectation starting from any mental state. To build intuition, we can factorize $V^*$ for the current model into two components, capturing the utility of recall and the cost of search,
 %
 \begin{equation}\label{eq:value}
   V^*(m_t) = p(\text{recall} \mid m_t) U\recall - 
@@ -557,7 +557,7 @@ and similarly if the right cue is attended.
 
 We again computed the optimal policy by backwards induction. We applied the same discretization, and computed the transition function in the same way. Note that, because recall progresses for only one memory at a time, it is not necessary to represent the transition function over the full state space.
 
-To compute the value functions, we began by initializing the value of terminal states to $U\recall$ if either recall progress exceeded the threshold and 0 if the combined time exceeded 150. We then computed the value at previous time steps by iterating backwards. In this case, for each time step, we must consider all combinations of time spent on each item that sum to the the time step under consideration. Additionally, we must consider three possible computationss. Assuming the left cue is currently attended, their values are
+To compute the value functions, we began by initializing the value of terminal states to $U\recall$ if either recall progress exceeded the threshold and 0 if the combined time exceeded 150. We then computed the value at previous time steps by iterating backwards. In this case, for each time step, we must consider all combinations of time spent on each item that sum to the the time step under consideration. Additionally, we must consider three possible computations. Assuming the left cue is currently attended, their values are
 %
 \begin{equation}
 \begin{aligned}
@@ -594,7 +594,3 @@ To give the lesioned model the best chance of capturing the qualitative effects,
     \mu_\text{NDT} = 813,\ 
     \alpha_\text{NDT} = 3.56,\ 
 \)).
-
-\subsection*{Acknowledgments}
-This research was supported by a grant from Facebook Reality Labs.
-

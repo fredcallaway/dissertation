@@ -5,7 +5,8 @@ Choice of attention---to pay attention to this and ignore that---is to the inner
 \end{savequote}
 
 \Chapter[Fixation patterns in simple choice reflect optimal information sampling\footnote{
-  This chapter is based on the following paper:\newline\bibentry{callaway2021fixation}.%
+  This chapter is based on the following paper:\newline\bibentry{callaway2021fixation}. We thank Ian Krajbich for his help in simulating the aDDM and Bas van Opheusden for suggesting the method for efficiently computing $\VPI$.
+
 }]{Attention}\label{sec:attention}
 
 % Frederick Callaway\textsuperscript{1*},
@@ -278,7 +279,7 @@ The model makes even starker predictions in the three-item case. First, take all
 
 Finally, the model makes a striking prediction regarding the location of the third fixation in the three-item case. Consider the choice of where to fixate after the first two fixations. The decision maker can choose to fixate on the item that she has not seen yet, or to refixate the first-fixated item. The model predicts a refixation to the first-seen item if both that item and the second-seen item already have high value estimates (leaving the unfixated item with the lowest value estimate). Consistent with this prediction, \figref{fig:attention6}{e} shows that the probability of the third fixation being a refixation to the first-seen item increases with that item's rating. Note that the model with $\alpha$ fixed to zero (corresponding to a strong prior bias), dramatically overpredicts the intercept. This is because this model greatly underestimates the value of the not-yet-fixated item.
 
-Overall, \figref{fig:attention6}{} shows that our main model provides a better fit to some fixation patterns, whereas the aDDM provides a better fit to others. However, it is important to keep in mind that whereas our model provides predictions for these fixation patterns based on first principles, the predictions of the aDDM for these patterns are largely mechanistice since that model samples fixation locations and durations from the observed empirical distribution. As a result, it is not surprising that \figref{fig:attention6}{b} shows a better match between the aDDM and the data since the ``predicted'' durations are actually sampled from the observed data conditional on the first item rating.
+Overall, \figref{fig:attention6}{} shows that our main model provides a better fit to some fixation patterns, whereas the aDDM provides a better fit to others. However, it is important to keep in mind that whereas our model provides predictions for these fixation patterns based on first principles, the predictions of the aDDM for these patterns are largely mechanistic since that model samples fixation locations and durations from the observed empirical distribution. As a result, it is not surprising that \figref{fig:attention6}{b} shows a better match between the aDDM and the data since the ``predicted'' durations are actually sampled from the observed data conditional on the first item rating.
 
 % \FloatBarrier
 
@@ -334,7 +335,7 @@ While we have focused on attention in simple choice, other studies have explored
  
 \section{Methods}
 
-The model was implemented in the Julia programming language \citep{bezanson2017julia}. The code can be found at \url{https://github.com/fredcallaway/optimal-fixations-simple-choice}.
+The model was implemented in the Julia programming language \citep{bezanson2017julia}. The code can be found at \linebreak \url{https://github.com/fredcallaway/optimal-fixations-simple-choice}.
 
 
 \subsection{Approximating the optimal policy}\label{sec:attention-policy}
@@ -438,8 +439,3 @@ $\sigma_x = 2.66 \pm 0.272$,
 $\switchcost =   0.0118 \pm 0.002$,
 $\samplecost = 0.00506 \pm 0.001$, and
 $\beta = 330.0 \pm 97.9$.
-
-
-\paragraph{Acknowledgements}
-We thank Ian Krajbich for his help in simulating the aDDM and Bas van Opheusden for suggesting the method for efficiently computing $\VPI$.
-
