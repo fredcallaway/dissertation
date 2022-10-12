@@ -316,7 +316,7 @@ All data and code supporting this chapter can be found at \url{https://github.co
 
 
 \subsection{Experiment~1} \label{sec:planning-methods1}
-We recruited $104$ participants ($28.7$ $\pm$ $8.2$ years; $50$ female, $5$ not specified) from Prolific who reported fluency in English, resided in the United States, and had a $95\%$ approval rating (this number excludes participants who accepted the study but did not move past the second instruction page). We excluded $6$ participants because they failed a quiz following the instructions and $3$ participants who did not complete the experiment for some other reason, leaving $95$ participants in the analysis. Participants who completed the experiment or failed the quiz received $\$1.50$ for participation. Those who completed the experiment additionally earned a performance-dependent bonus of (mean $\pm$ sd) $\$2.43$ $\pm$ $\$0.42$ for $22.5$ $\pm$ $6.6$ minutes of work.
+We recruited $104$ participants from Prolific who reported fluency in English, resided in the United States, and had a $95\%$ approval rating (this number excludes participants who accepted the study but did not move past the second instruction page). We excluded $6$ participants because they failed a quiz following the instructions and $3$ participants who did not complete the experiment for some other reason, leaving $95$ participants in the analysis. Participants who completed the experiment or failed the quiz received $\$1.50$ for participation. Those who completed the experiment additionally earned a performance-dependent bonus of (mean $\pm$ sd) $\$2.43$ $\pm$ $\$0.42$ for $22.5$ $\pm$ $6.6$ minutes of work.
 
 \paragraph{Main Task}
 In the main task of Experiment~1 (see \figref{fig:planning-task}{}), participants navigated a cartoon spider through a directed graph in which each vertex (the gray circles) harbored a gain or loss, with the goal of maximizing the total payoff accrued along the selected route. All rewards were independently drawn from a discrete uniform distribution over the values $\{-10,-5, +5, +10\}$. At the beginning of each trial, all rewards were occluded; however, participants could click on nodes adjacent to the starting location or to an already-revealed node to reveal the value. After each click, there was a three-second delay during which no additional clicks could be made. To visually convey these constraints, nodes were highlighted whenever they could be clicked. At any point, participants could stop clicking and move the spider from the starting node using the arrow keys. After each arrow key press, the spider moved to an adjacent node, the value of that node was revealed (if not already revealed), and its value was added to a total shown in the top right. Clicking was disabled after the first move, and the trial ended when the participant reached a terminal node (i.e., one with no outgoing edges).
@@ -328,7 +328,7 @@ The experiment began with an instruction phase in which participants completed i
 After completing the instructions, participants took a multiple-choice quiz that asked about the reward distribution, the rules for inspecting nodes, and the points-to-bonus conversion. Participants who failed the quiz were shown a review screen with all the necessary information and were given another chance to complete the quiz. If they failed the quiz three times, they were dismissed. Otherwise, they progressed to the main phase of the experiment where they completed $25$ trials of the main task. They were given an initial endowment of $100$ points to minimize the chance that they would ever have a negative score.
 
 \subsection{Experiment~2}\label{sec:planning-methods2}
-All aspects of the design were identical to Experiment~1 except where noted otherwise. We recruited $313$ participants ($31.7$ $\pm$ $11.1$ years; $162$ female, $12$ not specified). We excluded $4$ who failed the quiz and $11$ who did not complete the experiment, leaving $298$ participants in the analysis. Participants received $\$1.50$ plus a bonus of $\$2.18$ $\pm$ $\$0.74$ for $23.6$ $\pm$ $10.4$ minutes of work.
+All aspects of the design were identical to Experiment~1 except where noted otherwise. We recruited $313$ participants. We excluded $4$ who failed the quiz and $11$ who did not complete the experiment, leaving $298$ participants in the analysis. Participants received $\$1.50$ plus a bonus of $\$2.18$ $\pm$ $\$0.74$ for $23.6$ $\pm$ $10.4$ minutes of work.
 
 \paragraph{Main Task}
 The main task of Experiment~2 had the same basic structure as that in Experiment~1, but with a different graph and reward structure (see \figref{fig:planning-exp2}{a}). The graph had a single choice point at the first move (four options) followed by four forced moves. The reward distributions depended on a between-participant condition. In the constant variance condition, it was the same as in Experiment~1. In the other two conditions, most nodes were $-1$ or $+1$ with equal probability, but four nodes had an extreme distribution. For increasing variance, the terminal nodes (farthest from the initial location) had values of $+20$ with $\nicefrac{2}{3}$ probability and $-40$ with $\nicefrac{1}{3}$ probability. For decreasing variance, the nodes closest to the initial location had value $+1$ with $\nicefrac{3}{5}$ probability, and either $+20$ or $-20$ with roughly $\nicefrac{1}{5}$ each, slightly skewed towards $-20$ to make the expected reward $0$ ($.185$ and $.215$). These distributions were selected to make the optimal planning strategy closely resemble depth-first and breadth-first search in the increasing and decreasing variance conditions respectively.
@@ -338,7 +338,7 @@ The procedure was identical to Experiment~1 except that we replaced the bonus qu
 
 
 \subsection{Experiment~3}\label{sec:planning-methods3}
-All aspects of the design are identical to Experiment~2 except where noted otherwise. We recruited $319$ participants ($32.3$ $\pm$ $11.8$ years; $173$ female, $20$ not specified). We excluded $11$ who failed the quiz and $17$ who did not complete the experiment, leaving $291$ participants in the analysis. Participants received $\$1.50$ plus a bonus of $\$2.49$ $\pm$ $\$0.43$ for $21.3$ $\pm$ $7.5$ minutes of work.
+All aspects of the design are identical to Experiment~2 except where noted otherwise. We recruited $319$ participants. We excluded $11$ who failed the quiz and $17$ who did not complete the experiment, leaving $291$ participants in the analysis. Participants received $\$1.50$ plus a bonus of $\$2.49$ $\pm$ $\$0.43$ for $21.3$ $\pm$ $7.5$ minutes of work.
 
 \paragraph{Main Task}
 The task had the same basic structure and graph as Experiment~1. The key difference from previous experiments is that we lifted the restriction that only nodes adjacent to the initial state or already-revealed nodes could be revealed. That is, participants could reveal any unrevealed node at any point. The graph was the same as in Experiment~1. The reward structure varied by condition. In the constant variance condition, it was identical to Experiment~1. In the increasing variance condition, the reward distribution for depth $1$ nodes was uniform over the values $\{-2,-1, +1 +2\}$. The possible values at later depths were scaled by $3^d$; that is, the range and standard deviation increased by a factor of $3$ from each depth to the next, up to $\{-18,-9, +9 +18\}$ at the depth~$3$ leaf nodes. In the decreasing variance condition, the situation was exactly reversed: depth $1$ nodes could take values in $\{-18,-9, +9 +18\}$, and the values decreased by a factor of $3$ with each step down to $\{-2,-1, +1 +2\}$ at the leaf nodes.
@@ -347,7 +347,7 @@ The task had the same basic structure and graph as Experiment~1. The key differe
 The procedure was identical to Experiment~2.
 
 
-\subsection{Experiment~4}\label{sec:planning-methods4} We recruited $137$ participants ($33.4$ $\pm$ $12.2$ years; $55$ female, $36$ not specified) from Prolific who reported fluency in English, resided in the United States, and had a $95\%$ approval rating. We excluded $7$ who \ failed the quiz and $37$ who did not complete the experiment, leaving $93$ in the analysis. Due to a technical error, instruction progress was not recorded, hence the larger number of incompletes. Participants received $\$1.75$ plus a bonus of $\$0.99$ $\pm$ $\$0.13$ for $18.2$ $\pm$ $7.8$ minutes of work.
+\subsection{Experiment~4}\label{sec:planning-methods4} We recruited $137$ participants from Prolific who reported fluency in English, resided in the United States, and had a $95\%$ approval rating. We excluded $7$ who \ failed the quiz and $37$ who did not complete the experiment, leaving $93$ in the analysis. Due to a technical error, instruction progress was not recorded, hence the larger number of incompletes. Participants received $\$1.75$ plus a bonus of $\$0.99$ $\pm$ $\$0.13$ for $18.2$ $\pm$ $7.8$ minutes of work.
 
 \paragraph{Main Task}
 Participants assumed the role of a travel agent planning a road trip. On each trial, the participant saw a map of an island with eleven cities represented as circles and roads represented as arrows. Participants were instructed that the client wants to travel from a given starting location to a goal location. Each ``day'' they can move along any single arrow between two cities and each ``night'' the client has to stay in a hotel at a price that varies between cities. Participants were informed that hotels could cost $\$25$, $\$35$, $\$50$, or $\$100$, and that all values were equally likely. To reveal the price of the hotel in a given city, participants had to type its name into a text box. They could uncover any number of prices, in any order, and they could submit their recommended route at any moment. At this point the total cost was computed; this value was subtracted from a budget of $\$300$ and the participant's bonus for the trial was $1$ cent for each $\$10$ remaining.
@@ -380,9 +380,9 @@ that is, a logistic function of the expected value of the best path with slope $
 We defined the selection rule for each heuristic model so that its policy approximates the corresponding classical search algorithm. To do this, we defined
 \begin{equation}\label{eq:selectH}
 p\select^H(m, c) = \frac{
-  \textbf{1}(c \in \frontier(m)) \cdot \expp{\beta\select \cdot f\select^{\textsc{alg}}(m, c)}
+  \textbf{1}(c \in \frontier(m)) \cdot \expp{\beta\select \cdot f\select^{\textsc{ alg}}(m, c)}
   }{
-  \sum_{c' \in \frontier(m)} \expp{\beta\select \cdot f\select^{\textsc{alg}}(m, c')}
+  \displaystyle\sum_{c' \in \frontier(m)} \expp{\beta\select \cdot f\select^{\textsc{ alg}}(m, c')}
   },
 \end{equation}
 where $f\select^{\textsc{ alg}}(m, c)$ denotes a node-scoring function for each algorithm; specifically, 
@@ -399,11 +399,11 @@ The random model takes the same form as the heuristic models, with $f\select^{\t
 
 For the optimal model, we define both the stopping and the selection rules using the optimal state-action value function, $Q_\gamma$, of the metalevel MDP with computational cost $\gamma$. We computed the $Q$ function using dynamic programming. The stopping rule is
 \begin{equation}\label{eq:stopO}
-p\stop^O(m) = \frac{ \expp{\beta\stop \cdot Q_\gamma(m,\bot)}}{\sum_{a' \in \frontier(m) \cup \{\bot\}} \expp{\beta\stop  \cdot  Q_\gamma(m, c')}}
+p\stop^O(m) = \frac{ \expp{\beta\stop \cdot Q_\gamma(m,\bot)}}{\displaystyle\sum_{a' \in \frontier(m) \cup \{\bot\}} \expp{\beta\stop  \cdot  Q_\gamma(m, c')}}
 \end{equation}
 and the selection rule is
 \begin{equation}\label{eq:selectO}
-p\select^O(m, c) = \frac{\expp{\beta\select  \cdot  Q_\gamma(m, c)}}{\sum_{c' \in \frontier(m)}\expp{\beta\select  \cdot  Q_\gamma(m, c')}}.
+p\select^O(m, c) = \frac{\expp{\beta\select  \cdot  Q_\gamma(m, c)}}{\displaystyle\sum_{c' \in \frontier(m)}\expp{\beta\select  \cdot  Q_\gamma(m, c')}}.
 \end{equation}
 Note that if $\beta\select = \beta\stop$, this corresponds to a single softmax over the full action space. However, we use separate inverse temperature parameters for stopping and selection to match the flexibility of the error model used by the optimal model to that of the heuristic models.
 
