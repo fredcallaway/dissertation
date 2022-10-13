@@ -33,7 +33,7 @@ In this chapter, I provide a formal description of the framework. The formalizat
 \end{figure*}
 
 
-\section{Markov decision processes}
+\section{Markov decision processes}\label{sec:mdps}
 
 A metalevel Markov decision process is an extension of a standard Markov decision process (MDP), illustrated in \figref{fig:mdp-diagram}{}. Thus, I begin with a brief overview of standard MDPs. See \citet{puterman2014markov} and \citet{sutton2018reinforcement} more thorough overviews.
 
@@ -283,17 +283,17 @@ Importantly, the two views are not mutually exclusive. They are often compatible
 
 In the following section, I define Bayesian metalevel MDPs, as a special case of the general metalevel MDP framework outlined above.
 
-\section{Bayesian metalevel MDPs}
+\section{Bayesian metalevel MDPs}\label{sec:bayesian-metamdp}
 
 Taking the Bayesian view amounts to putting a restriction on the set of mental states and the transition function. Specifically, the mental states must correspond to posterior distributions over the state, and the transition function must encode describe a Bayesian updating procedure. I detail these two requirements below.
 
 
 \subsection{Belief states}
 
-When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally expressead as distributions over the world state. I will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, I will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$. 
+When adopting the Bayesian view, mental states correspond to \emph{beliefs}, formally expressed as distributions over the world state. I will use the notation $b_m$ to denote the Bayesian belief associated with mental state $m$. When it is clear from context, I will drop the $m$ subscript, e.g., using $b_t$ in place of $b_{m_t}$. 
 
 Mapping mental states to Bayesian beliefs is powerful because it provides a formal link between mental states and world states. For example, we can denote the probability of a world state under a belief state as $b_m(w) = \Pr(W = w \mid M = m)$.\footnote{%
-  For notational convenience, I assume in this chapter that $\W$ is countable. The definitions can easily be extended to the continous case.
+  For notational convenience, I assume in this chapter that $\W$ is countable. The definitions can easily be extended to the continuous case.
 } Similarly, we can express expectations about functions of world state given the mental state as $\expectunder{f(w)}{w \sim b_m}$. This allows us to, for example, define an action policy that takes the optimal action given the current mental state,
 \begin{equation}
   \pi\act(m) = \Uniform \left(\argmax_a \expectunder{U(w, a)}{w \sim b_m}\right).
@@ -691,3 +691,22 @@ How should the weights be determined? Treating the approximation literally, the 
 \end{equation}
 
 The key advantage to BMPS over a more generic RL algorithm is that the policy has a very small number of parameters. This allows us to use an efficient search strategy such as Bayesian optimization. \citet{callaway2018learning} present an evaluation of BMPS trained with Bayesian optimization on several benchmark tasks, finding that it outperforms the blinkered policy described above as well as a generic DQN. In a cognitive modeling application, consistency may be more important than efficiency; in these cases, we can use exhaustive search algorithms that produce similar results when run multiple times. I describe such a method in Section~\ref{sec:attention-ucb}.
+
+\section{Summary}
+
+In this chapter, I introduced the formal framework of metalevel Markov decision processes. Below I briefly summarize the key points to take away from this section:
+
+\begin{itemize}
+  \item A Markov decision process (MDP) models a sequential decision problem with a set of states the environment can be in, a set of actions the agent can take, a transition function specifying how actions affect the environment state, and a reward function specifying the immediate utility gained by executing each action in each possible state (Section~\ref{sec:mdps}).
+
+  \item A metalevel Markov MDP models the problem posed by an agent's internal cognitive environment. Here, states correspond to mental states, actions correspond to cognitive operations, the transition function specifies how operations update mental state, and the reward function specifies both cognitive cost and also the utility of the external action that is taken as a result of cognition. A metalevel MDP also includes a set of world states  that determines both the outcome of cognitive operations and also the utility of external actions. (Section~\ref{sec:metalevel-mdps}).
+
+  \item The optimal policy for a metalevel MDP corresponds to an optimal cognitive process, an optimal strategy for selecting which cognitive operation to perform next given the current mental state (Section~\ref{sec:metamdp-policy}).
+
+  \item We can adopt two views of computation: a mechanical view that treats mental states and actions as exactly analogous to external states and actions, and a Bayesian view that formalize computations as internal experiments that generate information about the world (Sections~\ref{sec:two-views} and~\ref{sec:bayesian-metamdp}). Adopting the latter view allows us to transform a metalevel MDP into an equivalent ``marginalized'' MDP (Section~\ref{sec:metamdp-marginalized}).
+
+  \item Identifying optimal policies for metalevel MDPs can be challenging due to the very large state and action spaces (Section~\ref{sec:computing}). Adopting a combination of model-free and model-based techniques can be an effective way to solve this challenging problem (Section~\ref{sec:bmps}).
+\end{itemize}
+
+In the following three chapters, I show how my colleagues and I have applied this framework to characterize optimal cognitive processes for attention, memory, and planning. As we shall see, this will highlight many of the ways that human cognitive processes are well adapted to both our internal and external environments, revealing new insights about both how our minds work and why they work that way.
+
