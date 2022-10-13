@@ -137,7 +137,7 @@ That is, if the recall progress is above threshold, executing $\bot$ corresponds
 \paragraph{Transition function}
 The transition function $T$ captures the evidence-accumulation dynamics of the object-level process, as defined in Equation~\ref{eq:evidence}. The marginal transition function is
 %
-\begin{equation}\label{eq:transition}
+\begin{equation}\label{eq:mem-transition}
 \begin{aligned}
   % T(m_{t+1} | m_t, a) = \int p(z_{t+1} \mid z_t, v)p(v \mid z_t, t) \ dv
   T(m_{t+1} | m_t, c) 
@@ -436,7 +436,7 @@ We compute the optimal policy by backwards induction. See \citet{puterman2014mar
 
 Recall that a mental state in the model is a tuple $(t, z_t)$. Because backwards induction can only be applied in finite state spaces, we begin by discretizing the progress dimension into 100 equally sized bins, ranging from $-\theta$ to $\theta$. Note that $\theta$ is the maximum possible value $z_t$ can take. The lower bound of $-\theta$ is an arbitrary choice; we found that the optimal policy for well-fitting parameters always terminated well before this value was reached (e.g., Figure~\ref{fig:exp1_predictions}), suggesting that this imposed lower bound did not meaningfully affect the solution.
 
-We first computed the transition function. To account for the discretization, we computed the probability of transitioning from $(t, z_t)$ to $(t+1, z_{t+1})$ as $\Pr(a < z_{t+1} < b \mid t, z_t)$ where $a$ and $b$ are the boundaries of the bin with $z_{t+1}$ in the center. Because $z_{t+1}|t,z_t$ is Gaussian (Equation~\ref{eq:transition}), we could compute this quantity with standard statistical library functions (the Normal CDF). For most bins, the boundaries were $z_{t+1} \pm \nicefrac{\theta}{100}$. The top bin was clipped at $b = \theta$ and the bottom bin was unbounded, with $a = -\infty$. This ensures that the transition probability from each state sums to one.
+We first computed the transition function. To account for the discretization, we computed the probability of transitioning from $(t, z_t)$ to $(t+1, z_{t+1})$ as $\Pr(a < z_{t+1} < b \mid t, z_t)$ where $a$ and $b$ are the boundaries of the bin with $z_{t+1}$ in the center. Because $z_{t+1}|t,z_t$ is Gaussian (Equation~\ref{eq:mem-transition}), we could compute this quantity with standard statistical library functions (the Normal CDF). For most bins, the boundaries were $z_{t+1} \pm \nicefrac{\theta}{100}$. The top bin was clipped at $b = \theta$ and the bottom bin was unbounded, with $a = -\infty$. This ensures that the transition probability from each state sums to one.
 
 Next, we initialized the value function for all terminal mental states. The value of states with $z_t = \theta$ is $U\recall$ and the value of states with $t=150$ (the maximum trial duration) but $z_t < \theta$ is 0. Then, we iterated backward in time, computing the value of all states with $t=149$ as the maximum of the expected value of each possible computation,
 %
@@ -546,7 +546,7 @@ The termination reward is modified to capture the fact that either memory can be
 
 The transition function simply applies the original transition function to the currently focused cue (which is updated based on the computation). If the left memory is attended, we have
 %
-\begin{equation}\label{eq:transition2}
+\begin{equation}\label{eq:mem-transition2}
   % T(m_{t+1} | m_t, a) = \int p(z_{t+1} \mid z_t, v)p(v \mid z_t, t) \ dv
   T(m_{t+1} | m_t, c) = p(z_{t+1}\cL \mid t\cL, z_t\cL)
 \end{equation}
