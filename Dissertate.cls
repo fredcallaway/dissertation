@@ -73,9 +73,9 @@
 \usepackage[letterpaper]{geometry}
 \geometry{
     top=1in,
-    bottom=1.2in,
-    left=1in,
-    right=1in,
+    bottom=1.5in,
+    left=1.2in,
+    right=1.2in,
     % headheight=3ex,
     % headsep=3ex
 }
