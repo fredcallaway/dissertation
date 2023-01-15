@@ -277,7 +277,7 @@
         \vspace{15pt}
       \@degreemonth\ \@degreeyear
     \rm
-    {\newline \vspace{50pt} \large This draft was compiled on \today\\}
+    % {\newline \vspace{50pt} \large This draft was compiled on \today\\}
     \end{center}
     \vspace*{\fill}
 }
