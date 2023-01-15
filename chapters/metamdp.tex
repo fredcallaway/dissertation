@@ -482,7 +482,9 @@ Combining Equations~\ref{eq:belief-accuracy} and~\ref{eq:belief-completeness}, w
 \begin{equation}\label{eq:sufficient}
   p(w \mid m_t) = p(w \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
 \end{equation}
-This imposes a true constraint on the metalevel MDPs we can marginalize. Specifically, Equation~\ref{eq:belief-completeness} says that the mental state must be a \emph{sufficient statistic} for the full history of mental states and computations with respect to the world state. To see why this property is necessary, note that Markov decision processes must satisfy the Markov property. That is, the probability of the next state must depend only on the current state and action; formally,
+This imposes a true constraint on the metalevel MDPs we can marginalize. Specifically, Equation~\ref{eq:belief-completeness} says that the mental state must be a \emph{sufficient statistic} for the full history of mental states and computations with respect to the world state.
+% Could cite Littman ``scaling up'' or Bertsekas 1987
+To see why this property is necessary, note that Markov decision processes must satisfy the Markov property. That is, the probability of the next state must depend only on the current state and action; formally,
 \begin{equation}\label{eq:markov}
   p(m_{t+1} \mid m_t, c_t) = p(m_t \mid \vec{m}_{1:t}, \vec{c}_{1:t}).
 \end{equation}
