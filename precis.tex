@@ -41,7 +41,8 @@ The dissertation consists of six chapters. In the first chapter, I introduce the
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{diagrams/precis/intro.pdf}
-  \caption{Sequential decision problems posed by external and internal environments.}
+  \caption{Sequential decision problems posed by external and internal environments. 
+  External environments \subcap{A} are often modeled by a Markov decision process, or MDP \subcap{B}. An MDP is defined by a set of possible states the world can be in, a set of actions the agent can perform, a reward function that encodes the agent's goals, and a transition function describing how actions change the state (arrows). An internal, cognitive environment \subcap{C} can be modeled as a \emph{metalevel} MDP \subcap{D}. A metalevel MDP is defined by a set of mental states and a set of computational operations that change that mental state (as specified in the metalevel transition function). The metalevel reward function captures both the cost of executing those operations as well as the external utility of the behavior that the computation produces.}
   \label{fig:sequential-intuition}
 \end{figure}
 
@@ -121,7 +122,7 @@ One weakness with the above finding, and indeed with many empirical results in m
   \caption{\captiontitle{Planning}
     \subcap{A} Meta-level MDP. The mental state is a decision-tree, which represents possible future actions (edges), states (nodes), and rewards (green/red). A computation corresponds to considering a future state and expanding the decision tree.
     \subcap{B} Experimental task. The internal process of expanding a decision tree is externalized by forcing participants to click to reveal the reward to be gained at each state.
-    \subcap{C} Adaptation of planning strategy in environments with different reward structures (see main text). Each panel shows the probability of making a second click on the same path as the first click, depending on the value revealed by that first click. Models that achieve high reward in the environment are highlighted. % Modulating the distribution of rewards in the environment changes the optimal planning stategy: breadth-first when large rewards are near the initial state, best-first when they are distributed evenly, and depth-first when they are far from the initial state.
+    \subcap{C} Adaptation of planning strategy in environments with different reward structures (see main text). Each panel shows the probability of making a second click on the same path as the first click, depending on the value revealed by that first click. Models that achieve high reward in the respective environment are highlighted. % Modulating the distribution of rewards in the environment changes the optimal planning stategy: breadth-first when large rewards are near the initial state, best-first when they are distributed evenly, and depth-first when they are far from the initial state.
   }
   \label{fig:planning}
 \end{figure}
